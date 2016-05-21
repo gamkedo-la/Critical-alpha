@@ -38,6 +38,25 @@ public class MapGenerator : MonoBehaviour
     private bool m_meshDataProcessing;
 
 
+	public float GetTerrainHeight(float x, float z)
+	{
+		x /= EndlessTerrain.Scale;
+		z /= EndlessTerrain.Scale;
+
+		float height = m_terrainEquation.GetHeight(x, z);
+
+		//print(height);
+		height = m_meshHeightCurve.Evaluate(height);
+		//print(height);
+		height *= m_meshHeightMultiplier;
+		//print(height);
+		height *= EndlessTerrain.Scale;
+		//print(height);
+
+		return height;
+	}
+
+
     public void DrawMapInEditor()
     {
         m_terrainEquation.Initialise();
@@ -102,7 +121,7 @@ public class MapGenerator : MonoBehaviour
     }
 
 
-    void Start()
+    void Awake()
     {
         m_terrainEquation.Initialise();
     }

@@ -7,7 +7,7 @@ using System.Threading;
 
 public class EndlessTerrain : MonoBehaviour
 {
-    private const float Scale = 2f;
+    public const float Scale = 2f;
     private const float ViewerMoveThresholdForChunkUpdate = 25f;
     private const float SquViewerMoveThresholdForChunkUpdate = ViewerMoveThresholdForChunkUpdate * ViewerMoveThresholdForChunkUpdate;
 

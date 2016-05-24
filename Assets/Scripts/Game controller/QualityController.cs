@@ -226,4 +226,27 @@ public class QualityController : MonoBehaviour
         else
             m_qualityMode = QualityMode.Manual;
     }
+
+    public void SetQualityDetail()
+    {
+        m_qualityIndex++;
+        UpdateGraphicsQuality();
+    }
+
+    public string GetQualityDetail()
+    {
+        return m_qualityNames[m_qualityIndex];
+    }
+
+    public void SetTerrainyDetail()
+    {
+        m_terrainDetail--;
+        UpdateTerrainDetail();
+    }
+
+    public string GetTerrainDetail()
+    {
+        return m_qualityNames[m_qualityIndex];
+    }
+
 }

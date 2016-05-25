@@ -3,14 +3,21 @@ using System.Collections;
 
 public class GameController : MonoBehaviour
 {
-
     private Canvas canvasComponent;
+
 
     void Start()
     {
-        canvasComponent = GameObject.Find("Pause canvas").GetComponent<Canvas>();
+		var canvasObject = GameObject.Find("Pause canvas");
+
+		if (canvasObject == null)
+			return;
+		
+		canvasComponent = canvasObject.GetComponent<Canvas>();
         canvasComponent.enabled = false;
     }
+
+
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
@@ -29,11 +36,13 @@ public class GameController : MonoBehaviour
             Application.Quit();
 	}
 
+
     public void LoadLevel(string LevelToLoad)
     {
         Time.timeScale = 1;
         Application.LoadLevel(LevelToLoad);
     }
+
 
     public void QuitGame()
     {

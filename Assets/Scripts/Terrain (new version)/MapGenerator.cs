@@ -40,6 +40,8 @@ public class MapGenerator : MonoBehaviour
 
 	public float GetTerrainHeight(float x, float z)
 	{
+		x -= 1f;	// Offsets needed for some reason I forget, but they're important so don't mess with this!
+		z -= 1f;
 		x /= EndlessTerrain.Scale;
 		z /= EndlessTerrain.Scale;
 
@@ -73,7 +75,7 @@ public class MapGenerator : MonoBehaviour
         }
         else if (m_drawMode == DrawMode.Mesh)
         {
-            display.DrawMesh(MeshGenerator.GenerateTerrainMesh(mapData.heightMap, m_editorPreviewLod, m_meshHeightMultiplier, m_meshHeightCurve), 
+			display.DrawMesh(MeshGenerator.GenerateTerrainMesh(mapData.heightMap, m_editorPreviewLod, m_meshHeightMultiplier, m_meshHeightCurve), 
                 TextureGenerator.TextureFromColourMap(mapData.colourMap, MapChunkSize, MapChunkSize));
         }
     }
@@ -113,7 +115,7 @@ public class MapGenerator : MonoBehaviour
 
     private void MeshDataThread(MapData mapData, int lod, Action<MeshData> callback)
     {
-        var meshData = MeshGenerator.GenerateTerrainMesh(mapData.heightMap, lod, m_meshHeightMultiplier, m_meshHeightCurve);
+		var meshData = MeshGenerator.GenerateTerrainMesh(mapData.heightMap, lod, m_meshHeightMultiplier, m_meshHeightCurve);
         lock (m_meshDataThreadInfoQueue)
         {
             m_meshDataThreadInfoQueue.Enqueue(new MapThreadInfo<MeshData>(callback, meshData));

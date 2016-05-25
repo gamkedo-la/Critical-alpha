@@ -4,7 +4,7 @@ using System.Collections;
 public static class MeshGenerator
 {
     public static MeshData GenerateTerrainMesh(float[,] heightMap, int levelOfDetail, 
-        float heightMultiplier, AnimationCurve heightCurve)
+		float heightMultiplier, AnimationCurve heightCurve)
     {
         var localHeightCurve = new AnimationCurve(heightCurve.keys);
         int width = heightMap.GetLength(0);
@@ -24,7 +24,7 @@ public static class MeshGenerator
             for (int x = 0; x < width; x += meshSimplificationIncrement)
             {
                 float heightValue = localHeightCurve.Evaluate(heightMap[x, y]) * heightMultiplier;
-                meshData.vertices[vertexIndex] = new Vector3(topLeftX + x, heightValue, topLeftZ + y);
+                meshData.vertices[vertexIndex] = new Vector3(topLeftX + x, heightValue, topLeftZ + y);	
                 meshData.uvs[vertexIndex] = new Vector2((x + 0.5f) / width, (y + 0.5f) / height);
 
                 if (x < width - 1 && y < height - 1)

@@ -25,7 +25,7 @@ public class ProceduralPlacementExample : MonoBehaviour
 
 			for (int j = 0; j < m_numObjectsPerSide; j++)
 			{
-				float z = (j - m_numObjectsPerSide / 2) * m_separation + transform.position.y;
+				float z = (j - m_numObjectsPerSide / 2) * m_separation + transform.position.z;
 
 				var newObject = (GameObject) Instantiate(m_testPrefab, new Vector3(x, 0, z), Quaternion.identity);
 				newObject.transform.parent = transform;
@@ -47,26 +47,51 @@ public class ProceduralPlacementExample : MonoBehaviour
 				if (collider != null)
 				{
 					var bounds = collider.bounds;
-					var min = bounds.min;
-					var max = bounds.max;
-					float centreAboveBase = transform.position.y - min.y;
+					var centre = bounds.center;
+					var centreToMin = bounds.min - centre;
+					var centreToMax = bounds.max - centre;
+
+					float centreAboveBase = transform.position.y - bounds.min.y;
+
+					float rotationAngle = Random.Range(0f, 360f);
+					testObject.transform.Rotate(Vector3.up * rotationAngle);
+
+					centreToMin = Quaternion.Euler(0, rotationAngle, 0) * centreToMin;
+					centreToMax = Quaternion.Euler(0, rotationAngle, 0) * centreToMax;
+
+					var min = centre + centreToMin;
+					var max = centre + centreToMax;
 
 					float terrainHeightCorner1 = m_mapGenerator.GetTerrainHeight(min.x, min.z);
 					float terrainHeightCorner2 = m_mapGenerator.GetTerrainHeight(min.x, max.z);
 					float terrainHeightCorner3 = m_mapGenerator.GetTerrainHeight(max.x, min.z);
 					float terrainHeightCorner4 = m_mapGenerator.GetTerrainHeight(max.x, max.z);
 
-					testObjectLocation.y = Mathf.Min(terrainHeightCorner1, 
-						terrainHeightCorner2, terrainHeightCorner3, terrainHeightCorner4) + centreAboveBase;
-				}
-				else
-				{
-					float terrainHeight = m_mapGenerator.GetTerrainHeight(testObjectLocation.x, testObjectLocation.z);
+//					print(string.Format("{0}, {1}, {2}", min.x, min.z, terrainHeightCorner1));
+//					print(string.Format("{0}, {1}, {2}", min.x, max.z, terrainHeightCorner2));
+//					print(string.Format("{0}, {1}, {2}", max.x, min.z, terrainHeightCorner3));
+//					print(string.Format("{0}, {1}, {2}", max.x, max.z, terrainHeightCorner4));
 
-					testObjectLocation.y = terrainHeight;
-				}
+					float y = Mathf.Min(terrainHeightCorner1, terrainHeightCorner2, terrainHeightCorner3, terrainHeightCorner4);
 
-				testObject.transform.position = testObjectLocation;
+					if (y < 0f)
+						Destroy(testObject);
+					else
+					{
+						testObjectLocation.y = y + centreAboveBase;
+						testObject.transform.position = testObjectLocation;
+					}
+				}
+//				else
+//				{
+//					float terrainHeight = m_mapGenerator.GetTerrainHeight(testObjectLocation.x, testObjectLocation.z);
+//
+//					testObjectLocation.y = terrainHeight;
+//				}
+//
+				float terrainHeightAtOrigin = m_mapGenerator.GetTerrainHeight(0f, 0f);
+
+				print(terrainHeightAtOrigin);
 			}
 		}
 	}

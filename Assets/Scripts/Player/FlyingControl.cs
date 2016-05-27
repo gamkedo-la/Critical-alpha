@@ -11,6 +11,7 @@ public class FlyingControl : MonoBehaviour
     [SerializeField] float m_maxForwardSpeed = 100f;
     [SerializeField] float m_forwardSpeed = 30f;
     [SerializeField] float m_liftMultiplier = 0.1f;
+	[SerializeField] float m_downSpeed = 5f;
 
     [Range(0f, 100f)]
     [SerializeField] float m_accelerationRate = 50f;
@@ -37,6 +38,7 @@ public class FlyingControl : MonoBehaviour
 
         ForwardVelocity = Vector3.forward * m_forwardSpeed;
         transform.Translate((ForwardVelocity + Vector3.up * m_liftSpeed) * Time.deltaTime);
+		transform.Translate(m_downSpeed * Vector3.down * Time.deltaTime, Space.World);
 
         transform.Rotate(transform.right, v * Time.deltaTime * m_pitchRate, Space.World);
         transform.Rotate(-transform.forward, h * Time.deltaTime * m_bankRate, Space.World);

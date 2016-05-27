@@ -118,7 +118,7 @@ public class TerrainTileBuilder : MonoBehaviour
 
     private void AddUvs(Triangle triangle)
     {
-        var nodes = triangle.m_nodes;
+        //var nodes = triangle.m_nodes;
 
         var uv = m_terrainHeightEquation.GetUv(triangle.m_vertices);
         m_uvs.AddRange(uv);
@@ -134,7 +134,7 @@ public class TerrainTileBuilder : MonoBehaviour
 
     private void AddColours(Triangle triangle)
     {
-        var nodes = triangle.m_nodes;
+        //var nodes = triangle.m_nodes;
 
         var colours = m_terrainHeightEquation.GetVertexColours(triangle.m_vertices);
         m_colours.AddRange(colours);

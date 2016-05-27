@@ -34,8 +34,6 @@ public class MapGenerator : MonoBehaviour
 
     private Coroutine m_mapDataCoroutine;
     private Coroutine m_meshDataCoroutine;
-    private bool m_mapDataProcessing;
-    private bool m_meshDataProcessing;
 
 
 	public float GetTerrainHeight(float x, float z)
@@ -131,7 +129,7 @@ public class MapGenerator : MonoBehaviour
 
     void Update()
     {
-        if (!m_mapDataProcessing && m_mapDataThreadInfoQueue.Count > 0)
+        if (m_mapDataThreadInfoQueue.Count > 0)
         {
             //print("Time: " + Time.time + ", Map data thread queue: " + m_mapDataThreadInfoQueue.Count);
 
@@ -147,7 +145,7 @@ public class MapGenerator : MonoBehaviour
             //m_mapDataCoroutine = StartCoroutine(ProcessMapDataQueue());
         }
 
-        if (!m_meshDataProcessing && m_meshDataThreadInfoQueue.Count > 0)
+        if (m_meshDataThreadInfoQueue.Count > 0)
         {
             //print("Time: " + Time.time + ", Mesh data thread queue: " + m_meshDataThreadInfoQueue.Count);
 
@@ -165,43 +163,6 @@ public class MapGenerator : MonoBehaviour
         //if (Time.deltaTime > 0.033)
         //    print("Time: " + Time.time + ", delta time: " + Time.deltaTime);
     }
-
-
-    #region Unused
-
-    //private IEnumerator ProcessMapDataQueue()
-    //{
-    //    m_mapDataProcessing = true;
-
-    //    for (int i = 0; i < m_mapDataThreadInfoQueue.Count; i++)
-    //    {
-    //        var threadInfo = m_mapDataThreadInfoQueue.Dequeue();
-    //        threadInfo.callback(threadInfo.parameter);
-
-    //        yield return null;
-    //    }
-
-    //    m_mapDataProcessing = false;
-    //}
-
-
-    //private IEnumerator ProcessMeshDataQueue()
-    //{
-    //    m_meshDataProcessing = true;
-
-    //    for (int i = 0; i < m_meshDataThreadInfoQueue.Count; i++)
-    //    {
-    //        var threadInfo = m_meshDataThreadInfoQueue.Dequeue();
-    //        threadInfo.callback(threadInfo.parameter);
-
-    //        yield return null;
-    //    }
-
-    //    m_meshDataProcessing = false;
-    //}
-
-
-    #endregion
 
 
     private MapData GenerateMapData(Vector2 centre)

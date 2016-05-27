@@ -11,7 +11,7 @@ public class TerrainEquationPerlinNoise : TerrainEquationBase
     [SerializeField] float m_lacunarity = 2f;
 
     [SerializeField] int m_seed = 0;
-    [SerializeField] Vector2 m_offset = Vector2.zero;   // Not currently used
+    //[SerializeField] Vector2 m_offset = Vector2.zero;   // Not currently used
 
     private Vector2[] m_octaveOffsets;
     private float m_totalAmplitude;

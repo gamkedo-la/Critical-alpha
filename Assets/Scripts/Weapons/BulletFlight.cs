@@ -5,6 +5,7 @@ using System.Collections;
 [RequireComponent(typeof(TrailRenderer))]
 public class BulletFlight : MonoBehaviour
 {
+	[SerializeField] int m_bulletDamage = 10;
     [SerializeField] float m_bulletLifeTime = 4f;
     [SerializeField] float m_bulletSpeed = 100f;
     [SerializeField] ParticleSystem m_explosion;
@@ -12,14 +13,14 @@ public class BulletFlight : MonoBehaviour
     
     private Vector3 m_velocity;
     private bool m_bulletImpacted;
-    private TrailRenderer m_trailRenderer;
+    //private TrailRenderer m_trailRenderer;
     //private SphereCollider m_collider;
     //private float m_colliderRadius;
 
 
     void Start()
     {
-        m_trailRenderer = GetComponent<TrailRenderer>();
+        //m_trailRenderer = GetComponent<TrailRenderer>();
 
         Destroy(gameObject, m_bulletLifeTime);
  
@@ -55,7 +56,13 @@ public class BulletFlight : MonoBehaviour
         else
             particles = m_explosion;
 
-        m_bulletImpacted = true;    
+        m_bulletImpacted = true;  
+
+		IDamageable damageScript = other.gameObject.GetComponent<IDamageable>();
+
+		if (damageScript != null)
+			damageScript.Damage(m_bulletDamage);
+
         var explosion = Instantiate(particles);
         explosion.transform.position = transform.position;
         float lifetime = explosion.startLifetime;

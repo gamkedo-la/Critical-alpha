@@ -89,9 +89,8 @@ public class ProceduralPlacementExample : MonoBehaviour
 //					testObjectLocation.y = terrainHeight;
 //				}
 //
-				float terrainHeightAtOrigin = m_mapGenerator.GetTerrainHeight(0f, 0f);
-
-				print(terrainHeightAtOrigin);
+				//float terrainHeightAtOrigin = m_mapGenerator.GetTerrainHeight(0f, 0f);
+				//print(terrainHeightAtOrigin);
 			}
 		}
 	}

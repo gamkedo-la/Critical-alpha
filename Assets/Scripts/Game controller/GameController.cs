@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 using System.Collections;
 
 public class GameController : MonoBehaviour
@@ -40,7 +41,7 @@ public class GameController : MonoBehaviour
     public void LoadLevel(string LevelToLoad)
     {
         Time.timeScale = 1;
-        Application.LoadLevel(LevelToLoad);
+		SceneManager.LoadScene(LevelToLoad);
     }
 
 

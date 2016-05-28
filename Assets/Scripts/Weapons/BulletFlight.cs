@@ -58,7 +58,7 @@ public class BulletFlight : MonoBehaviour
 
         m_bulletImpacted = true;  
 
-		IDamageable damageScript = other.gameObject.GetComponent<IDamageable>();
+		IDamageable damageScript = other.gameObject.GetComponentInParent<IDamageable>();
 
 		if (damageScript != null)
 			damageScript.Damage(m_bulletDamage);

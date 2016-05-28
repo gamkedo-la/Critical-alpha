@@ -42,25 +42,25 @@ public class ProceduralPlacementExample : MonoBehaviour
 			foreach (var testObject in m_testObjects)
 			{
 				var testObjectLocation = testObject.transform.position;
-				var collider = testObject.GetComponent<Collider>();
+				var collider = testObject.GetComponentInChildren<Collider>();
 
 				if (collider != null)
 				{
 					var bounds = collider.bounds;
-					var centre = bounds.center;
-					var centreToMin = bounds.min - centre;
-					var centreToMax = bounds.max - centre;
 
-					float centreAboveBase = transform.position.y - bounds.min.y;
+					var originToMin = bounds.min - testObjectLocation;
+					var originToMax = bounds.max - testObjectLocation;
+
+					float originAboveBase = testObjectLocation.y - bounds.min.y;
 
 					float rotationAngle = Random.Range(0f, 360f);
 					testObject.transform.Rotate(Vector3.up * rotationAngle);
 
-					centreToMin = Quaternion.Euler(0, rotationAngle, 0) * centreToMin;
-					centreToMax = Quaternion.Euler(0, rotationAngle, 0) * centreToMax;
+					originToMin = Quaternion.Euler(0, rotationAngle, 0) * originToMin;
+					originToMax = Quaternion.Euler(0, rotationAngle, 0) * originToMax;
 
-					var min = centre + centreToMin;
-					var max = centre + centreToMax;
+					var min = testObjectLocation + originToMin;
+					var max = testObjectLocation + originToMax;
 
 					float terrainHeightCorner1 = m_mapGenerator.GetTerrainHeight(min.x, min.z);
 					float terrainHeightCorner2 = m_mapGenerator.GetTerrainHeight(min.x, max.z);
@@ -78,7 +78,7 @@ public class ProceduralPlacementExample : MonoBehaviour
 						Destroy(testObject);
 					else
 					{
-						testObjectLocation.y = y + centreAboveBase;
+						testObjectLocation.y = y + originAboveBase;
 						testObject.transform.position = testObjectLocation;
 					}
 				}

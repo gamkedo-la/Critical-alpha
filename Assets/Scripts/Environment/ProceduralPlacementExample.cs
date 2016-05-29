@@ -42,7 +42,7 @@ public class ProceduralPlacementExample : MonoBehaviour
 			foreach (var testObject in m_testObjects)
 			{
 				var testObjectLocation = testObject.transform.position;
-				var collider = testObject.GetComponentInChildren<Collider>();
+				var collider = testObject.GetComponentInChildren<Collider>();	// Note: this only works if the object has a single collider
 
 				if (collider != null)
 				{

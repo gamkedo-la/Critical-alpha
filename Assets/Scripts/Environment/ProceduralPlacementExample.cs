@@ -41,6 +41,8 @@ public class ProceduralPlacementExample : MonoBehaviour
 		{
 			foreach (var testObject in m_testObjects)
 			{
+				var rigidbody = testObject.GetComponent<Rigidbody>();
+
 				var testObjectLocation = testObject.transform.position;
 				var collider = testObject.GetComponentInChildren<Collider>();	// Note: this only works if the object has a single collider
 
@@ -72,13 +74,17 @@ public class ProceduralPlacementExample : MonoBehaviour
 //					print(string.Format("{0}, {1}, {2}", max.x, min.z, terrainHeightCorner3));
 //					print(string.Format("{0}, {1}, {2}", max.x, max.z, terrainHeightCorner4));
 
-					float y = Mathf.Min(terrainHeightCorner1, terrainHeightCorner2, terrainHeightCorner3, terrainHeightCorner4);
+					float y = rigidbody == null  
+						? Mathf.Min(terrainHeightCorner1, terrainHeightCorner2, terrainHeightCorner3, terrainHeightCorner4)
+						: Mathf.Max(terrainHeightCorner1, terrainHeightCorner2, terrainHeightCorner3, terrainHeightCorner4);
 
 					if (y < 0f)
 						Destroy(testObject);
 					else
 					{
-						testObjectLocation.y = y + originAboveBase;
+						y += originAboveBase;
+
+						testObjectLocation.y = y;
 						testObject.transform.position = testObjectLocation;
 					}
 				}

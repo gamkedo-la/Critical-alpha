@@ -44,16 +44,16 @@ public class ProceduralPlacementExample : MonoBehaviour
 				var rigidbody = testObject.GetComponent<Rigidbody>();
 
 				var testObjectLocation = testObject.transform.position;
-				var collider = testObject.GetComponentInChildren<Collider>();	// Note: this only works if the object has a single collider
+				//var collider = testObject.GetComponentInChildren<Collider>();	// Note: this only works if the object has a single collider
 
-				if (collider != null)
+				var bounds = BoundsUtilities.OverallBounds(testObject);
+
+				if (bounds != null)
 				{
-					var bounds = collider.bounds;
+					var originToMin = bounds.Value.min - testObjectLocation;
+					var originToMax = bounds.Value.max - testObjectLocation;
 
-					var originToMin = bounds.min - testObjectLocation;
-					var originToMax = bounds.max - testObjectLocation;
-
-					float originAboveBase = testObjectLocation.y - bounds.min.y;
+					float originAboveBase = testObjectLocation.y - bounds.Value.min.y;
 
 					float rotationAngle = Random.Range(0f, 360f);
 					testObject.transform.Rotate(Vector3.up * rotationAngle);

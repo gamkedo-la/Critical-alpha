@@ -24,15 +24,16 @@ public class FlyingControl : MonoBehaviour
 
     private float m_liftSpeed;
 
+    private float m_v;
+    private float m_h;
+    private float m_a;
+
 
 	void Update()
-    {
-        float v = Input.GetAxis("Vertical");
-        float h = Input.GetAxis("Horizontal");
-        float a = Input.GetAxis("Acceleration");
-        a = m_accelerationRate * a * Time.deltaTime;
+    {    
+        m_a = m_accelerationRate * m_a * Time.deltaTime;
 
-        m_forwardSpeed += a;
+        m_forwardSpeed += m_a;
         m_forwardSpeed = Mathf.Clamp(m_forwardSpeed, m_minForwardSpeed, m_maxForwardSpeed);
         m_liftSpeed = m_forwardSpeed * m_liftMultiplier;
 
@@ -40,8 +41,8 @@ public class FlyingControl : MonoBehaviour
         transform.Translate((ForwardVelocity + Vector3.up * m_liftSpeed) * Time.deltaTime);
 		transform.Translate(m_downSpeed * Vector3.down * Time.deltaTime, Space.World);
 
-        transform.Rotate(transform.right, v * Time.deltaTime * m_pitchRate, Space.World);
-        transform.Rotate(-transform.forward, h * Time.deltaTime * m_bankRate, Space.World);
+        transform.Rotate(transform.right, m_v * Time.deltaTime * m_pitchRate, Space.World);
+        transform.Rotate(-transform.forward, m_h * Time.deltaTime * m_bankRate, Space.World);
 
         var forwardOnGround = Vector3.ProjectOnPlane(transform.forward, Vector3.up);//.normalized;
         var rightOnGround = new Vector3(forwardOnGround.z, 0, -forwardOnGround.x);
@@ -59,5 +60,18 @@ public class FlyingControl : MonoBehaviour
             m_slider.maxValue = m_maxForwardSpeed;
             m_slider.value = m_forwardSpeed;
         }
+    }
+
+
+    public void PitchAndRollInput(float v, float h)
+    {
+        m_v = v;
+        m_h = h;
+    }
+
+
+    public void ThrustInput(float a)
+    {
+        m_a = a;
     }
 }

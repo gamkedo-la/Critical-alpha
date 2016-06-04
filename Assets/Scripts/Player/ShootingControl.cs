@@ -8,6 +8,7 @@ public class ShootingControl : MonoBehaviour
     [SerializeField] float m_bulletCooldown = 0.2f;
     [SerializeField] float m_spawnDistanceInFront = 5f;
     [SerializeField] float m_spawnDistanceSideways = 2f;
+    [SerializeField] float m_spawnDistanceUp = 0f;
 
     private float m_timeSinceBulletFired;
     private FlyingControl m_flyingControlScript;
@@ -33,6 +34,7 @@ public class ShootingControl : MonoBehaviour
             var sidewaysOffset = m_rightSide ? transform.right : -transform.right;
 
             bullet.transform.position = transform.position 
+                + transform.up * m_spawnDistanceUp
                 + transform.forward * m_spawnDistanceInFront 
                 + sidewaysOffset * m_spawnDistanceSideways;
 

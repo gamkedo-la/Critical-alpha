@@ -47,7 +47,7 @@ public class BulletFlight : MonoBehaviour
         if (m_bulletImpacted)
             return;
 
-        //print("Bullet impact");
+        //print("Bullet impact with " + other.name);
 
         ParticleSystem particles;
 

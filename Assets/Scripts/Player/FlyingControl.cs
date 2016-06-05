@@ -16,9 +16,9 @@ public class FlyingControl : MonoBehaviour
     [Range(0f, 100f)]
     [SerializeField] float m_accelerationRate = 50f;
 
-    [SerializeField] float m_bankRate = 90f;
+    [SerializeField] float m_bankRate = 120f;
     [SerializeField] float m_pitchRate = 90f;
-    [SerializeField] float m_turnRate = 10f;
+    [SerializeField] float m_turnRate = 20f;
 
     [SerializeField] Slider m_slider;
 

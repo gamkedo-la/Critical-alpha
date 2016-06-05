@@ -23,9 +23,13 @@ public class ShootingControl : MonoBehaviour
 
     void Update()
     {
-        m_timeSinceBulletFired += Time.deltaTime;
+        m_timeSinceBulletFired += Time.deltaTime;  
+    }
 
-        if (Input.GetAxisRaw("Jump") == 1 && m_timeSinceBulletFired > m_bulletCooldown)
+
+    public void Shoot(float input)
+    {
+        if (input == 1 && m_timeSinceBulletFired > m_bulletCooldown)
         {
             //print("Instantiate bullet");
             m_timeSinceBulletFired = 0;
@@ -33,9 +37,9 @@ public class ShootingControl : MonoBehaviour
 
             var sidewaysOffset = m_rightSide ? transform.right : -transform.right;
 
-            bullet.transform.position = transform.position 
+            bullet.transform.position = transform.position
                 + transform.up * m_spawnDistanceUp
-                + transform.forward * m_spawnDistanceInFront 
+                + transform.forward * m_spawnDistanceInFront
                 + sidewaysOffset * m_spawnDistanceSideways;
 
             bullet.transform.rotation = transform.rotation;

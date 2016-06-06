@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-[RequireComponent(typeof(FlyingControl))]
 public class ShootingControl : MonoBehaviour
 {
     [SerializeField] BulletFlight m_bullet;
@@ -27,9 +26,9 @@ public class ShootingControl : MonoBehaviour
     }
 
 
-    public void Shoot(float input)
+    public void Shoot()
     {
-        if (input == 1 && m_timeSinceBulletFired > m_bulletCooldown)
+        if (m_timeSinceBulletFired > m_bulletCooldown)
         {
             //print("Instantiate bullet");
             m_timeSinceBulletFired = 0;
@@ -44,7 +43,11 @@ public class ShootingControl : MonoBehaviour
 
             bullet.transform.rotation = transform.rotation;
 
-            bullet.SetInitialVelocity(m_flyingControlScript.ForwardVelocity);
+            if (m_flyingControlScript != null)
+                bullet.SetInitialVelocity(m_flyingControlScript.ForwardVelocity);
+            else
+                bullet.SetInitialVelocity(Vector3.zero);
+
             m_rightSide = !m_rightSide;
         }
     }

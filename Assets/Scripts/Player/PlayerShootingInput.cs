@@ -15,8 +15,7 @@ public class PlayerShootingInput : MonoBehaviour
 
     void Update()
     {
-        float input = Input.GetAxisRaw("Jump");
-
-        m_shootingControlScript.Shoot(input);
+        if (Input.GetAxisRaw("Jump") == 1)
+            m_shootingControlScript.Shoot();
     }
 }

@@ -15,6 +15,6 @@ public class EnemyShootingAiInput : MonoBehaviour
 
     void Update()
     {
-        m_shootingControlScript.Shoot(1f);
+        m_shootingControlScript.Shoot();
 	}
 }

@@ -13,20 +13,11 @@ public class BulletFlight : MonoBehaviour
     
     private Vector3 m_velocity;
     private bool m_bulletImpacted;
-    //private TrailRenderer m_trailRenderer;
-    //private SphereCollider m_collider;
-    //private float m_colliderRadius;
 
 
     void Start()
     {
-        //m_trailRenderer = GetComponent<TrailRenderer>();
-
         Destroy(gameObject, m_bulletLifeTime);
- 
-        //m_velocity = Vector3.down * m_bulletSpeed;
-        //m_collider = GetComponent<SphereCollider>();
-        //m_colliderRadius = m_collider.radius * 0.5f;
     }
 
 
@@ -45,6 +36,10 @@ public class BulletFlight : MonoBehaviour
     void OnTriggerStay(Collider other)
     {
         if (m_bulletImpacted)
+            return;
+
+        if ((other.transform == transform.parent)
+            || (other.transform.parent == transform.parent))
             return;
 
         //print("Bullet impact with " + other.name);

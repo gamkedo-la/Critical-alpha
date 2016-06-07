@@ -4,19 +4,19 @@ using System.Collections;
 public class ShootingControl : MonoBehaviour
 {
     [SerializeField] BulletFlight m_bullet;
-    [SerializeField] float m_bulletCooldown = 0.2f;
-    [SerializeField] float m_spawnDistanceInFront = 5f;
-    [SerializeField] float m_spawnDistanceSideways = 2f;
-    [SerializeField] float m_spawnDistanceUp = 0f;
+    [SerializeField] Transform[] m_bulletSpawnPoints;
+    [SerializeField] float m_bulletCooldown = 0.15f;
 
     private float m_timeSinceBulletFired;
     private FlyingControl m_flyingControlScript;
-    private bool m_rightSide;
+    private int m_spawnPointIndex;
+    private int m_numSpawnPoints;
 
 
     void Awake()
     {
         m_flyingControlScript = GetComponent<FlyingControl>();
+        m_numSpawnPoints = m_bulletSpawnPoints.Length;
     }
 
 
@@ -33,22 +33,21 @@ public class ShootingControl : MonoBehaviour
             //print("Instantiate bullet");
             m_timeSinceBulletFired = 0;
             var bullet = Instantiate(m_bullet);
+            bullet.transform.parent = transform;
 
-            var sidewaysOffset = m_rightSide ? transform.right : -transform.right;
+            var spawnPoint = m_bulletSpawnPoints[m_spawnPointIndex];
 
-            bullet.transform.position = transform.position
-                + transform.up * m_spawnDistanceUp
-                + transform.forward * m_spawnDistanceInFront
-                + sidewaysOffset * m_spawnDistanceSideways;
+            bullet.transform.position = spawnPoint.position;
 
-            bullet.transform.rotation = transform.rotation;
+            bullet.transform.rotation = spawnPoint.rotation;
 
             if (m_flyingControlScript != null)
                 bullet.SetInitialVelocity(m_flyingControlScript.ForwardVelocity);
             else
                 bullet.SetInitialVelocity(Vector3.zero);
 
-            m_rightSide = !m_rightSide;
+            m_spawnPointIndex++;
+            m_spawnPointIndex = m_spawnPointIndex % m_numSpawnPoints;
         }
     }
 }

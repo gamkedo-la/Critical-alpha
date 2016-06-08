@@ -241,7 +241,7 @@ public class QualityController : MonoBehaviour
     }
 
 
-    public void SetTerrainyDetail()
+    public void SetTerrainDetail()
     {
         m_terrainDetail--;
         UpdateTerrainDetail();
@@ -257,13 +257,13 @@ public class QualityController : MonoBehaviour
     void OnEnable()
     {
         EventManager.StartListening(StandardEventName.SetGraphicsQuality, SetGraphicsQuality);
-        EventManager.StartListening(StandardEventName.SetTerrainDetail, SetTerrainyDetail);
+        EventManager.StartListening(StandardEventName.SetTerrainDetail, SetTerrainDetail);
     }
 
 
     void OnDisable()
     {
         EventManager.StopListening(StandardEventName.SetGraphicsQuality, SetGraphicsQuality);
-        EventManager.StopListening(StandardEventName.SetTerrainDetail, SetTerrainyDetail);
+        EventManager.StopListening(StandardEventName.SetTerrainDetail, SetTerrainDetail);
     }
 }

@@ -8,6 +8,9 @@ using System.Collections;
 public enum StandardEventName
 {
     None = 0,
+
+    SetGraphicsQuality = 1,
+    SetTerrainDetail = 2,
 }
 
 
@@ -17,6 +20,8 @@ public enum StandardEventName
 public enum BooleanEventName
 {
     None = 0,
+
+    ActivateHud = 1,
 }
 
 
@@ -48,4 +53,8 @@ public enum StringEventName
 public enum FloatEventName
 {
     None = 0,
+
+    SetThrustLevel = 1,
+    SetMinThrustLevel = 2,
+    SetMaxThrustLevel = 3,
 }

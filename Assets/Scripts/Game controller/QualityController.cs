@@ -30,10 +30,10 @@ public class QualityController : MonoBehaviour
 	[SerializeField] bool m_allowQualityIncrease = false;
 
     [Header("Options")]
-    [SerializeField] QualityMode m_qualityMode = QualityMode.Automatic;
+    [SerializeField] QualityMode m_qualityMode = QualityMode.Manual;
     [SerializeField] TerrainDetail m_terrainDetail = TerrainDetail.High;
-	[SerializeField] Toggle m_autoUpdateToggle;
-	[SerializeField] Text m_maxFrameTimeText;
+	//[SerializeField] Toggle m_autoUpdateToggle;
+	//[SerializeField] Text m_maxFrameTimeText;
 
     public static TerrainDetail TerrainDetail;
 
@@ -63,8 +63,8 @@ public class QualityController : MonoBehaviour
         UpdateGraphicsQuality();
         m_time = -m_assessmentTime * 4f;
 
-		if (m_autoUpdateToggle != null)
-			m_autoUpdateToggle.isOn = m_qualityMode == QualityMode.Automatic;
+		//if (m_autoUpdateToggle != null)
+		//	m_autoUpdateToggle.isOn = m_qualityMode == QualityMode.Automatic;
     }
 
 
@@ -91,8 +91,8 @@ public class QualityController : MonoBehaviour
 		if (m_time > 0 && Time.unscaledDeltaTime > m_maxFrameTime)
 			m_maxFrameTime = Time.unscaledDeltaTime;
 
-		if (m_maxFrameTimeText != null)
-			m_maxFrameTimeText.text = string.Format("Max: {0:0} ms", m_maxFrameTime * 1000);
+		//if (m_maxFrameTimeText != null)
+		//	m_maxFrameTimeText.text = string.Format("Max: {0:0} ms", m_maxFrameTime * 1000);
 
         if (m_time > m_assessmentTime)
         {
@@ -227,16 +227,19 @@ public class QualityController : MonoBehaviour
             m_qualityMode = QualityMode.Manual;
     }
 
-    public void SetQualityDetail()
+
+    public void SetGraphicsQuality()
     {
         m_qualityIndex++;
         UpdateGraphicsQuality();
     }
 
-    public string GetQualityDetail()
+
+    public string GetGraphicsQuality()
     {
         return m_qualityNames[m_qualityIndex];
     }
+
 
     public void SetTerrainyDetail()
     {
@@ -244,9 +247,23 @@ public class QualityController : MonoBehaviour
         UpdateTerrainDetail();
     }
 
+
     public string GetTerrainDetail()
     {
         return m_qualityNames[m_qualityIndex];
     }
 
+
+    void OnEnable()
+    {
+        EventManager.StartListening(StandardEventName.SetGraphicsQuality, SetGraphicsQuality);
+        EventManager.StartListening(StandardEventName.SetTerrainDetail, SetTerrainyDetail);
+    }
+
+
+    void OnDisable()
+    {
+        EventManager.StopListening(StandardEventName.SetGraphicsQuality, SetGraphicsQuality);
+        EventManager.StopListening(StandardEventName.SetTerrainDetail, SetTerrainyDetail);
+    }
 }

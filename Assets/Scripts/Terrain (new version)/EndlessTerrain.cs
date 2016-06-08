@@ -21,7 +21,7 @@ public class EndlessTerrain : MonoBehaviour
     private static bool m_updateTerrainDetail;
     private static MapGenerator m_mapGenerator;
 
-    [SerializeField] Transform m_viewer;
+    private Transform m_viewer;
     [SerializeField] Material m_mapMaterial;
 
     public static int ChunkSize;
@@ -37,6 +37,7 @@ public class EndlessTerrain : MonoBehaviour
 
     void Start()
     {
+        m_viewer = Camera.main.transform;
         m_mapGenerator = FindObjectOfType<MapGenerator>();
 
         MaxViewDst = m_detailLevels[m_detailLevels.Length - 1].m_visibleDistThreshold;

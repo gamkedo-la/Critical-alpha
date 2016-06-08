@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
 using System.Collections;
 using System;
 
@@ -20,13 +19,22 @@ public class FlyingControl : MonoBehaviour
     [SerializeField] float m_pitchRate = 90f;
     [SerializeField] float m_turnRate = 20f;
 
-    [SerializeField] Slider m_slider;
-
     private float m_liftSpeed;
+    private float m_previousForwardSpeed;
 
     private float m_v;
     private float m_h;
     private float m_a;
+
+
+    void Start()
+    {
+        if (CompareTag(Tags.Player))
+        {
+            EventManager.TriggerEvent(FloatEventName.SetMinThrustLevel, m_minForwardSpeed);
+            EventManager.TriggerEvent(FloatEventName.SetMaxThrustLevel, m_maxForwardSpeed);
+        }
+    }
 
 
 	void Update()
@@ -54,12 +62,10 @@ public class FlyingControl : MonoBehaviour
 
         transform.Rotate(Vector3.up, turnAmount * Time.deltaTime, Space.World);
 
-        if (m_slider != null)
-        {
-            m_slider.minValue = m_minForwardSpeed;
-            m_slider.maxValue = m_maxForwardSpeed;
-            m_slider.value = m_forwardSpeed;
-        }
+        if (CompareTag(Tags.Player) && m_previousForwardSpeed != m_forwardSpeed)
+            EventManager.TriggerEvent(FloatEventName.SetThrustLevel, m_forwardSpeed);
+
+        m_previousForwardSpeed = m_forwardSpeed;
     }
 
 

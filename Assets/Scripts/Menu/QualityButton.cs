@@ -15,7 +15,7 @@ public class QualityButton : MonoBehaviour {
 
     void Update()
     {
-        m_text.text = string.Format("Quality: {0}", qualityController.GetQualityDetail());
+        m_text.text = string.Format("Quality: {0}", qualityController.GetGraphicsQuality());
     }
 
 }

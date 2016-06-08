@@ -13,11 +13,14 @@ public class BulletFlight : MonoBehaviour
     
     private Vector3 m_velocity;
     private bool m_bulletImpacted;
+    private Transform m_originalParent;
 
 
     void Start()
     {
         Destroy(gameObject, m_bulletLifeTime);
+        m_originalParent = transform.parent;
+        transform.parent = null;
     }
 
 
@@ -38,8 +41,8 @@ public class BulletFlight : MonoBehaviour
         if (m_bulletImpacted)
             return;
 
-        if ((other.transform == transform.parent)
-            || (other.transform.parent == transform.parent))
+        if ((other.transform == m_originalParent)
+            || (other.transform.parent == m_originalParent))
             return;
 
         //print("Bullet impact with " + other.name);

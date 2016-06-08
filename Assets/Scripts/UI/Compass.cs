@@ -20,9 +20,8 @@ public class Compass : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
-        //Debug.Log("Direction: " + playerTransform.transform.eulerAngles.y);
 
-        offsetX = playerTransform.transform.eulerAngles.y;
+        offsetX = playerTransform.eulerAngles.y;
 
         //Divide by 360 because uvRect range is from 0 to 1
         offsetX /= 360;

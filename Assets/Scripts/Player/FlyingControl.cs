@@ -19,6 +19,7 @@ public class FlyingControl : MonoBehaviour
     [SerializeField] float m_pitchRate = 90f;
     [SerializeField] float m_turnRate = 20f;
 
+    private bool m_isPlayer;
     private float m_liftSpeed;
     private float m_previousForwardSpeed;
 
@@ -29,10 +30,13 @@ public class FlyingControl : MonoBehaviour
 
     void Start()
     {
-        if (CompareTag(Tags.Player))
+        m_isPlayer = CompareTag(Tags.Player);
+
+        if (m_isPlayer)
         {
             EventManager.TriggerEvent(FloatEventName.SetMinThrustLevel, m_minForwardSpeed);
             EventManager.TriggerEvent(FloatEventName.SetMaxThrustLevel, m_maxForwardSpeed);
+            EventManager.TriggerEvent(FloatEventName.SetThrustLevel, m_forwardSpeed);
         }
     }
 
@@ -62,7 +66,7 @@ public class FlyingControl : MonoBehaviour
 
         transform.Rotate(Vector3.up, turnAmount * Time.deltaTime, Space.World);
 
-        if (CompareTag(Tags.Player) && m_previousForwardSpeed != m_forwardSpeed)
+        if (m_isPlayer && m_previousForwardSpeed != m_forwardSpeed)
             EventManager.TriggerEvent(FloatEventName.SetThrustLevel, m_forwardSpeed);
 
         m_previousForwardSpeed = m_forwardSpeed;

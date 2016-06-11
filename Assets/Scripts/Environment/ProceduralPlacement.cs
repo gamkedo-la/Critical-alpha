@@ -4,24 +4,26 @@ using System.Collections;
 public class ProceduralPlacement : MonoBehaviour
 {
     [Header("Options")]
+    [SerializeField] bool m_showDebugSpheres = false;
     [SerializeField] int m_seed = 1;
     [SerializeField] int m_maxPlacementAttempts = 100;
 
     [Header("Main target")]
-    [SerializeField] PlaceableObject m_mainTarget;
+    [SerializeField] PlaceableObject m_mainTargetPrefab;
     [SerializeField] float m_minDistanceFromPlayer = 800f;
     [SerializeField] float m_maxDistanceFromPlayer = 1200f;
 
     [Header("Enemy aircraft")]
-    [SerializeField] PlaceableObject[] m_aircraftTypes;
+    [SerializeField] PlaceableObject[] m_aircraftTypePrefabss;
     [SerializeField] int m_numberOfAircraft = 10;
 
     [Header("Enemy ground defences")]
-    [SerializeField] PlaceableObject[] m_groundDefenceTypes;
+    [SerializeField] PlaceableObject[] m_groundDefenceTypePrefabs;
     [SerializeField] int m_numberOfGroundDefences = 20;
 
     private MapGenerator m_mapGenerator;
     private Vector3 m_player;
+    private PlaceableObject m_mainTarget;
 
 
     void Awake()
@@ -52,26 +54,30 @@ public class ProceduralPlacement : MonoBehaviour
 
     private void PlaceMainTarget()
     {
-        if (m_mainTarget == null)
+        if (m_mainTargetPrefab == null)
+        {
+            print("No main target prefab defined");
             return;
+        }
 
-        var newObject = (GameObject) Instantiate(m_mainTarget.gameObject, Vector3.zero, Quaternion.identity);
-        newObject.transform.parent = transform;
+        var mainTargetObject = (GameObject) Instantiate(m_mainTargetPrefab.gameObject, Vector3.zero, Quaternion.identity);
+        m_mainTarget = mainTargetObject.GetComponent<PlaceableObject>();
+        m_mainTarget.gameObject.transform.parent = transform;
 
         bool success = false;
         int attempts = 1;
 
         while (!success && attempts <= m_maxPlacementAttempts)
         {
-            print(string.Format("Attempt {0}", attempts));
-            success = TestPosition(newObject);
+            //print(string.Format("Attempt {0}", attempts));
+            success = TestPosition(m_mainTarget);
             attempts++;
         }
 
         if (attempts > m_maxPlacementAttempts)
         {
             print("Failed to place main target");
-            Destroy(newObject);
+            Destroy(m_mainTarget);
         }
         else
             print(string.Format("Main target took {0} attempts to place", --attempts));
@@ -80,20 +86,27 @@ public class ProceduralPlacement : MonoBehaviour
 
     private void PlaceEnemyAircraft()
     {
-        if (m_aircraftTypes.Length == 0)
+        if (m_aircraftTypePrefabss.Length == 0)
+        {
+            print("No enemy aircraft prefabs defined");
             return;
+        }
     }
 
 
     private void PlaceEnemyGroundDefences()
     {
-        if (m_groundDefenceTypes == null)
+        if (m_groundDefenceTypePrefabs == null)
+        {
+            print("No enemy ground defence prefabs defined");
             return;
+        }
     }
 
 
-    private bool TestPosition(GameObject testObject)
+    private bool TestPosition(PlaceableObject testPlaceableObject)
     {
+        var testObject = testPlaceableObject.gameObject;
         float distance = Random.Range(m_minDistanceFromPlayer, m_maxDistanceFromPlayer);
         float rotationY = Random.Range(0f, 360f);
         
@@ -155,40 +168,9 @@ public class ProceduralPlacement : MonoBehaviour
                 trialPosition.y = 0;
                 testObject.transform.position = trialPosition;
 
-                //corner1.y = -originAboveBase;
-                //corner2.y = -originAboveBase;
-                //corner3.y = -originAboveBase;
-                //corner4.y = -originAboveBase;
-
-                //var sphere1 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-                //var sphere2 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-                //var sphere3 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-                //var sphere4 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-          
-                //sphere1.transform.position = corner1;          
-                //sphere2.transform.position = corner2;
-                //sphere3.transform.position = corner3;
-                //sphere4.transform.position = corner4;
-
-                //print(string.Format("Pos: {0}, height: {1}", corner1, terrainHeightCorner1));
-                //print(string.Format("Pos: {0}, height: {1}", corner2, terrainHeightCorner2));
-                //print(string.Format("Pos: {0}, height: {1}", corner3, terrainHeightCorner3));
-                //print(string.Format("Pos: {0}, height: {1}", corner4, terrainHeightCorner4));
-
-                //var sphere5 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-                //var sphere6 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-                //var sphere7 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-                //var sphere8 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-
-                //corner1.y = terrainHeightCorner1;
-                //corner2.y = terrainHeightCorner2;
-                //corner3.y = terrainHeightCorner3;
-                //corner4.y = terrainHeightCorner4;
-
-                //sphere5.transform.position = corner1;
-                //sphere6.transform.position = corner2;
-                //sphere7.transform.position = corner3;
-                //sphere8.transform.position = corner4;
+                if (m_showDebugSpheres)
+                    AddDebugSpheres(corner1, corner2, corner3, corner4, originAboveBase, terrainHeightCorner1,
+                        terrainHeightCorner2, terrainHeightCorner3, terrainHeightCorner4, testObject.transform);
             }
 
             //float y = rigidbody == null
@@ -205,5 +187,55 @@ public class ProceduralPlacement : MonoBehaviour
         }
 
         return success;
+    }
+
+
+    private void AddDebugSpheres(Vector3 corner1, Vector3 corner2, Vector3 corner3, Vector3 corner4,
+        float originAboveBase, float terrainHeightCorner1, float terrainHeightCorner2,
+        float terrainHeightCorner3, float terrainHeightCorner4, Transform parent)
+    {
+        corner1.y = -originAboveBase;
+        corner2.y = -originAboveBase;
+        corner3.y = -originAboveBase;
+        corner4.y = -originAboveBase;
+
+        var sphere1 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        var sphere2 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        var sphere3 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        var sphere4 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+
+        sphere1.transform.position = corner1;
+        sphere2.transform.position = corner2;
+        sphere3.transform.position = corner3;
+        sphere4.transform.position = corner4;
+
+        //print(string.Format("Pos: {0}, height: {1}", corner1, terrainHeightCorner1));
+        //print(string.Format("Pos: {0}, height: {1}", corner2, terrainHeightCorner2));
+        //print(string.Format("Pos: {0}, height: {1}", corner3, terrainHeightCorner3));
+        //print(string.Format("Pos: {0}, height: {1}", corner4, terrainHeightCorner4));
+
+        var sphere5 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        var sphere6 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        var sphere7 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        var sphere8 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+
+        corner1.y = terrainHeightCorner1;
+        corner2.y = terrainHeightCorner2;
+        corner3.y = terrainHeightCorner3;
+        corner4.y = terrainHeightCorner4;
+
+        sphere5.transform.position = corner1;
+        sphere6.transform.position = corner2;
+        sphere7.transform.position = corner3;
+        sphere8.transform.position = corner4;
+
+        sphere1.transform.parent = parent;
+        sphere2.transform.parent = parent;
+        sphere3.transform.parent = parent;
+        sphere4.transform.parent = parent;
+        sphere5.transform.parent = parent;
+        sphere6.transform.parent = parent;
+        sphere7.transform.parent = parent;
+        sphere8.transform.parent = parent;
     }
 }

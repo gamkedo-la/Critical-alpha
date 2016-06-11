@@ -55,24 +55,42 @@ public class ProceduralPlacementExample : MonoBehaviour
 
 				if (bounds != null)
 				{
-					var originToMin = bounds.Value.min - testObjectLocation;
-					var originToMax = bounds.Value.max - testObjectLocation;
+                    float minY = bounds.Value.min.y;
+                    float minX = bounds.Value.min.x;
+                    float minZ = bounds.Value.min.z;
+                    float maxX = bounds.Value.max.x;
+                    float maxZ = bounds.Value.max.z;
 
-					float originAboveBase = testObjectLocation.y - bounds.Value.min.y;
+                    var corner1 = new Vector3(minX, minY, minZ);
+                    var corner2 = new Vector3(minX, minY, maxZ);
+                    var corner3 = new Vector3(maxX, minY, minZ);
+                    var corner4 = new Vector3(maxX, minY, maxZ);
 
-					float rotationAngle = Random.Range(0f, 360f);
-					testObject.transform.Rotate(Vector3.up * rotationAngle);
+                    var originToCorner1 = corner1 - testObjectLocation;
+                    var originToCorner2 = corner2 - testObjectLocation;
+                    var originToCorner3 = corner3 - testObjectLocation;
+                    var originToCorner4 = corner4 - testObjectLocation;
 
-					originToMin = Quaternion.Euler(0, rotationAngle, 0) * originToMin;
-					originToMax = Quaternion.Euler(0, rotationAngle, 0) * originToMax;
+                    float originAboveBase = testObjectLocation.y - bounds.Value.min.y;
 
-					var min = testObjectLocation + originToMin;
-					var max = testObjectLocation + originToMax;
+                    float rotationY = Random.Range(0f, 360f);
+                    var rotation = Quaternion.Euler(0, rotationY, 0);
+                    testObject.transform.rotation = rotation;
 
-					float terrainHeightCorner1 = m_mapGenerator.GetTerrainHeight(min.x, min.z);
-					float terrainHeightCorner2 = m_mapGenerator.GetTerrainHeight(min.x, max.z);
-					float terrainHeightCorner3 = m_mapGenerator.GetTerrainHeight(max.x, min.z);
-					float terrainHeightCorner4 = m_mapGenerator.GetTerrainHeight(max.x, max.z);
+                    originToCorner1 = rotation * originToCorner1;
+                    originToCorner2 = rotation * originToCorner2;
+                    originToCorner3 = rotation * originToCorner3;
+                    originToCorner4 = rotation * originToCorner4;
+
+                    corner1 = testObjectLocation + originToCorner1;
+                    corner2 = testObjectLocation + originToCorner2;
+                    corner3 = testObjectLocation + originToCorner3;
+                    corner4 = testObjectLocation + originToCorner4;
+
+                    float terrainHeightCorner1 = m_mapGenerator.GetTerrainHeight(corner1.x, corner1.z);
+                    float terrainHeightCorner2 = m_mapGenerator.GetTerrainHeight(corner2.x, corner2.z);
+                    float terrainHeightCorner3 = m_mapGenerator.GetTerrainHeight(corner3.x, corner3.z);
+                    float terrainHeightCorner4 = m_mapGenerator.GetTerrainHeight(corner4.x, corner4.z);
 
 //					print(string.Format("{0}, {1}, {2}", min.x, min.z, terrainHeightCorner1));
 //					print(string.Format("{0}, {1}, {2}", min.x, max.z, terrainHeightCorner2));

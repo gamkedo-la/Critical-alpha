@@ -7,4 +7,5 @@ public class Tags : MonoBehaviour
     public const string Ground = "Ground";
     public const string Water = "Water";
     public const string Cloud = "Cloud";
+    public const string MapGenerator = "Map generator";
 }

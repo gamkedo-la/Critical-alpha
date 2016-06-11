@@ -4,16 +4,21 @@ using System.Collections.Generic;
 
 public class ProceduralPlacementExample : MonoBehaviour 
 {
-	[SerializeField] MapGenerator m_mapGenerator;
 	[SerializeField] GameObject m_testPrefab;
 	[SerializeField] float m_separation = 50f;
 	[SerializeField] int m_numObjectsPerSide = 9;
 
 	private List<GameObject> m_testObjects;
+    private MapGenerator m_mapGenerator;
 
 
-	void Awake()
+    void Awake()
 	{
+        var mapGeneratorObject = GameObject.FindGameObjectWithTag(Tags.MapGenerator);
+
+        if (mapGeneratorObject != null)
+            m_mapGenerator = mapGeneratorObject.GetComponent<MapGenerator>();
+
 		m_testObjects = new List<GameObject>();
 
 		if (m_testPrefab == null)

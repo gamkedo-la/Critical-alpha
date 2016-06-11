@@ -5,17 +5,17 @@ public static class BoundsUtilities
 {
 	public static Bounds? OverallBounds(GameObject gameObject)
 	{
-		var colliders = gameObject.GetComponentsInChildren<Collider>();
+		var renderers = gameObject.GetComponentsInChildren<MeshRenderer>();
 
-		int length = colliders.Length;
+		int length = renderers.Length;
 
 		if (length == 0)
 			return null;
 
-		var newBounds = colliders[0].bounds;
+		var newBounds = renderers[0].bounds;
 
 		for (int i = 1; i < length; i++)
-			newBounds.Encapsulate(colliders[i].bounds);
+			newBounds.Encapsulate(renderers[i].bounds);
 
 		return newBounds;
 	}

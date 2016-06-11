@@ -2,9 +2,10 @@
 using System.Collections;
 using UnityEngine.UI;
 
-public class Compass : MonoBehaviour {
+public class DisplayCompass : MonoBehaviour {
 
     private RawImage compassRawImage;
+    private Text compassText;
     private Transform playerTransform;
     private float offsetX;
 
@@ -12,14 +13,19 @@ public class Compass : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        compassRawImage = GetComponent<RawImage>();
+
+        compassRawImage = GameObject.Find("Compass Graphic").GetComponent<RawImage>();
+        compassText = GameObject.Find("Compass Text").GetComponent<Text>();
         playerTransform = FindObjectOfType<PlayerFlyingInput>().transform;
+
+        compassText.text = Mathf.Floor(playerTransform.eulerAngles.y).ToString();
 
     }
 
     // Update is called once per frame
     void Update()
     {
+        compassText.text = Mathf.Floor(playerTransform.eulerAngles.y).ToString(); 
 
         offsetX = playerTransform.eulerAngles.y;
 

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class ProceduralPlacement : MonoBehaviour
 {
@@ -20,7 +21,7 @@ public class ProceduralPlacement : MonoBehaviour
     [SerializeField] float m_maxDistanceFromPlayer = 1200f;
 
     [Header("Enemy aircraft")]
-    [SerializeField] PlaceableObjectAir[] m_aircraftTypePrefabss;
+    [SerializeField] PlaceableObjectAir[] m_aircraftTypePrefabs;
     [SerializeField] int m_numberOfAircraft = 10;
 
     [Header("Enemy ground defences")]
@@ -35,6 +36,10 @@ public class ProceduralPlacement : MonoBehaviour
     private Vector3 m_playerPosition;
     private Vector3 m_groundZeroPosition;
 
+    private List<Vector3> m_groundObjectPositions = new List<Vector3>();
+    private List<Vector3> m_waterObjectPositions = new List<Vector3>();
+    private List<Vector3> m_airObjectPositions = new List<Vector3>();
+
 
     void Awake()
     {
@@ -48,7 +53,11 @@ public class ProceduralPlacement : MonoBehaviour
     void Start()
     {
         if (m_mapGenerator == null)
+        {
+            print(string.Format("No object with the tag '{0}' was found, so object placement couldn't be performed", 
+                Tags.MapGenerator));
             return;
+        }
 
         var playerObject = GameObject.FindGameObjectWithTag(Tags.Player);
 
@@ -80,10 +89,22 @@ public class ProceduralPlacement : MonoBehaviour
         bool success = false;
         int attempts = 1;
 
+        var groundObject = mainTarget as PlaceableObjectGround;
+        var waterObject = mainTarget as PlaceableObjectWater;
+        var airObject = mainTarget as PlaceableObjectAir;
+
         while (!success && attempts <= m_maxPlacementAttempts)
         {
             //print(string.Format("Attempt {0}", attempts));
-            success = TestPosition(mainTarget);
+            if (groundObject != null)
+                success = TestGroundPosition(groundObject, true);
+            else if (waterObject != null)
+                success = TestWaterPosition(waterObject, true);
+            else if (airObject != null)
+                success = TestAirPosition(airObject, true);
+            else
+                attempts = m_maxPlacementAttempts;
+
             attempts++;
         }
 
@@ -111,13 +132,29 @@ public class ProceduralPlacement : MonoBehaviour
 
     private void PlaceEnemyAircraft()
     {
-        if (m_aircraftTypePrefabss.Length == 0)
+        if (m_aircraftTypePrefabs.Length == 0)
         {
             print("No enemy aircraft prefabs defined");
             return;
         }
 
         Random.seed = m_seed + 1;
+
+        for (int i = 0; i < m_numberOfAircraft; i++)
+        {
+            int index = Random.Range(0, m_aircraftTypePrefabs.Length);
+            var airGameObject = (GameObject) Instantiate(m_aircraftTypePrefabs[index].gameObject, Vector3.zero, Quaternion.identity);
+            var airObject = airGameObject.GetComponent<PlaceableObjectAir>();
+
+            bool success = false;
+            int attempts = 1;
+
+            while (!success && attempts <= m_maxPlacementAttempts)
+            {
+                success = TestAirPosition(airObject);
+                attempts++;
+            }
+        }
     }
 
 
@@ -130,6 +167,7 @@ public class ProceduralPlacement : MonoBehaviour
         }
 
         Random.seed = m_seed + 2;
+
     }
 
 
@@ -142,16 +180,107 @@ public class ProceduralPlacement : MonoBehaviour
         }
 
         Random.seed = m_seed + 3;
+
     }
 
 
-    private bool TestPosition(PlaceableObject testPlaceableObject)
+    private bool GetTrialPosition(PlaceableObject testPlaceableObject, bool mainTarget, 
+        List<Vector3> objectsToAvoid, out Vector3 position)
+    {
+        var referencePosition = m_groundZeroPosition;
+        float minDist = testPlaceableObject.m_minDistFromMainTarget;
+        float maxDist = testPlaceableObject.m_maxDistFromMainTarget;
+        float minSeparation = testPlaceableObject.m_minSeparation;
+ 
+        if (mainTarget)
+        {
+            referencePosition = m_playerPosition;
+            minDist = m_minDistanceFromPlayer;
+            maxDist = m_maxDistanceFromPlayer;
+        }
+
+        float distance = Random.Range(minDist, maxDist);
+        float radialAngle = Random.Range(0f, 360f);
+        var radialRotation = Quaternion.Euler(0, radialAngle, 0);
+
+        bool success = true;
+  
+        position = Vector3.forward * distance;
+        position = radialRotation * position;
+        position += referencePosition;
+
+        if (objectsToAvoid == null)
+            return true;
+
+        for (int i = 0; i < objectsToAvoid.Count; i++)
+        {
+            var otherPosition = objectsToAvoid[i];
+            float separation = (position - otherPosition).magnitude;
+
+            success = success && separation >= minSeparation; 
+        }
+
+        return success;
+    }
+
+
+    private bool TestGroundPosition(PlaceableObjectGround testPlaceableObject, bool mainTarget = false)
     {
         var testObject = testPlaceableObject.gameObject;
-        float distance = Random.Range(m_minDistanceFromPlayer, m_maxDistanceFromPlayer);
+        var objectsToAvoid = mainTarget ? null : m_groundObjectPositions;
+
+        Vector3 trialPosition;
+        bool success = GetTrialPosition(testPlaceableObject, mainTarget, objectsToAvoid, out trialPosition);
+
+        if (!success)
+            return false;
+
+        return success;
+    }
+
+
+    private bool TestAirPosition(PlaceableObjectAir testPlaceableObject, bool mainTarget = false)
+    {
+        var testObject = testPlaceableObject.gameObject;
+        var objectsToAvoid = mainTarget ? null : m_airObjectPositions;
+
+        Vector3 trialPosition;
+        bool success = GetTrialPosition(testPlaceableObject, mainTarget, objectsToAvoid, out trialPosition);
+
+        if (success)
+        {
+            // TODO: work out correct rotation and bank angle for circular patrol
+            float rotationY = Random.Range(0f, 360f);
+            var rotation = Quaternion.Euler(0, rotationY, 0);
+            rotation *= Quaternion.Euler(0f, 0f, 45f);
+
+            testObject.transform.rotation = rotation;
+
+            float altitude = Random.Range(testPlaceableObject.m_minAltitude, testPlaceableObject.m_maxAltitude);
+
+            trialPosition.y = altitude;
+            testObject.transform.position = trialPosition;
+            testObject.gameObject.transform.parent = transform;
+
+            m_airObjectPositions.Add(trialPosition);
+        }
+
+        return success;
+    }
+
+
+    private bool TestWaterPosition(PlaceableObjectWater testPlaceableObject, bool mainTarget = false)
+    {
+        var testObject = testPlaceableObject.gameObject;
+        var objectsToAvoid = mainTarget ? null : m_waterObjectPositions;
+
+        Vector3 trialPosition;
+        bool success = GetTrialPosition(testPlaceableObject, mainTarget, objectsToAvoid, out trialPosition);
+
+        if (!success)
+            return false;
+
         float rotationY = Random.Range(0f, 360f);
-        
-        var trialPosition = m_playerPosition + Vector3.forward * distance;
         var trialRotation = Quaternion.Euler(0, rotationY, 0);
 
         testObject.transform.position = trialPosition;
@@ -159,8 +288,6 @@ public class ProceduralPlacement : MonoBehaviour
         //var rigidbody = testObject.GetComponent<Rigidbody>();
 
         var bounds = BoundsUtilities.OverallBounds(testObject);
-
-        bool success = true;
 
         if (bounds != null)
         {

@@ -145,6 +145,7 @@ public class ProceduralPlacement : MonoBehaviour
             int index = Random.Range(0, m_aircraftTypePrefabs.Length);
             var airGameObject = (GameObject) Instantiate(m_aircraftTypePrefabs[index].gameObject, Vector3.zero, Quaternion.identity);
             var airObject = airGameObject.GetComponent<PlaceableObjectAir>();
+            airGameObject.gameObject.transform.parent = transform;
 
             bool success = false;
             int attempts = 1;
@@ -168,6 +169,22 @@ public class ProceduralPlacement : MonoBehaviour
 
         Random.seed = m_seed + 2;
 
+        for (int i = 0; i < m_numberOfGroundDefences; i++)
+        {
+            int index = Random.Range(0, m_groundDefenceTypePrefabs.Length);
+            var groundGameObject = (GameObject) Instantiate(m_groundDefenceTypePrefabs[index].gameObject, Vector3.zero, Quaternion.identity);
+            var groundObject = groundGameObject.GetComponent<PlaceableObjectGround>();
+            groundGameObject.gameObject.transform.parent = transform;
+
+            bool success = false;
+            int attempts = 1;
+
+            while (!success && attempts <= m_maxPlacementAttempts)
+            {
+                success = TestGroundPosition(groundObject);
+                attempts++;
+            }
+        }
     }
 
 
@@ -181,6 +198,22 @@ public class ProceduralPlacement : MonoBehaviour
 
         Random.seed = m_seed + 3;
 
+        for (int i = 0; i < m_numberOfWaterDefences; i++)
+        {
+            int index = Random.Range(0, m_waterDefenceTypePrefabs.Length);
+            var waterGameObject = (GameObject) Instantiate(m_waterDefenceTypePrefabs[index].gameObject, Vector3.zero, Quaternion.identity);
+            var waterObject = waterGameObject.GetComponent<PlaceableObjectWater>();
+            waterGameObject.gameObject.transform.parent = transform;
+
+            bool success = false;
+            int attempts = 1;
+
+            while (!success && attempts <= m_maxPlacementAttempts)
+            {
+                success = TestWaterPosition(waterObject);
+                attempts++;
+            }
+        }
     }
 
 
@@ -224,21 +257,6 @@ public class ProceduralPlacement : MonoBehaviour
     }
 
 
-    private bool TestGroundPosition(PlaceableObjectGround testPlaceableObject, bool mainTarget = false)
-    {
-        var testObject = testPlaceableObject.gameObject;
-        var objectsToAvoid = mainTarget ? null : m_groundObjectPositions;
-
-        Vector3 trialPosition;
-        bool success = GetTrialPosition(testPlaceableObject, mainTarget, objectsToAvoid, out trialPosition);
-
-        if (!success)
-            return false;
-
-        return success;
-    }
-
-
     private bool TestAirPosition(PlaceableObjectAir testPlaceableObject, bool mainTarget = false)
     {
         var testObject = testPlaceableObject.gameObject;
@@ -267,17 +285,15 @@ public class ProceduralPlacement : MonoBehaviour
                 rotation = Quaternion.Euler(0, theta + (90 * flip), 0);
 
                 var flyingControlScript = testPlaceableObject.gameObject.GetComponent<FlyingControl>();
+
                 float speed = flyingControlScript.m_forwardSpeed;
-                float turnRate = flyingControlScript.m_turnRate;
+                float turnRateRad = Mathf.Deg2Rad * flyingControlScript.m_turnRate;
+                float sinThi = speed / (distance * turnRateRad);
+                float bankAngleDeg = -flip * Mathf.Rad2Deg * (Mathf.Abs(sinThi) > 1f ? 90f : Mathf.Asin(sinThi));
 
-                // Not sure why we need this factor of 60 increase but it seems to work
-                float sinThi = 60 * speed / (distance * turnRate);
+                rotation *= Quaternion.Euler(0f, 0f, bankAngleDeg);
 
-                float bankAngle = -flip * (Mathf.Abs(sinThi) > 1f ? 90f : Mathf.Asin(sinThi) * Mathf.Rad2Deg);
-
-                rotation *= Quaternion.Euler(0f, 0f, bankAngle);
-
-                //print(string.Format("Speed: {0}, turn rate: {1}, distance: {2}, invThi: {3}, bank angle: {4}", 
+                //print(string.Format("Speed: {0}, turn rate: {1}, distance: {2}, sinThi: {3}, bank angle: {4}", 
                 //    speed, turnRate, distance, sinThi, bankAngle));
             }
 
@@ -287,8 +303,7 @@ public class ProceduralPlacement : MonoBehaviour
 
             trialPosition.y = altitude;
             testObject.transform.position = trialPosition;
-            testObject.gameObject.transform.parent = transform;
-
+            
             m_airObjectPositions.Add(trialPosition);
         }
 
@@ -296,10 +311,10 @@ public class ProceduralPlacement : MonoBehaviour
     }
 
 
-    private bool TestWaterPosition(PlaceableObjectWater testPlaceableObject, bool mainTarget = false)
+    private bool TestGroundPosition(PlaceableObjectGround testPlaceableObject, bool mainTarget = false)
     {
         var testObject = testPlaceableObject.gameObject;
-        var objectsToAvoid = mainTarget ? null : m_waterObjectPositions;
+        var objectsToAvoid = mainTarget ? null : m_groundObjectPositions;
 
         Vector3 trialPosition;
         bool success = GetTrialPosition(testPlaceableObject, mainTarget, objectsToAvoid, out trialPosition);
@@ -311,8 +326,8 @@ public class ProceduralPlacement : MonoBehaviour
         var trialRotation = Quaternion.Euler(0, rotationY, 0);
 
         testObject.transform.position = trialPosition;
- 
-        //var rigidbody = testObject.GetComponent<Rigidbody>();
+
+        var rigidbody = testObject.GetComponent<Rigidbody>();
 
         var bounds = BoundsUtilities.OverallBounds(testObject);
 
@@ -351,34 +366,110 @@ public class ProceduralPlacement : MonoBehaviour
             float terrainHeightCorner3 = m_mapGenerator.GetTerrainHeight(corner3.x, corner3.z);
             float terrainHeightCorner4 = m_mapGenerator.GetTerrainHeight(corner4.x, corner4.z);
 
-            float minHeight = Mathf.Min(terrainHeightCorner1, terrainHeightCorner2, terrainHeightCorner3, terrainHeightCorner4);
+            float minHeight = testPlaceableObject.m_minHeight;
+            float maxHeight = testPlaceableObject.m_maxHeight;
+
+            // TODO: add gradient check
+
+            float y = rigidbody == null
+                ? Mathf.Min(terrainHeightCorner1, terrainHeightCorner2, terrainHeightCorner3, terrainHeightCorner4)
+                : Mathf.Max(terrainHeightCorner1, terrainHeightCorner2, terrainHeightCorner3, terrainHeightCorner4);
+
+            success = y >= minHeight && y <= maxHeight;
+
+            if (success)
+            {
+                y += originAboveBase;
+                trialPosition.y = y;
+
+                testObject.transform.rotation = trialRotation;
+                testObject.transform.position = trialPosition;
+
+                if (!mainTarget)
+                    m_groundObjectPositions.Add(trialPosition);
+
+                if (m_showDebugSpheres)
+                    AddDebugSpheres(corner1, corner2, corner3, corner4, y - originAboveBase, terrainHeightCorner1,
+                        terrainHeightCorner2, terrainHeightCorner3, terrainHeightCorner4, testObject.transform);
+            }         
+        }
+
+        return success;
+    }
+
+
+    private bool TestWaterPosition(PlaceableObjectWater testPlaceableObject, bool mainTarget = false)
+    {
+        var testObject = testPlaceableObject.gameObject;
+        var objectsToAvoid = mainTarget ? null : m_waterObjectPositions;
+
+        Vector3 trialPosition;
+        bool success = GetTrialPosition(testPlaceableObject, mainTarget, objectsToAvoid, out trialPosition);
+
+        if (!success)
+            return false;
+
+        float rotationY = Random.Range(0f, 360f);
+        var trialRotation = Quaternion.Euler(0, rotationY, 0);
+
+        testObject.transform.position = trialPosition;
+
+        var bounds = BoundsUtilities.OverallBounds(testObject);
+
+        if (bounds != null)
+        {
+            float minY = bounds.Value.min.y;
+            float minX = bounds.Value.min.x;
+            float minZ = bounds.Value.min.z;
+            float maxX = bounds.Value.max.x;
+            float maxZ = bounds.Value.max.z;
+
+            var corner1 = new Vector3(minX, minY, minZ);
+            var corner2 = new Vector3(minX, minY, maxZ);
+            var corner3 = new Vector3(maxX, minY, minZ);
+            var corner4 = new Vector3(maxX, minY, maxZ);
+
+            var originToCorner1 = corner1 - trialPosition;
+            var originToCorner2 = corner2 - trialPosition;
+            var originToCorner3 = corner3 - trialPosition;
+            var originToCorner4 = corner4 - trialPosition;
+
+            float originAboveBase = trialPosition.y - bounds.Value.min.y;
+
+            originToCorner1 = trialRotation * originToCorner1;
+            originToCorner2 = trialRotation * originToCorner2;
+            originToCorner3 = trialRotation * originToCorner3;
+            originToCorner4 = trialRotation * originToCorner4;
+
+            corner1 = trialPosition + originToCorner1;
+            corner2 = trialPosition + originToCorner2;
+            corner3 = trialPosition + originToCorner3;
+            corner4 = trialPosition + originToCorner4;
+
+            float terrainHeightCorner1 = m_mapGenerator.GetTerrainHeight(corner1.x, corner1.z);
+            float terrainHeightCorner2 = m_mapGenerator.GetTerrainHeight(corner2.x, corner2.z);
+            float terrainHeightCorner3 = m_mapGenerator.GetTerrainHeight(corner3.x, corner3.z);
+            float terrainHeightCorner4 = m_mapGenerator.GetTerrainHeight(corner4.x, corner4.z);
+
+            //float minHeight = Mathf.Min(terrainHeightCorner1, terrainHeightCorner2, terrainHeightCorner3, terrainHeightCorner4);
             float maxHeight = Mathf.Max(terrainHeightCorner1, terrainHeightCorner2, terrainHeightCorner3, terrainHeightCorner4);
 
             success = maxHeight < -originAboveBase;
 
             if (success)
             {
-                testObject.transform.rotation = trialRotation;
-
                 trialPosition.y = 0;
+
+                testObject.transform.rotation = trialRotation;
                 testObject.transform.position = trialPosition;
 
+                if (!mainTarget)
+                    m_waterObjectPositions.Add(trialPosition);
+
                 if (m_showDebugSpheres)
-                    AddDebugSpheres(corner1, corner2, corner3, corner4, originAboveBase, terrainHeightCorner1,
+                    AddDebugSpheres(corner1, corner2, corner3, corner4, -originAboveBase, terrainHeightCorner1,
                         terrainHeightCorner2, terrainHeightCorner3, terrainHeightCorner4, testObject.transform);
             }
-
-            //float y = rigidbody == null
-            //    ? Mathf.Min(terrainHeightCorner1, terrainHeightCorner2, terrainHeightCorner3, terrainHeightCorner4)
-            //    : Mathf.Max(terrainHeightCorner1, terrainHeightCorner2, terrainHeightCorner3, terrainHeightCorner4);
-
-            //if (y < 0f)
-            //    Destroy(testObject);
-            //else
-            //{
-            //    y += originAboveBase;
-
-            
         }
 
         return success;
@@ -386,13 +477,13 @@ public class ProceduralPlacement : MonoBehaviour
 
 
     private void AddDebugSpheres(Vector3 corner1, Vector3 corner2, Vector3 corner3, Vector3 corner4,
-        float originAboveBase, float terrainHeightCorner1, float terrainHeightCorner2,
+        float baseY, float terrainHeightCorner1, float terrainHeightCorner2,
         float terrainHeightCorner3, float terrainHeightCorner4, Transform parent)
     {
-        corner1.y = -originAboveBase;
-        corner2.y = -originAboveBase;
-        corner3.y = -originAboveBase;
-        corner4.y = -originAboveBase;
+        corner1.y = baseY;
+        corner2.y = baseY;
+        corner3.y = baseY;
+        corner4.y = baseY;
 
         var sphere1 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         var sphere2 = GameObject.CreatePrimitive(PrimitiveType.Sphere);

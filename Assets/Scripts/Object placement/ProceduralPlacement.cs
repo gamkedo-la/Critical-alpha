@@ -3,6 +3,12 @@ using System.Collections;
 
 public class ProceduralPlacement : MonoBehaviour
 {
+    [Header("Mission details")]
+    [TextArea(1, 2)]
+    public string m_missionGoal;
+    [TextArea(3, 10)]
+    public string m_missionStory;
+
     [Header("Options")]
     [SerializeField] bool m_showDebugSpheres = false;
     [SerializeField] int m_seed = 1;
@@ -14,16 +20,20 @@ public class ProceduralPlacement : MonoBehaviour
     [SerializeField] float m_maxDistanceFromPlayer = 1200f;
 
     [Header("Enemy aircraft")]
-    [SerializeField] PlaceableObject[] m_aircraftTypePrefabss;
+    [SerializeField] PlaceableObjectAir[] m_aircraftTypePrefabss;
     [SerializeField] int m_numberOfAircraft = 10;
 
     [Header("Enemy ground defences")]
-    [SerializeField] PlaceableObject[] m_groundDefenceTypePrefabs;
+    [SerializeField] PlaceableObjectGround[] m_groundDefenceTypePrefabs;
     [SerializeField] int m_numberOfGroundDefences = 20;
 
+    [Header("Enemy water defences")]
+    [SerializeField] PlaceableObjectWater[] m_waterDefenceTypePrefabs;
+    [SerializeField] int m_numberOfWaterDefences = 20;
+
     private MapGenerator m_mapGenerator;
-    private Vector3 m_player;
-    private PlaceableObject m_mainTarget;
+    private Vector3 m_playerPosition;
+    private Vector3 m_groundZeroPosition;
 
 
     void Awake()
@@ -40,29 +50,32 @@ public class ProceduralPlacement : MonoBehaviour
         if (m_mapGenerator == null)
             return;
 
-        Random.seed = m_seed;
-
         var playerObject = GameObject.FindGameObjectWithTag(Tags.Player);
 
         if (playerObject != null)
-            m_player = playerObject.transform.position;
+            m_playerPosition = playerObject.transform.position;
 
         PlaceMainTarget();
         PlaceEnemyAircraft();
+        PlaceEnemyGroundDefences();
+        PlaceEnemyWaterDefences();
     }
 
 
     private void PlaceMainTarget()
     {
+        Random.seed = m_seed;
+    
         if (m_mainTargetPrefab == null)
         {
             print("No main target prefab defined");
+            SetBackupGroundZeroPosition();
             return;
         }
 
         var mainTargetObject = (GameObject) Instantiate(m_mainTargetPrefab.gameObject, Vector3.zero, Quaternion.identity);
-        m_mainTarget = mainTargetObject.GetComponent<PlaceableObject>();
-        m_mainTarget.gameObject.transform.parent = transform;
+        var mainTarget = mainTargetObject.GetComponent<PlaceableObject>();
+        mainTarget.gameObject.transform.parent = transform;
 
         bool success = false;
         int attempts = 1;
@@ -70,17 +83,29 @@ public class ProceduralPlacement : MonoBehaviour
         while (!success && attempts <= m_maxPlacementAttempts)
         {
             //print(string.Format("Attempt {0}", attempts));
-            success = TestPosition(m_mainTarget);
+            success = TestPosition(mainTarget);
             attempts++;
         }
 
         if (attempts > m_maxPlacementAttempts)
         {
             print("Failed to place main target");
-            Destroy(m_mainTarget);
+            Destroy(mainTarget);
         }
         else
             print(string.Format("Main target took {0} attempts to place", --attempts));
+
+        if (mainTarget != null)
+            m_groundZeroPosition = mainTarget.transform.position;
+        else
+            SetBackupGroundZeroPosition();
+    }
+
+
+    private void SetBackupGroundZeroPosition()
+    {
+        float distance = Random.Range(m_minDistanceFromPlayer, m_maxDistanceFromPlayer);
+        m_groundZeroPosition = m_playerPosition + Vector3.forward * distance;
     }
 
 
@@ -91,16 +116,32 @@ public class ProceduralPlacement : MonoBehaviour
             print("No enemy aircraft prefabs defined");
             return;
         }
+
+        Random.seed = m_seed + 1;
     }
 
 
     private void PlaceEnemyGroundDefences()
     {
-        if (m_groundDefenceTypePrefabs == null)
+        if (m_groundDefenceTypePrefabs.Length == 0)
         {
             print("No enemy ground defence prefabs defined");
             return;
         }
+
+        Random.seed = m_seed + 2;
+    }
+
+
+    private void PlaceEnemyWaterDefences()
+    {
+        if (m_waterDefenceTypePrefabs.Length == 0)
+        {
+            print("No enemy water defence prefabs defined");
+            return;
+        }
+
+        Random.seed = m_seed + 3;
     }
 
 
@@ -110,7 +151,7 @@ public class ProceduralPlacement : MonoBehaviour
         float distance = Random.Range(m_minDistanceFromPlayer, m_maxDistanceFromPlayer);
         float rotationY = Random.Range(0f, 360f);
         
-        var trialPosition = m_player + Vector3.forward * distance;
+        var trialPosition = m_playerPosition + Vector3.forward * distance;
         var trialRotation = Quaternion.Euler(0, rotationY, 0);
 
         testObject.transform.position = trialPosition;

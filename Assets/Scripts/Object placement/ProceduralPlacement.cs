@@ -249,10 +249,37 @@ public class ProceduralPlacement : MonoBehaviour
 
         if (success)
         {
-            // TODO: work out correct rotation and bank angle for circular patrol
-            float rotationY = Random.Range(0f, 360f);
-            var rotation = Quaternion.Euler(0, rotationY, 0);
-            rotation *= Quaternion.Euler(0f, 0f, 45f);
+            var rotation = Quaternion.identity;
+
+            if (mainTarget)
+            {
+                float rotationY = Random.Range(0f, 360f);
+                rotation = Quaternion.Euler(0, rotationY, 0);
+            }
+            else
+            {
+                var groundZero = new Vector2(m_groundZeroPosition.x, m_groundZeroPosition.z);
+                var position = new Vector2(trialPosition.x, trialPosition.z);
+                var direction = position - groundZero;
+                float distance = direction.magnitude;
+                var theta = Mathf.Atan2(direction.x, direction.y) * Mathf.Rad2Deg;
+                int flip = Random.Range(0, 2) * 2 - 1;
+                rotation = Quaternion.Euler(0, theta + (90 * flip), 0);
+
+                var flyingControlScript = testPlaceableObject.gameObject.GetComponent<FlyingControl>();
+                float speed = flyingControlScript.m_forwardSpeed;
+                float turnRate = flyingControlScript.m_turnRate;
+
+                // Not sure why we need this factor of 60 increase but it seems to work
+                float sinThi = 60 * speed / (distance * turnRate);
+
+                float bankAngle = -flip * (Mathf.Abs(sinThi) > 1f ? 90f : Mathf.Asin(sinThi) * Mathf.Rad2Deg);
+
+                rotation *= Quaternion.Euler(0f, 0f, bankAngle);
+
+                //print(string.Format("Speed: {0}, turn rate: {1}, distance: {2}, invThi: {3}, bank angle: {4}", 
+                //    speed, turnRate, distance, sinThi, bankAngle));
+            }
 
             testObject.transform.rotation = rotation;
 

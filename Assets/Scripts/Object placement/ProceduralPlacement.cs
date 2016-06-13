@@ -19,6 +19,7 @@ public class ProceduralPlacement : MonoBehaviour
     [SerializeField] PlaceableObject m_mainTargetPrefab;
     [SerializeField] float m_minDistanceFromPlayer = 800f;
     [SerializeField] float m_maxDistanceFromPlayer = 1200f;
+    [SerializeField] float m_angleRangeInFrontOfPlayer = 90f;
 
     [Header("Enemy aircraft")]
     [SerializeField] PlaceableObjectAir[] m_aircraftTypePrefabs;
@@ -243,16 +244,20 @@ public class ProceduralPlacement : MonoBehaviour
         float minDist = options.minDistFromMainTarget;
         float maxDist = options.maxDistFromMainTarget;
         float minSeparation = options.minSeparation;
+        float minAngle = 0f;
+        float maxAngle = 360f;
  
         if (mainTarget)
         {
             referencePosition = m_playerPosition;
             minDist = m_minDistanceFromPlayer;
             maxDist = m_maxDistanceFromPlayer;
+            minAngle = -m_angleRangeInFrontOfPlayer * 0.5f;
+            maxAngle = m_angleRangeInFrontOfPlayer * 0.5f;
         }
 
         float distance = Random.Range(minDist, maxDist);
-        float radialAngle = Random.Range(0f, 360f);
+        float radialAngle = Random.Range(minAngle, maxAngle);
         var radialRotation = Quaternion.Euler(0, radialAngle, 0);
 
         bool success = true;

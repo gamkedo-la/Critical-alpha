@@ -24,10 +24,14 @@ public class EnemyHealth : MonoBehaviour, IDamageable
 
 		if (m_currentHealth <= 0)
 		{
-			var explosion = Instantiate(m_explosion);
-			explosion.transform.position = transform.position;
-			float lifetime = explosion.startLifetime;
-			Destroy(explosion.gameObject, lifetime);
+            if (m_explosion != null)
+            {
+                var explosion = Instantiate(m_explosion);
+                explosion.transform.position = transform.position;
+                float lifetime = explosion.startLifetime;
+                Destroy(explosion.gameObject, lifetime);
+            }
+
 			Destroy(gameObject);
 		}
 	}

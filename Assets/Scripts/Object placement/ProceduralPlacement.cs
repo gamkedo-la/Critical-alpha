@@ -5,10 +5,11 @@ using System.Collections.Generic;
 public class ProceduralPlacement : MonoBehaviour
 {
     [Header("Mission details")]
+    public string missionName;
     [TextArea(1, 2)]
-    public string m_missionGoal;
+    public string missionGoal;
     [TextArea(3, 10)]
-    public string m_missionStory;
+    public string missionStory;
 
     [Header("Options")]
     [SerializeField] bool m_showDebugSpheres = false;
@@ -363,14 +364,15 @@ public class ProceduralPlacement : MonoBehaviour
 
             float minHeight = testPlaceableObject.m_minHeight;
             float maxHeight = testPlaceableObject.m_maxHeight;
+            float maxHeightDifference = testPlaceableObject.m_maxHeightDifference;
 
-            // TODO: add gradient check
+            float heightDifference = boundsData.HeightDifference();
 
             float y = rigidbody == null
                 ? boundsData.minTerrainHeight
                 : boundsData.maxTerrainHeight;
 
-            success = y >= minHeight && y <= maxHeight;
+            success = heightDifference <= maxHeightDifference  && y >= minHeight && y <= maxHeight;
 
             if (success)
             {

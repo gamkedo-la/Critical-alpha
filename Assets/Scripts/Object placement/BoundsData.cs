@@ -23,6 +23,7 @@ public struct BoundsData
         this.terrainHeightCorner4 = terrainHeightCorner4;
     }
 
+
     public Vector3 corner1;
     public Vector3 corner2;
     public Vector3 corner3;
@@ -36,4 +37,10 @@ public struct BoundsData
     public float terrainHeightCorner2;
     public float terrainHeightCorner3;
     public float terrainHeightCorner4;
+
+
+    public float HeightDifference()
+    {
+        return maxTerrainHeight - minTerrainHeight;
+    }
 }

@@ -20,20 +20,17 @@ public class ProceduralPlacement : MonoBehaviour
     [SerializeField] PlaceableObject m_mainTargetPrefab;
     [SerializeField] float m_minDistanceFromPlayer = 800f;
     [SerializeField] float m_maxDistanceFromPlayer = 1200f;
-    [SerializeField] float m_angleRangeInFrontOfPlayer = 90f;
+    [SerializeField] float m_minAngleFromNorth = -45f;
+    [SerializeField] float m_maxAngleFromNorth = 45f;
 
     [Header("Enemy aircraft")]
-    [SerializeField] PlaceableObjectAir[] m_aircraftTypePrefabs;
-    [SerializeField] int m_numberOfAircraft = 10;
-    [SerializeField] PlacementOptions m_aircraftOptions;
+    [SerializeField] PlacementOptionsAir[] m_aircraftPlacementOptions;
 
     [Header("Enemy ground defences")]
-    [SerializeField] PlaceableObjectGround[] m_groundDefenceTypePrefabs;
-    [SerializeField] PlacementOptions m_groundDefencesOptions;
+    [SerializeField] PlacementOptionsGround[] m_groundDefencesOptions;
 
     [Header("Enemy water defences")]
-    [SerializeField] PlaceableObjectWater[] m_waterDefenceTypePrefabs;
-    [SerializeField] PlacementOptions m_waterDefencesOptions;
+    [SerializeField] PlacementOptionsWater[] m_waterDefencesOptions;
 
     private MapGenerator m_mapGenerator;
     private Vector3 m_playerPosition;
@@ -100,11 +97,11 @@ public class ProceduralPlacement : MonoBehaviour
         {
             //print(string.Format("Attempt {0}", attempts));
             if (groundObject != null)
-                success = TestGroundPosition(groundObject, true);
+                success = TestGroundPosition(groundObject, null, true);
             else if (waterObject != null)
-                success = TestWaterPosition(waterObject, true);
+                success = TestWaterPosition(waterObject, null, true);
             else if (airObject != null)
-                success = TestAirPosition(airObject, true);
+                success = TestAirPosition(airObject, null, true);
             else
                 attempts = m_maxPlacementAttempts;
 
@@ -114,7 +111,7 @@ public class ProceduralPlacement : MonoBehaviour
         if (attempts > m_maxPlacementAttempts)
         {
             print("Failed to place main target");
-            Destroy(mainTarget);
+            Destroy(mainTarget.gameObject);
         }
         else
             print(string.Format("Main target took {0} attempts to place", --attempts));
@@ -135,34 +132,47 @@ public class ProceduralPlacement : MonoBehaviour
 
     private void PlaceEnemyAircraft()
     {
-        if (m_aircraftTypePrefabs.Length == 0)
+        if (m_aircraftPlacementOptions.Length == 0)
         {
-            print("No enemy aircraft prefabs defined");
+            print("No enemy aircraft waves are defined");
             return;
         }
 
         Random.seed = m_seed + 1;
 
-        for (int i = 0; i < m_numberOfAircraft; i++)
+        for (int k = 0; k < m_aircraftPlacementOptions.Length; k++)
         {
-            int index = Random.Range(0, m_aircraftTypePrefabs.Length);
-            var airGameObject = (GameObject) Instantiate(m_aircraftTypePrefabs[index].gameObject, Vector3.zero, Quaternion.identity);
-            var airObject = airGameObject.GetComponent<PlaceableObjectAir>();
-            airGameObject.gameObject.transform.parent = transform;
+            var options = m_aircraftPlacementOptions[k];
+            int number = options.number;
+            var aircraftTypePrefabs = options.aircraftTypePrefabs;
 
-            bool success = false;
-            int attempts = 1;
-
-            while (!success && attempts <= m_maxPlacementAttempts)
+            if (number == 0)
             {
-                success = TestAirPosition(airObject);
-                attempts++;
-            }
+                print(string.Format("No enemy aircraft prefabs defined in wave {0}", k + 1));
+                continue;
+            }        
 
-            if (attempts > m_maxPlacementAttempts)
+            for (int i = 0; i < number; i++)
             {
-                print(string.Format("Failed to place enemy aircraft number {0}", i + 1));
-                Destroy(airGameObject);
+                int index = Random.Range(0, aircraftTypePrefabs.Length);
+                var airGameObject = (GameObject) Instantiate(aircraftTypePrefabs[index].gameObject, Vector3.zero, Quaternion.identity);
+                var airObject = airGameObject.GetComponent<PlaceableObjectAir>();
+                airGameObject.gameObject.transform.parent = transform;
+
+                bool success = false;
+                int attempts = 1;
+
+                while (!success && attempts <= m_maxPlacementAttempts)
+                {
+                    success = TestAirPosition(airObject, options);
+                    attempts++;
+                }
+
+                if (attempts > m_maxPlacementAttempts)
+                {
+                    print(string.Format("Failed to place enemy aircraft number {0} in wave {1}", i + 1, k + 1));
+                    Destroy(airGameObject);
+                }
             }
         }
     }
@@ -170,34 +180,47 @@ public class ProceduralPlacement : MonoBehaviour
 
     private void PlaceEnemyGroundDefences()
     {
-        if (m_groundDefenceTypePrefabs.Length == 0)
+        if (m_groundDefencesOptions.Length == 0)
         {
-            print("No enemy ground defence prefabs defined");
+            print("No enemy ground defence waves are defined");
             return;
         }
 
         Random.seed = m_seed + 2;
 
-        for (int i = 0; i < m_groundDefencesOptions.number; i++)
+        for (int k = 0; k < m_groundDefencesOptions.Length; k++)
         {
-            int index = Random.Range(0, m_groundDefenceTypePrefabs.Length);
-            var groundGameObject = (GameObject) Instantiate(m_groundDefenceTypePrefabs[index].gameObject, Vector3.zero, Quaternion.identity);
-            var groundObject = groundGameObject.GetComponent<PlaceableObjectGround>();
-            groundGameObject.gameObject.transform.parent = transform;
+            var options = m_groundDefencesOptions[k];
+            int number = options.number;
+            var groundDefenceTypePrefabs = options.groundDefenceTypePrefabs;
 
-            bool success = false;
-            int attempts = 1;
-
-            while (!success && attempts <= m_maxPlacementAttempts)
+            if (number == 0)
             {
-                success = TestGroundPosition(groundObject);
-                attempts++;
+                print(string.Format("No enemy ground defence prefabs defined in wave {0}", k + 1));
+                continue;
             }
 
-            if (attempts > m_maxPlacementAttempts)
+            for (int i = 0; i < number; i++)
             {
-                print(string.Format("Failed to place enemy ground defence number {0}", i + 1));
-                Destroy(groundGameObject);
+                int index = Random.Range(0, groundDefenceTypePrefabs.Length);
+                var groundGameObject = (GameObject) Instantiate(groundDefenceTypePrefabs[index].gameObject, Vector3.zero, Quaternion.identity);
+                var groundObject = groundGameObject.GetComponent<PlaceableObjectGround>();
+                groundGameObject.gameObject.transform.parent = transform;
+
+                bool success = false;
+                int attempts = 1;
+
+                while (!success && attempts <= m_maxPlacementAttempts)
+                {
+                    success = TestGroundPosition(groundObject, options);
+                    attempts++;
+                }
+
+                if (attempts > m_maxPlacementAttempts)
+                {
+                    print(string.Format("Failed to place enemy ground defence number {0}in wave {1}", i + 1, k + 1));
+                    Destroy(groundGameObject);
+                }
             }
         }
     }
@@ -205,56 +228,69 @@ public class ProceduralPlacement : MonoBehaviour
 
     private void PlaceEnemyWaterDefences()
     {
-        if (m_waterDefenceTypePrefabs.Length == 0)
+        if (m_waterDefencesOptions.Length == 0)
         {
-            print("No enemy water defence prefabs defined");
+            print("No enemy water defence waves are defined");
             return;
         }
 
         Random.seed = m_seed + 3;
 
-        for (int i = 0; i < m_waterDefencesOptions.number; i++)
+        for (int k = 0; k < m_groundDefencesOptions.Length; k++)
         {
-            int index = Random.Range(0, m_waterDefenceTypePrefabs.Length);
-            var waterGameObject = (GameObject) Instantiate(m_waterDefenceTypePrefabs[index].gameObject, Vector3.zero, Quaternion.identity);
-            var waterObject = waterGameObject.GetComponent<PlaceableObjectWater>();
-            waterGameObject.gameObject.transform.parent = transform;
+            var options = m_waterDefencesOptions[k];
+            int number = options.number;
+            var waterDefenceTypePrefabs = options.waterDefenceTypePrefabs;
 
-            bool success = false;
-            int attempts = 1;
-
-            while (!success && attempts <= m_maxPlacementAttempts)
+            if (number == 0)
             {
-                success = TestWaterPosition(waterObject);
-                attempts++;
+                print(string.Format("No enemy water defence prefabs defined in wave {0}", k + 1));
+                continue;
             }
 
-            if (attempts > m_maxPlacementAttempts)
+            for (int i = 0; i < number; i++)
             {
-                print(string.Format("Failed to place enemy water defence number {0}", i + 1));
-                Destroy(waterGameObject);
+                int index = Random.Range(0, waterDefenceTypePrefabs.Length);
+                var waterGameObject = (GameObject) Instantiate(waterDefenceTypePrefabs[index].gameObject, Vector3.zero, Quaternion.identity);
+                var waterObject = waterGameObject.GetComponent<PlaceableObjectWater>();
+                waterGameObject.gameObject.transform.parent = transform;
+
+                bool success = false;
+                int attempts = 1;
+
+                while (!success && attempts <= m_maxPlacementAttempts)
+                {
+                    success = TestWaterPosition(waterObject, options);
+                    attempts++;
+                }
+
+                if (attempts > m_maxPlacementAttempts)
+                {
+                    print(string.Format("Failed to place enemy water defence number {0} in wave {1}", i + 1, k + 1));
+                    Destroy(waterGameObject);
+                }
             }
         }
     }
 
 
-    private bool GetTrialPosition(PlaceableObject testPlaceableObject, PlacementOptions options, 
+    private bool GetTrialPosition(PlacementOptions options, 
         bool mainTarget, List<Vector3> objectsToAvoid, out Vector3 position)
     {
         var referencePosition = m_groundZeroPosition;
-        float minDist = options.minDistFromMainTarget;
-        float maxDist = options.maxDistFromMainTarget;
-        float minSeparation = options.minSeparation;
-        float minAngle = 0f;
-        float maxAngle = 360f;
+        float minDist = options != null ? options.minDistFromMainTarget : 2000;
+        float maxDist = options != null ? options.maxDistFromMainTarget : 3000;
+        float minSeparation = options != null ? options.minSeparation : 200;
+        float minAngle = options != null ? options.minAngleFromNorth : 0;
+        float maxAngle = options != null ? options.maxAngleFromNorth : 360;
  
         if (mainTarget)
         {
             referencePosition = m_playerPosition;
             minDist = m_minDistanceFromPlayer;
             maxDist = m_maxDistanceFromPlayer;
-            minAngle = -m_angleRangeInFrontOfPlayer * 0.5f;
-            maxAngle = m_angleRangeInFrontOfPlayer * 0.5f;
+            minAngle = m_minAngleFromNorth;
+            maxAngle = m_maxAngleFromNorth;
         }
 
         float distance = Random.Range(minDist, maxDist);
@@ -282,14 +318,14 @@ public class ProceduralPlacement : MonoBehaviour
     }
 
 
-    private bool TestAirPosition(PlaceableObjectAir testPlaceableObject, bool mainTarget = false)
+    private bool TestAirPosition(PlaceableObjectAir testPlaceableObject, 
+        PlacementOptions options, bool mainTarget = false)
     {
         var testObject = testPlaceableObject.gameObject;
         var objectsToAvoid = mainTarget ? null : m_airObjectPositions;
 
         Vector3 trialPosition;
-        bool success = GetTrialPosition(testPlaceableObject, m_aircraftOptions, 
-            mainTarget, objectsToAvoid, out trialPosition);
+        bool success = GetTrialPosition(options, mainTarget, objectsToAvoid, out trialPosition);
 
         if (success)
         {
@@ -337,13 +373,14 @@ public class ProceduralPlacement : MonoBehaviour
     }
 
 
-    private bool TestGroundPosition(PlaceableObjectGround testPlaceableObject, bool mainTarget = false)
+    private bool TestGroundPosition(PlaceableObjectGround testPlaceableObject,
+        PlacementOptions options, bool mainTarget = false)
     {
         var testObject = testPlaceableObject.gameObject;
         var objectsToAvoid = mainTarget ? null : m_groundObjectPositions;
 
         Vector3 trialPosition;
-        bool success = GetTrialPosition(testPlaceableObject, m_groundDefencesOptions, 
+        bool success = GetTrialPosition(options, 
             mainTarget, objectsToAvoid, out trialPosition);
 
         if (!success)
@@ -394,13 +431,14 @@ public class ProceduralPlacement : MonoBehaviour
     }
 
 
-    private bool TestWaterPosition(PlaceableObjectWater testPlaceableObject, bool mainTarget = false)
+    private bool TestWaterPosition(PlaceableObjectWater testPlaceableObject,
+        PlacementOptions options, bool mainTarget = false)
     {
         var testObject = testPlaceableObject.gameObject;
         var objectsToAvoid = mainTarget ? null : m_waterObjectPositions;
 
         Vector3 trialPosition;
-        bool success = GetTrialPosition(testPlaceableObject, m_waterDefencesOptions, 
+        bool success = GetTrialPosition(options, 
             mainTarget, objectsToAvoid, out trialPosition);
 
         if (!success)

@@ -8,4 +8,6 @@ public class PlacementOptions
     public float minSeparation = 50f;
     public float minDistFromMainTarget = 100f;
     public float maxDistFromMainTarget = 1000f;
+    public float minAngleFromNorth = -180f;
+    public float maxAngleFromNorth = 180f;
 }

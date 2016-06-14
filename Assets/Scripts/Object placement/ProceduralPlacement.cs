@@ -236,7 +236,7 @@ public class ProceduralPlacement : MonoBehaviour
 
         Random.seed = m_seed + 3;
 
-        for (int k = 0; k < m_groundDefencesOptions.Length; k++)
+        for (int k = 0; k < m_waterDefencesOptions.Length; k++)
         {
             var options = m_waterDefencesOptions[k];
             int number = options.number;

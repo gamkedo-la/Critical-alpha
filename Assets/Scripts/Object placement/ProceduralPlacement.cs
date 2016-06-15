@@ -67,12 +67,6 @@ public class ProceduralPlacement : MonoBehaviour
     }
 
 
-    void Start()
-    {
-        
-    }
-
-
     private void PlaceMainTarget()
     {
         Random.seed = m_seed;
@@ -412,8 +406,8 @@ public class ProceduralPlacement : MonoBehaviour
                 : boundsData.maxTerrainHeight;
 
             success = heightDifference <= maxHeightDifference  
-                && y >= minHeight && y <= maxHeight 
-                && boundsData.minTerrainHeight >= 0;
+                && boundsData.minTerrainHeight >= minHeight 
+                && boundsData.maxTerrainHeight <= maxHeight;
 
             if (success)
             {

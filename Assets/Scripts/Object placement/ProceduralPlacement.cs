@@ -216,7 +216,7 @@ public class ProceduralPlacement : MonoBehaviour
 
                 if (attempts > m_maxPlacementAttempts)
                 {
-                    print(string.Format("Failed to place enemy ground defence number {0}in wave {1}", i + 1, k + 1));
+                    print(string.Format("Failed to place enemy ground defence number {0} in wave {1}", i + 1, k + 1));
                     Destroy(groundGameObject);
                 }
             }
@@ -405,7 +405,7 @@ public class ProceduralPlacement : MonoBehaviour
 
             float y = rigidbody == null
                 ? boundsData.minTerrainHeight
-                : boundsData.maxTerrainHeight;
+                : boundsData.maxTerrainHeight + 0.5f * maxHeightDifference;
 
             success = heightDifference <= maxHeightDifference  
                 && boundsData.minTerrainHeight >= minHeight 
@@ -490,6 +490,7 @@ public class ProceduralPlacement : MonoBehaviour
         var corner3 = new Vector3(maxX, minY, minZ);
         var corner4 = new Vector3(maxX, minY, maxZ);
 
+        // TODO: add side and centre sampling?
         var originToCorner1 = corner1 - trialPosition;
         var originToCorner2 = corner2 - trialPosition;
         var originToCorner3 = corner3 - trialPosition;
@@ -548,6 +549,15 @@ public class ProceduralPlacement : MonoBehaviour
         var sphere6 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         var sphere7 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         var sphere8 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+
+        sphere1.GetComponent<Collider>().enabled = false;
+        sphere2.GetComponent<Collider>().enabled = false;
+        sphere3.GetComponent<Collider>().enabled = false;
+        sphere4.GetComponent<Collider>().enabled = false;
+        sphere5.GetComponent<Collider>().enabled = false;
+        sphere6.GetComponent<Collider>().enabled = false;
+        sphere7.GetComponent<Collider>().enabled = false;
+        sphere8.GetComponent<Collider>().enabled = false;
 
         boundsData.corner1.y = boundsData.terrainHeightCorner1;
         boundsData.corner2.y = boundsData.terrainHeightCorner2;

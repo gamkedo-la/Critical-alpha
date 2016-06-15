@@ -6,7 +6,6 @@ public class EnemyHealth : MonoBehaviour, IDamageable
 	[SerializeField] int m_startingHealth = 100;
 	[SerializeField] ParticleSystem m_explosion;
 
-
 	private int m_currentHealth;
 
 
@@ -35,4 +34,10 @@ public class EnemyHealth : MonoBehaviour, IDamageable
 			Destroy(gameObject);
 		}
 	}
+
+
+    public int CurrentHealth
+    {
+        get { return m_currentHealth; }
+    }
 }

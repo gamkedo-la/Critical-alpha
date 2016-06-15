@@ -20,6 +20,7 @@ public class CameraSwitcher : MonoBehaviour
 	
 	void Update()
     {
+        m_timeSinceSwitched += Time.unscaledDeltaTime;
         int index = m_index;
 
         if (Input.GetKeyDown(KeyCode.Alpha1) && m_cameraPositions.Length > 0)
@@ -36,9 +37,7 @@ public class CameraSwitcher : MonoBehaviour
         if (m_timeSinceSwitched > m_cameraSwitchCooldown)
         {
             int increment = (int) Input.GetAxisRaw("Camera");
-            print(increment);
             index += increment;
-
             index = (index + m_cameraPositions.Length) % m_cameraPositions.Length;
         }
 
@@ -56,8 +55,6 @@ public class CameraSwitcher : MonoBehaviour
                 EventManager.TriggerEvent(BooleanEventName.ActivateHud, true);
             else
                 EventManager.TriggerEvent(BooleanEventName.ActivateHud, false);
-        }
-
-        m_timeSinceSwitched += Time.unscaledDeltaTime;
+        }   
     }
 }

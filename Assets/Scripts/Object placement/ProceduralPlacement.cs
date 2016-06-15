@@ -346,7 +346,7 @@ public class ProceduralPlacement : MonoBehaviour
 
                 var flyingControlScript = testPlaceableObject.gameObject.GetComponent<FlyingControl>();
 
-                float speed = flyingControlScript.m_forwardSpeed;
+                float speed = flyingControlScript.ForwardSpeed;
                 float turnRateRad = Mathf.Deg2Rad * flyingControlScript.m_turnRate;
                 float sinThi = speed / (distance * turnRateRad);
                 float bankAngleDeg = -flip * Mathf.Rad2Deg * (Mathf.Abs(sinThi) > 1f ? 90f : Mathf.Asin(sinThi));

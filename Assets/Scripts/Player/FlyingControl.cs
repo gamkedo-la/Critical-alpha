@@ -8,7 +8,7 @@ public class FlyingControl : MonoBehaviour
 
     [SerializeField] float m_minForwardSpeed = 10f;
     [SerializeField] float m_maxForwardSpeed = 100f;
-    public float m_forwardSpeed = 30f;
+    [SerializeField] float m_forwardSpeed = 60f;
     [SerializeField] float m_liftMultiplier = 0.1f;
 	[SerializeField] float m_downSpeed = 5f;
 
@@ -80,8 +80,24 @@ public class FlyingControl : MonoBehaviour
     }
 
 
+    /// <summary>
+    /// Input for thrust control 
+    /// </summary>
+    /// <param name="a">The thrust input value, limit to -1 -> +1</param>
     public void ThrustInput(float a)
     {
         m_a = a;
+    }
+
+
+    public float ForwardSpeed
+    {
+        get { return m_forwardSpeed; }
+    }
+
+
+    public float MaxForwardSpeed
+    {
+        get { return m_maxForwardSpeed; }
     }
 }

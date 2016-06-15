@@ -7,6 +7,10 @@ public class EnemyAircraftAiInput : MonoBehaviour
     [SerializeField] float m_playerInRangeAttackThreshold = 500f;
     [SerializeField] float m_fleeHealthProportion = 0.3f; 
     [SerializeField] float m_controlsSensitivity = 0.5f;
+    [SerializeField] float m_decisionRate = 0.2f;
+    [SerializeField] Vector2 m_evadeChangeTimeMinMax = new Vector2(0.5f, 4f); 
+
+    private WaitForSeconds m_waitTime;
 
     private FlyingControl m_flyingControlScript;
     private EnemyHealth m_health;
@@ -21,11 +25,16 @@ public class EnemyAircraftAiInput : MonoBehaviour
     private State m_state = State.Patrol;
     private Vector3 m_playerDirection;
     private bool m_playerInRange;
-    private float m_dotToPlayer;
-    private float m_dotRightToPlayer;
+    private float m_dotForwardToPlayer;
+    private float m_dotUpToPlayer;
+    private float m_dotRightToPlayer;   
     private float m_dotUp;
     private float m_dotRight;
     private float m_bankAngle;
+
+    private bool m_evadeRight;
+    private float m_evadeChangeTime;
+    private float m_timeSinceEvadeChange;
 
     private float m_v;
     private float m_h;
@@ -41,6 +50,8 @@ public class EnemyAircraftAiInput : MonoBehaviour
 
         if (playerObject != null)
             m_player = playerObject.transform;
+
+        m_waitTime = new WaitForSeconds(m_decisionRate);
     }
 
 
@@ -51,6 +62,44 @@ public class EnemyAircraftAiInput : MonoBehaviour
         m_spawnBankAngle = transform.rotation.eulerAngles.z;
         m_fleeHealth = Mathf.RoundToInt(m_health.CurrentHealth * m_fleeHealthProportion);
         m_patrolSpeed = m_flyingControlScript.ForwardSpeed;
+
+        if (m_player != null)
+            StartCoroutine(MakeDecisions());
+    }
+
+
+    private IEnumerator MakeDecisions()
+    {
+        float randomTime = Random.Range(0f, m_decisionRate);
+        yield return new WaitForSeconds(randomTime);
+
+        while(true)
+        {
+            CheckOrientation();
+            CheckPlayerRange();
+            CheckHealth();
+
+            switch (m_state)
+            {
+                case (State.Patrol):
+                    UpdatePatrol();
+                    break;
+
+                case (State.Chase):
+                    UpdateChase();
+                    break;
+
+                case (State.Evade):
+                    UpdateEvade();
+                    break;
+
+                case (State.Flee):
+                    UpdateFlee();
+                    break;
+            }
+
+            yield return m_waitTime;
+        }
     }
 
 
@@ -58,29 +107,6 @@ public class EnemyAircraftAiInput : MonoBehaviour
     {
         if (m_player == null)
             return;
-
-        CheckOrientation();
-        CheckPlayerRange();
-        CheckHealth();
-        
-        switch(m_state)
-        {
-            case (State.Patrol):
-                UpdatePatrol();
-                break;
-
-            case (State.Chase):
-                UpdateChase();
-                break;
-
-            case (State.Evade):
-                UpdateEvade();
-                break;
-
-            case (State.Flee):
-                UpdateFlee();
-                break;
-        }
 
         m_flyingControlScript.PitchAndRollInput(m_v * m_controlsSensitivity, m_h * m_controlsSensitivity);
         m_flyingControlScript.ThrustInput(m_a * m_controlsSensitivity);
@@ -103,7 +129,8 @@ public class EnemyAircraftAiInput : MonoBehaviour
 
         var playerDirectionNormalized = m_playerDirection.normalized;
 
-        m_dotToPlayer = Vector3.Dot(playerDirectionNormalized, transform.forward);
+        m_dotForwardToPlayer = Vector3.Dot(transform.forward, playerDirectionNormalized);
+        m_dotUpToPlayer = Vector3.Dot(transform.up, playerDirectionNormalized);
         m_dotRightToPlayer = Vector3.Dot(transform.right, playerDirectionNormalized);
         m_dotUp = Vector3.Dot(transform.up, Vector3.up);
         m_dotRight = Vector3.Dot(transform.right, Vector3.up);
@@ -124,14 +151,12 @@ public class EnemyAircraftAiInput : MonoBehaviour
         if (!m_playerInRange)
             m_state = State.Patrol;
         else
-            m_state = m_dotToPlayer > 0 ? State.Chase : State.Evade;
+            m_state = m_dotForwardToPlayer > 0 ? State.Chase : State.Evade;
     }
 
 
     private float HorizontalAngleToPlayer()
     {
-
-
         return 0;
     }
 
@@ -164,17 +189,26 @@ public class EnemyAircraftAiInput : MonoBehaviour
     {
         m_a = Mathf.Clamp(m_patrolSpeed - m_flyingControlScript.ForwardSpeed, -1f, 1f);
 
-        float sign = Mathf.Sign(m_dotRightToPlayer);
-        float rightSign = Mathf.Sign(m_dotRight);
+        m_timeSinceEvadeChange += m_decisionRate;
+
+        if (m_timeSinceEvadeChange > m_evadeChangeTime)
+        {
+            int choice = Random.Range(0, 2);
+            m_evadeRight = choice > 0;
+
+            m_evadeChangeTime = Random.Range(m_evadeChangeTimeMinMax.x, m_evadeChangeTimeMinMax.y);
+            m_timeSinceEvadeChange = 0f;
+        }
 
         float magnitude = 0f;
 
-        if (rightSign > 0)
-            magnitude = sign > 0 ? m_dotUp : 2f - m_dotUp;
+        if (m_dotRight > 0)
+            magnitude = m_evadeRight ? m_dotUp : 2f - m_dotUp;
         else
-            magnitude = sign < 0 ? m_dotUp : 2f - m_dotUp;
+            magnitude = !m_evadeRight ? m_dotUp : 2f - m_dotUp;
 
-        m_h = -sign * magnitude;
+        m_h = m_evadeRight ? -magnitude : magnitude;
+
         m_h = Mathf.Clamp(m_h, -1f, 1f);
     }
 

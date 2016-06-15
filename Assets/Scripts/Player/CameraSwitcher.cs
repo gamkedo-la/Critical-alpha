@@ -5,9 +5,11 @@ using UnityEngine.UI;
 public class CameraSwitcher : MonoBehaviour
 {
     [SerializeField] Transform[] m_cameraPositions;
+    [SerializeField] float m_cameraSwitchCooldown = 0.3f;
 
     private Transform m_cameraTransform;
     private int m_index;
+    private double m_timeSinceSwitched;
 
 
     void Awake()
@@ -31,8 +33,19 @@ public class CameraSwitcher : MonoBehaviour
         else if (Input.GetKeyDown(KeyCode.Alpha5) && m_cameraPositions.Length > 4)
             index = 4;
 
+        if (m_timeSinceSwitched > m_cameraSwitchCooldown)
+        {
+            int increment = (int) Input.GetAxisRaw("Camera");
+            print(increment);
+            index += increment;
+
+            index = (index + m_cameraPositions.Length) % m_cameraPositions.Length;
+        }
+
         if (m_index != index)
         {
+            m_timeSinceSwitched = 0;
+
             m_index = index;
             var newTransform = m_cameraPositions[m_index];
 
@@ -44,5 +57,7 @@ public class CameraSwitcher : MonoBehaviour
             else
                 EventManager.TriggerEvent(BooleanEventName.ActivateHud, false);
         }
+
+        m_timeSinceSwitched += Time.unscaledDeltaTime;
     }
 }

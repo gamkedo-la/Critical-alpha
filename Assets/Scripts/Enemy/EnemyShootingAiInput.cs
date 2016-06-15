@@ -4,7 +4,8 @@ using System.Collections;
 [RequireComponent(typeof(ShootingControl))]
 public class EnemyShootingAiInput : MonoBehaviour
 {
-    [SerializeField] float m_minDotProductForShooting = 0.5f;
+    [SerializeField] float m_minDotProductForShooting = 0.7f;
+    [SerializeField] float m_minRangeForShooting = 200f;
 
     private ShootingControl m_shootingControlScript;
     private Transform m_player;
@@ -25,19 +26,21 @@ public class EnemyShootingAiInput : MonoBehaviour
         if (m_player == null)
             return;
 
-        if (IsPlayerInfront())
+        if (IsPlayerInRange())
             m_shootingControlScript.Shoot();
 	}
 
 
-    private bool IsPlayerInfront()
+    private bool IsPlayerInRange()
     {
-        var direction = (m_player.position - transform.position).normalized;
+        var direction = (m_player.position - transform.position);
 
-        float dot = Vector3.Dot(direction, transform.forward);
+        float range = direction.magnitude;
+        float dot = Vector3.Dot(direction.normalized, transform.forward);
 
-        bool isInfront = dot >= m_minDotProductForShooting;
+        bool isInFront = dot >= m_minDotProductForShooting;
+        bool closeEnough = range <= m_minRangeForShooting;
 
-        return isInfront;
+        return isInFront && closeEnough;
     }
 }

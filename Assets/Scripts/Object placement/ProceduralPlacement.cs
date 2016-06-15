@@ -409,7 +409,9 @@ public class ProceduralPlacement : MonoBehaviour
                 ? boundsData.minTerrainHeight
                 : boundsData.maxTerrainHeight;
 
-            success = heightDifference <= maxHeightDifference  && y >= minHeight && y <= maxHeight;
+            success = heightDifference <= maxHeightDifference  
+                && y >= minHeight && y <= maxHeight 
+                && boundsData.minTerrainHeight >= 0;
 
             if (success)
             {

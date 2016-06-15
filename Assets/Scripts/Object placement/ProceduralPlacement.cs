@@ -47,14 +47,10 @@ public class ProceduralPlacement : MonoBehaviour
 
         if (mapGeneratorObject != null)
             m_mapGenerator = mapGeneratorObject.GetComponent<MapGenerator>();
-    }
 
-
-    void Start()
-    {
         if (m_mapGenerator == null)
         {
-            print(string.Format("No object with the tag '{0}' was found, so object placement couldn't be performed", 
+            print(string.Format("No object with the tag '{0}' was found, so object placement couldn't be performed",
                 Tags.MapGenerator));
             return;
         }
@@ -68,6 +64,12 @@ public class ProceduralPlacement : MonoBehaviour
         PlaceEnemyAircraft();
         PlaceEnemyGroundDefences();
         PlaceEnemyWaterDefences();
+    }
+
+
+    void Start()
+    {
+        
     }
 
 

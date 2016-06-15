@@ -55,6 +55,8 @@ public class ProceduralPlacement : MonoBehaviour
             return;
         }
 
+        m_mapGenerator.Initialise();
+
         var playerObject = GameObject.FindGameObjectWithTag(Tags.Player);
 
         if (playerObject != null)

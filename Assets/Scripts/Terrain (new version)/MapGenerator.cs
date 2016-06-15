@@ -35,6 +35,8 @@ public class MapGenerator : MonoBehaviour
     private Coroutine m_mapDataCoroutine;
     private Coroutine m_meshDataCoroutine;
 
+    private bool m_initialised = false;
+
 
 	public float GetTerrainHeight(float x, float z)
 	{
@@ -121,9 +123,16 @@ public class MapGenerator : MonoBehaviour
     }
 
 
+    public void Initialise()
+    {
+        if (!m_initialised)
+            m_terrainEquation.Initialise();
+    }
+
+
     void Awake()
     {
-        m_terrainEquation.Initialise();
+        Initialise();
     }
 
 

@@ -173,7 +173,7 @@ public class EnemyAircraftAiInput : MonoBehaviour
 
         float bankAngle = transform.rotation.eulerAngles.z;
 
-        m_h = Mathf.Clamp(bankAngle - m_spawnBankAngle, -1f, 1f);
+        m_h = Mathf.Clamp((bankAngle - m_spawnBankAngle) * 0.05f, -1f, 1f);
 
         FlattenPitch();
     }
@@ -182,6 +182,7 @@ public class EnemyAircraftAiInput : MonoBehaviour
     private void UpdateChase()
     {
         FlattenPitch();
+        FlattenRoll();
     }
 
 
@@ -237,7 +238,7 @@ public class EnemyAircraftAiInput : MonoBehaviour
 
     private void FlattenRoll()
     {
-        m_h = Mathf.Clamp(m_bankAngle, -1f, 1f);
+        m_h = Mathf.Clamp(m_bankAngle * 0.05f, -1f, 1f);
     }
 
 

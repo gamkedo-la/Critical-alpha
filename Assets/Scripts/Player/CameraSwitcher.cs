@@ -33,6 +33,14 @@ public class CameraSwitcher : MonoBehaviour
             index = 3;
         else if (Input.GetKeyDown(KeyCode.Alpha5) && m_cameraPositions.Length > 4)
             index = 4;
+        else if (Input.GetKeyDown(KeyCode.Alpha6) && m_cameraPositions.Length > 5)
+            index = 5;
+        else if (Input.GetKeyDown(KeyCode.Alpha7) && m_cameraPositions.Length > 6)
+            index = 6;
+        else if (Input.GetKeyDown(KeyCode.Alpha8) && m_cameraPositions.Length > 7)
+            index = 7;
+        else if (Input.GetKeyDown(KeyCode.Alpha9) && m_cameraPositions.Length > 8)
+            index = 8;
 
         if (m_timeSinceSwitched > m_cameraSwitchCooldown)
         {
@@ -50,6 +58,7 @@ public class CameraSwitcher : MonoBehaviour
 
             m_cameraTransform.position = newTransform.position;
             m_cameraTransform.rotation = newTransform.rotation;
+            m_cameraTransform.parent = newTransform;
 
             if (m_index == 0)
                 EventManager.TriggerEvent(BooleanEventName.ActivateHud, true);

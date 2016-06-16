@@ -41,6 +41,8 @@ public class CameraSwitcher : MonoBehaviour
             index = 7;
         else if (Input.GetKeyDown(KeyCode.Alpha9) && m_cameraPositions.Length > 8)
             index = 8;
+        else if (Input.GetKeyDown(KeyCode.Alpha0) && m_cameraPositions.Length > 9)
+            index = 9;
 
         if (m_timeSinceSwitched > m_cameraSwitchCooldown)
         {

@@ -16,7 +16,7 @@ public class FixedCamera : MonoBehaviour
     }
 
     
-	void Update()
+	void LateUpdate()
     {
         transform.position = m_parent.position + m_relativePosition;
         transform.rotation = m_rotation;

@@ -6,6 +6,7 @@ public class EnemyAircraftAiInput : MonoBehaviour
 {
     [SerializeField] float m_playerInRangeAttackThreshold = 500f;
     [SerializeField] float m_fleeHealthProportion = 0.3f; 
+    [SerializeField] float m_evadeMaxDotThreshold = -0.5f;
     [SerializeField] float m_controlsSensitivity = 0.5f;
     [SerializeField] float m_decisionRate = 0.2f;
     [SerializeField] Vector2 m_evadeChangeTimeMinMax = new Vector2(0.5f, 4f); 
@@ -31,8 +32,9 @@ public class EnemyAircraftAiInput : MonoBehaviour
     private float m_dotUp;
     private float m_dotRight;
     private float m_bankAngle;
+    private float m_bankMagnitude;
 
-    private bool m_evadeRight;
+    private bool m_turnRight;
     private float m_evadeChangeTime;
     private float m_timeSinceEvadeChange;
 
@@ -151,19 +153,7 @@ public class EnemyAircraftAiInput : MonoBehaviour
         if (!m_playerInRange)
             m_state = State.Patrol;
         else
-            m_state = m_dotForwardToPlayer > 0 ? State.Chase : State.Evade;
-    }
-
-
-    private float HorizontalAngleToPlayer()
-    {
-        return 0;
-    }
-
-
-    private float VerticalAngleToPlayer()
-    {
-        return 0;
+            m_state = m_dotForwardToPlayer > m_evadeMaxDotThreshold ? State.Chase : State.Evade;
     }
 
 
@@ -181,13 +171,29 @@ public class EnemyAircraftAiInput : MonoBehaviour
 
     private void UpdateChase()
     {
-        FlattenPitch();
+        BankToAimAtPlayer();
+        PitchToAimAtPlayer();
+    }
+
+
+    private void BankToAimAtPlayer()
+    {
+        // TODO: check dot right to player
         FlattenRoll();
+    }
+
+
+    private void PitchToAimAtPlayer()
+    {
+        // TODO: check dot up to player
+        FlattenPitch();
     }
 
 
     private void UpdateEvade()
     {
+        FlattenPitch();
+
         m_a = Mathf.Clamp(m_patrolSpeed - m_flyingControlScript.ForwardSpeed, -1f, 1f);
 
         m_timeSinceEvadeChange += m_decisionRate;
@@ -195,20 +201,49 @@ public class EnemyAircraftAiInput : MonoBehaviour
         if (m_timeSinceEvadeChange > m_evadeChangeTime)
         {
             int choice = Random.Range(0, 2);
-            m_evadeRight = choice > 0;
+            m_turnRight = choice > 0;
 
             m_evadeChangeTime = Random.Range(m_evadeChangeTimeMinMax.x, m_evadeChangeTimeMinMax.y);
             m_timeSinceEvadeChange = 0f;
         }
 
-        float magnitude = 0f;
+        Bank();
+    }
 
-        if (m_dotRight > 0)
-            magnitude = m_evadeRight ? m_dotUp : 2f - m_dotUp;
+
+    private void Bank()
+    {  
+        if (m_turnRight)
+            BankToRight();
         else
-            magnitude = !m_evadeRight ? m_dotUp : 2f - m_dotUp;
+            BankToLeft();
+    }
 
-        m_h = m_evadeRight ? -magnitude : magnitude;
+
+    private void CalculateBankMagnitude()
+    {
+        if (m_dotRight > 0)
+            m_bankMagnitude = !m_turnRight ? m_dotUp : 2f - m_dotUp;
+        else
+            m_bankMagnitude = m_turnRight ? m_dotUp : 2f - m_dotUp;
+    }
+
+
+    private void BankToLeft()
+    {
+        CalculateBankMagnitude();
+
+        m_h = -m_bankMagnitude;
+
+        m_h = Mathf.Clamp(m_h, -1f, 1f);
+    }
+
+
+    private void BankToRight()
+    {
+        CalculateBankMagnitude();
+
+        m_h = m_bankMagnitude;
 
         m_h = Mathf.Clamp(m_h, -1f, 1f);
     }

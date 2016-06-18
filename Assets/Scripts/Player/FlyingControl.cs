@@ -17,7 +17,7 @@ public class FlyingControl : MonoBehaviour
 
     [SerializeField] float m_bankRate = 120f;
     [SerializeField] float m_pitchRate = 90f;
-    public float m_turnRate = 20f;
+    public float turnRate = 20f;
 
     private bool m_isPlayer;
     private float m_liftSpeed;
@@ -59,7 +59,7 @@ public class FlyingControl : MonoBehaviour
         var forwardOnGround = Vector3.ProjectOnPlane(transform.forward, Vector3.up);//.normalized;
         var rightOnGround = new Vector3(forwardOnGround.z, 0, -forwardOnGround.x);
         float bankDot = Vector3.Dot(rightOnGround, transform.up);
-        float turnAmount = bankDot * m_turnRate;
+        float turnAmount = bankDot * turnRate;
 
         //float bankAngle = transform.rotation.eulerAngles.z;
         //float turnAmount = -Mathf.Sin(bankAngle * Mathf.Deg2Rad) * m_turnRate;

@@ -281,7 +281,7 @@ public class ProceduralPlacement : MonoBehaviour
         float minSeparation = options != null ? options.minSeparation : 200;
         float minAngle = options != null ? options.minAngleFromNorth : 0;
         float maxAngle = options != null ? options.maxAngleFromNorth : 360;
- 
+
         if (mainTarget)
         {
             referencePosition = m_playerPosition;
@@ -291,6 +291,7 @@ public class ProceduralPlacement : MonoBehaviour
             maxAngle = m_maxAngleFromNorth;
         }
 
+        referencePosition.y = 0;
         float distance = Random.Range(minDist, maxDist);
         float radialAngle = Random.Range(minAngle, maxAngle);
         var radialRotation = Quaternion.Euler(0, radialAngle, 0);
@@ -307,9 +308,13 @@ public class ProceduralPlacement : MonoBehaviour
         for (int i = 0; i < objectsToAvoid.Count; i++)
         {
             var otherPosition = objectsToAvoid[i];
+            otherPosition.y = 0;
             float separation = (position - otherPosition).magnitude;
 
-            success = success && separation >= minSeparation; 
+            success = success && separation >= minSeparation;
+
+            if (!success)
+                break;
         }
 
         return success;

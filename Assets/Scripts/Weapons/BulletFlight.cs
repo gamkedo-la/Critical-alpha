@@ -42,7 +42,7 @@ public class BulletFlight : MonoBehaviour
             return;
 
         if ((other.transform == m_originalParent)
-            || (other.transform.parent == m_originalParent))
+            || (other.transform.root == m_originalParent))
             return;
 
         //print("Bullet impact with " + other.name);

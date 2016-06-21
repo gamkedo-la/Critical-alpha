@@ -5,11 +5,13 @@ using System.Collections;
 public class RigidbodyManager : MonoBehaviour
 {
     [SerializeField] float m_distanceThreshold = 350f;
+    [SerializeField] float m_settlingTime = 2f;
 
     private Rigidbody m_rigidbody;
     private Transform m_camera;
 
-    private float m_distSq; 
+    private float m_distSq;
+    private bool m_settled;
 
     
     void Awake()
@@ -28,11 +30,26 @@ public class RigidbodyManager : MonoBehaviour
 
 	void Update()
     {
+        if (m_settled)
+            return;
+
         var pos2 = new Vector2(transform.position.x, transform.position.z);
         var cameraPos2 = new Vector2(m_camera.position.x, m_camera.position.z);
 
         float distSq = (pos2 - cameraPos2).sqrMagnitude;
 
-        m_rigidbody.isKinematic = distSq > m_distSq;
+        if (distSq < m_distSq)
+            StartCoroutine(Settle());
 	}
+
+
+    private IEnumerator Settle()
+    {
+        m_settled = true;
+        m_rigidbody.isKinematic = false;
+
+        yield return new WaitForSeconds(m_settlingTime);
+     
+        m_rigidbody.isKinematic = true;
+    } 
 }

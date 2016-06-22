@@ -42,7 +42,7 @@ public class DisplayRadarAuto : MonoBehaviour {
         {
             radarDots[key] = (GameObject)Instantiate(radarBlip, frontRadarPanelTransform.transform.position, frontRadarPanelTransform.transform.rotation);
             radarDots[key].transform.SetParent(frontRadarPanelTransform);
-            radarDots[key].transform.localScale = new Vector3(0.5f, 0.5f, 1);
+            radarDots[key].transform.localScale = new Vector3(1f, 1f, 1);
 
             //Debug.Log(enemies[key].name);
         }

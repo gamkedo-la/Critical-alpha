@@ -57,43 +57,25 @@ public class DisplayRadarBackup : MonoBehaviour
         if (angleToward != null)
         {
             target = angleToward.transform;
-            //targetRelative = transform.InverseTransformPoint(target.transform.position);
             targetRelative = transform.InverseTransformDirection(angleToward.transform.position - transform.position);
 
-            //Debug.Log("Target Relative: " + targetRelative);
-
-            //Vector3 eulerAnglesTo = Quaternion.FromToRotation(transform.forward,
-            //                                    targetRelative - transform.position).eulerAngles;
-
-
-            yawDiff = Mathf.Atan2(targetRelative.x, targetRelative.z);
-            pitchDiff = Mathf.Atan2(targetRelative.y, targetRelative.z);
-            blipFromCenterScale = Mathf.Max(Mathf.Abs(pitchDiff), Mathf.Abs(yawDiff)) / 90;
-            polarPtOnRadarX = blipFromCenterScale * radarRadius * Mathf.Cos(yawDiff);
-            polarPtOnRadarY = blipFromCenterScale * radarRadius * Mathf.Sin(pitchDiff);
-
-            //yawDiff = Mathf.DeltaAngle(0f, eulerAnglesTo.x);
-            //pitchDiff = Mathf.DeltaAngle(0f, eulerAnglesTo.y);
 
 
 
-            /*if(transform.forward.x >= 0){
-                pitchDiff = Mathf.DeltaAngle(0f, eulerAnglesTo.z);
-            }else{
-                pitchDiff = Mathf.DeltaAngle(eulerAnglesTo.z, 0f);
-            }*/
+            yawDiff = Mathf.Atan2(targetRelative.x, targetRelative.z) * Mathf.Rad2Deg;
+            pitchDiff = Mathf.Atan2(targetRelative.y, targetRelative.z) * Mathf.Rad2Deg;
 
-            Debug.Log(
-            
-            //eulerAnglesTo.y + ", " + eulerAnglesTo.z + ", " + eulerAnglesTo.x
-            //yawDiff +
-            //", " + pitchDiff
-            polarPtOnRadarX + ", " + polarPtOnRadarY
-            //transform.forward
-            );
 
-            //blip.anchoredPosition = new Vector2(yawDiff, pitchDiff);
-            //frontRadarPanelTransform.rotation = Quaternion.Euler(0, 0, -playerTransform.eulerAngles.z);
+            Debug.Log("yawDiff = " + yawDiff + "    pitchDiff = " + pitchDiff);
+
+            blipFromCenterScale = Mathf.Max(Mathf.Abs(pitchDiff), Mathf.Abs(yawDiff)) / 90.0f;
+
+            float angleAngToBlip = Mathf.Atan2(pitchDiff, yawDiff);
+
+            polarPtOnRadarX = blipFromCenterScale * radarRadius * Mathf.Cos(angleAngToBlip);
+            polarPtOnRadarY = blipFromCenterScale * radarRadius * Mathf.Sin(angleAngToBlip);
+
+
 
 
 
@@ -105,62 +87,42 @@ public class DisplayRadarBackup : MonoBehaviour
 
                 //CalculatePolarPoints();
 
-                //blip.SetParent(frontRadarPanelTransform);
-                //Sblip.anchoredPosition = new Vector2(polarPtOnRadarX, polarPtOnRadarY);
+                blip.SetParent(frontRadarPanelTransform);
+                blip.anchoredPosition = new Vector2(polarPtOnRadarX, polarPtOnRadarY);
             }
             else
             {
 
                 Debug.Log("Rear Camera");
 
-                //reset the yaw and diff for the rear camera using -transform.forward to get a value between -90 and 90
-                //eulerAnglesTo = Quaternion.FromToRotation(-transform.forward,
-                //                    angleToward.transform.position - transform.position).eulerAngles;
+                targetRelative = transform.InverseTransformDirection(transform.position - angleToward.transform.position);
 
-                //yawDiff = Mathf.DeltaAngle(0f, eulerAnglesTo.y);
-                //pitchDiff = Mathf.DeltaAngle(0f, eulerAnglesTo.z);
 
-                /*if (transform.forward.x >= 0)
-                {
-                    pitchDiff = Mathf.DeltaAngle(0f, eulerAnglesTo.z);
-                }
-                else
-                {
-                    pitchDiff = Mathf.DeltaAngle(eulerAnglesTo.z, 0f);
-                }*/
 
-                //rearRadarPanelTransform.rotation = Quaternion.Euler(0, 0, -playerTransform.eulerAngles.z);
 
-                //CalculatePolarPoints();
+                yawDiff = Mathf.Atan2(targetRelative.x, targetRelative.z) * Mathf.Rad2Deg;
+                pitchDiff = Mathf.Atan2(targetRelative.y, targetRelative.z) * Mathf.Rad2Deg;
 
-                //blip.SetParent(rearRadarPanelTransform);
-                //blip.anchoredPosition = new Vector2(-polarPtOnRadarX, polarPtOnRadarY);
+
+                Debug.Log("yawDiff = " + yawDiff + "    pitchDiff = " + pitchDiff);
+
+                blipFromCenterScale = Mathf.Max(Mathf.Abs(pitchDiff), Mathf.Abs(yawDiff)) / 90.0f;
+
+                angleAngToBlip = Mathf.Atan2(pitchDiff, yawDiff);
+
+                polarPtOnRadarX = blipFromCenterScale * radarRadius * Mathf.Cos(angleAngToBlip);
+                polarPtOnRadarY = blipFromCenterScale * radarRadius * Mathf.Sin(angleAngToBlip);
+
+
+
+
+                blip.SetParent(rearRadarPanelTransform);
+                blip.anchoredPosition = new Vector2(-polarPtOnRadarX, -polarPtOnRadarY);
             }
 
-
-            //Debug.Log(
-            //    polarPtOnRadarX + ", " + polarPtOnRadarY 
-            //);
 
         }
 
     }
 
-
-    private void CalculatePolarPoints()
-    {
-
-        //angOfPtOnRadar = Mathf.Atan2(pitchDiff, yawDiff);
-        blipFromCenterScale = Mathf.Max(Mathf.Abs(pitchDiff), Mathf.Abs(yawDiff)) / 90.0f;
-        //polarPtOnRadarX = blipFromCenterScale * radarRadius * Mathf.Cos(angOfPtOnRadar);
-        //polarPtOnRadarY = blipFromCenterScale * radarRadius * Mathf.Sin(angOfPtOnRadar);
-
-        polarPtOnRadarX = blipFromCenterScale * radarRadius * Mathf.Cos(angOfPtOnRadar);
-        polarPtOnRadarY = blipFromCenterScale * radarRadius * Mathf.Sin(angOfPtOnRadar);
-
-        //Debug.Log(
-        //    angOfPtOnRadar
-        //);
-
-    }
 }

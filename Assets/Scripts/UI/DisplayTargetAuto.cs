@@ -73,8 +73,9 @@ public class DisplayTargetAuto : MonoBehaviour {
 
     void cameraTrackTarget()
     {
-        targetCamera.transform.position = (playerTransform.position + direction) * 2;
-        targetCamera.transform.LookAt(enemies[targetIndex].transform.position);
-        
+        targetCamera.transform.position = enemies[targetIndex].transform.position - (direction.normalized * 15.0f);
+        targetCamera.transform.LookAt(enemies[targetIndex].transform.position, Camera.main.transform.up);
+
+
     }
 }

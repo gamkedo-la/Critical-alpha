@@ -14,60 +14,115 @@ public class DisplayTargetAuto : MonoBehaviour {
     private Text targetName;
     private Text targetDistance;
 
-    private int enemiesLeft;
     private int targetIndex;
     private Vector3 direction;
 
     private Camera targetCamera;
 
+    public Color enemyAirColor;
+    public Color enemySeaColor;
+    public Color enemyLandColor;
+    public Color noTargetColor;
+
+    private Color targetBorderColor;
+
+    private Image targetBorderTop;
+    private Image targetBorderBottom;
+
+    private GameObject targetSelectIcon;
+
     // Use this for initialization
     void Start () {
 
-        targetIndex = 5;
+        targetIndex = 0;
 
         radarTarget = GameObject.Find("Target Canvas");
 
-        enemies = GameObject.FindGameObjectsWithTag("Enemy");
+        enemies = FindObjectOfType<DisplayRadarBackup>().returnEnemiesArray();
+        radarDots = FindObjectOfType<DisplayRadarBackup>().GetComponent<DisplayRadarBackup>().returnRadarDotsArray();
 
         targetName = GameObject.Find("Target Name").GetComponent<Text>();
         targetDistance = GameObject.Find("Target Distance").GetComponent<Text>();
         playerTransform = FindObjectOfType<PlayerFlyingInput>().GetComponent<Transform>();
         targetCamera = GameObject.Find("Target Camera").GetComponent<Camera>();
-        enemiesLeft = enemies.Length;
+
+        targetBorderTop = GameObject.Find("Target Border Top").GetComponent<Image>();
+        targetBorderBottom = GameObject.Find("Target Border Bottom").GetComponent<Image>();
+
+        targetBorderTop.color = enemyAirColor;
+        targetBorderBottom.color = enemyAirColor;
+
+        targetSelectIcon = GameObject.Find("Target Select Icon");
+        //targetSelectIcon.transform.SetAsLastSibling();
+
     }
 
     // Update is called once per frame
     void Update () {
-        Debug.Log("Enemies Left = " + enemiesLeft);
-        Debug.Log("Target Index = " + targetIndex);
+
 
         if (enemies[targetIndex] != null)
         {
             targetName.text = enemies[targetIndex].name;
             direction = enemies[targetIndex].transform.position - playerTransform.position;
+            //targetSelectIcon.transform.SetParent(radarDots[targetIndex].transform);
+            targetSelectIcon.transform.position = radarDots[targetIndex].transform.position;
+
+            //Makes sure whatever colored dot you are over is rendered on top
+            radarDots[targetIndex].transform.SetAsLastSibling();
             targetDistance.text = "Dist: " + (direction.magnitude / 100).ToString("f1");
             cameraTrackTarget();
 
         }
         else
         {
-            //enemiesLeft--;
+            targetIndex++;
         }
 
-        if (Input.GetKeyDown(KeyCode.T) && enemies[targetIndex] != null)
+        if (Input.GetKeyDown(KeyCode.T))
         {
-            if (targetIndex < enemies.Length - 1)
-            {
-                //radarTarget.transform.SetParent(radarDots[targetIndex].transform);
-            }
-
             targetIndex++;
 
             if (targetIndex >= enemies.Length)
             {
                 targetIndex = 0;
             }
+
+            if (enemies[targetIndex].tag == "Enemy Air")
+            {
+                Debug.Log("Enemy Air");
+            }
+
+            updateBorderColor();
+
         }
+        else if (Input.GetKeyDown(KeyCode.Y))
+        {
+            targetIndex--;
+
+            if (targetIndex < 0)
+            {
+                targetIndex = enemies.Length - 1;
+            }
+        }
+        else if (Input.GetKeyDown(KeyCode.R))
+        {
+            float lowestMagnitude = direction.magnitude;
+
+            for (int key = 0; key < enemies.Length; key++)
+            {
+                direction = enemies[key].transform.position - playerTransform.position;
+                if(direction.magnitude < lowestMagnitude)
+                {
+                    lowestMagnitude = direction.magnitude;
+                    targetIndex = key;
+                }
+            }
+        }
+
+        updateBorderColor();
+
+        Debug.Log("Target Index: " + targetIndex);
 
     }
 
@@ -76,6 +131,16 @@ public class DisplayTargetAuto : MonoBehaviour {
         targetCamera.transform.position = enemies[targetIndex].transform.position - (direction.normalized * 15.0f);
         targetCamera.transform.LookAt(enemies[targetIndex].transform.position, Camera.main.transform.up);
 
-
     }
+
+    void updateBorderColor()
+    {
+        targetBorderColor = radarDots[targetIndex].GetComponent<Image>().color;
+        targetBorderTop.color = targetBorderColor;
+        targetBorderBottom.color = targetBorderColor;
+    }
+
+
+
+
 }

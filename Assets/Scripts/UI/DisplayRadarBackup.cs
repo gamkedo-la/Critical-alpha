@@ -5,9 +5,9 @@ using UnityEngine.UI;
 public class DisplayRadarBackup : MonoBehaviour
 {
 
-    public GameObject angleToward;
+
     public float radarRadius;
-    public RectTransform blip;
+    //public RectTransform blip;
     private Transform frontRadarPanelTransform;
     private Transform rearRadarPanelTransform;
     private Transform playerTransform;
@@ -15,37 +15,41 @@ public class DisplayRadarBackup : MonoBehaviour
     private float yawDiff = 0;
     private float pitchDiff = 0;
 
-    private float angOfPtOnRadar;
     private float blipFromCenterScale;
     private float polarPtOnRadarX;
     private float polarPtOnRadarY;
 
     private GameObject[] enemies;
+    private GameObject[] radarDots;
+
     public GameObject radarBlip;
-    public Transform target;
+
     private Vector3 targetRelative;
+    private float angleAngToBlip;
 
     // Use this for initialization
     void Start()
     {
 
-        blip = GameObject.Find("Radar Blip").GetComponent<RectTransform>();
+        //blip = GameObject.Find("Radar Blip").GetComponent<RectTransform>();
         frontRadarPanelTransform = GameObject.Find("Front Radar Panel").GetComponent<RectTransform>();
         rearRadarPanelTransform = GameObject.Find("Rear Radar Panel").GetComponent<RectTransform>();
 
         playerTransform = FindObjectOfType<PlayerFlyingInput>().transform;
 
-        /*enemies = GameObject.FindGameObjectsWithTag("Enemy");
+        //populate enemies array with all enemies tagged with Enemy
+        enemies = GameObject.FindGameObjectsWithTag("Enemy");
+        radarDots = new GameObject[enemies.Length];
 
-        foreach (GameObject enemy in enemies)
+        //Instantiate radar blips for each enemy;
+        for (int key = 0; key < enemies.Length; key++)
         {
-            GameObject radarDot = (GameObject)Instantiate(radarBlip, frontRadarPanelTransform.transform.position, frontRadarPanelTransform.transform.rotation);
-            radarDot.transform.SetParent(frontRadarPanelTransform);
+            radarDots[key] = (GameObject)Instantiate(radarBlip, frontRadarPanelTransform.transform.position, frontRadarPanelTransform.transform.rotation);
+            radarDots[key].transform.SetParent(frontRadarPanelTransform);
+            radarDots[key].transform.localScale = new Vector3(0.75f, 0.75f, 1);
 
-            Debug.Log(enemy.name);
-
-        }*/
-
+            //Debug.Log(enemies[key].name);
+        }
 
 
     }
@@ -53,76 +57,68 @@ public class DisplayRadarBackup : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
-        if (angleToward != null)
+        for (int key = 0; key < enemies.Length; key++)
         {
-            target = angleToward.transform;
-            targetRelative = transform.InverseTransformDirection(angleToward.transform.position - transform.position);
-
-
-
-
-            yawDiff = Mathf.Atan2(targetRelative.x, targetRelative.z) * Mathf.Rad2Deg;
-            pitchDiff = Mathf.Atan2(targetRelative.y, targetRelative.z) * Mathf.Rad2Deg;
-
-
-            Debug.Log("yawDiff = " + yawDiff + "    pitchDiff = " + pitchDiff);
-
-            blipFromCenterScale = Mathf.Max(Mathf.Abs(pitchDiff), Mathf.Abs(yawDiff)) / 90.0f;
-
-            float angleAngToBlip = Mathf.Atan2(pitchDiff, yawDiff);
-
-            polarPtOnRadarX = blipFromCenterScale * radarRadius * Mathf.Cos(angleAngToBlip);
-            polarPtOnRadarY = blipFromCenterScale * radarRadius * Mathf.Sin(angleAngToBlip);
-
-
-
-
-
-            if (yawDiff >= -90 && yawDiff <= 90 && pitchDiff >= -90 && pitchDiff <= 90)
+            //If enemy hasn't been destroyed, update radar dot position, otherwise destroy
+            if (enemies[key] != null)
             {
 
 
+                targetRelative = playerTransform.InverseTransformDirection(enemies[key].transform.position - playerTransform.position);
 
+                CalculatePolarPoints();
 
-                //CalculatePolarPoints();
+                if (yawDiff >= -90 && yawDiff <= 90 && pitchDiff >= -90 && pitchDiff <= 90)
+                {
 
-                blip.SetParent(frontRadarPanelTransform);
-                blip.anchoredPosition = new Vector2(polarPtOnRadarX, polarPtOnRadarY);
+                    radarDots[key].GetComponent<RectTransform>().SetParent(frontRadarPanelTransform);
+                    radarDots[key].GetComponent<RectTransform>().anchoredPosition = new Vector2(polarPtOnRadarX, polarPtOnRadarY);
+                }
+                else
+                {
+
+                    targetRelative = playerTransform.InverseTransformDirection(playerTransform.position - enemies[key].transform.position);
+
+                    CalculatePolarPoints();
+
+                    //Use negatives to mirror the view for the Rear Radar
+                    radarDots[key].GetComponent<RectTransform>().SetParent(rearRadarPanelTransform);
+                    radarDots[key].GetComponent<RectTransform>().anchoredPosition = new Vector2(-polarPtOnRadarX, -polarPtOnRadarY);
+                }
             }
             else
             {
-
-                Debug.Log("Rear Camera");
-
-                targetRelative = transform.InverseTransformDirection(transform.position - angleToward.transform.position);
-
-
-
-
-                yawDiff = Mathf.Atan2(targetRelative.x, targetRelative.z) * Mathf.Rad2Deg;
-                pitchDiff = Mathf.Atan2(targetRelative.y, targetRelative.z) * Mathf.Rad2Deg;
-
-
-                Debug.Log("yawDiff = " + yawDiff + "    pitchDiff = " + pitchDiff);
-
-                blipFromCenterScale = Mathf.Max(Mathf.Abs(pitchDiff), Mathf.Abs(yawDiff)) / 90.0f;
-
-                angleAngToBlip = Mathf.Atan2(pitchDiff, yawDiff);
-
-                polarPtOnRadarX = blipFromCenterScale * radarRadius * Mathf.Cos(angleAngToBlip);
-                polarPtOnRadarY = blipFromCenterScale * radarRadius * Mathf.Sin(angleAngToBlip);
-
-
-
-
-                blip.SetParent(rearRadarPanelTransform);
-                blip.anchoredPosition = new Vector2(-polarPtOnRadarX, -polarPtOnRadarY);
+                GameObject.Destroy(radarDots[key]);
             }
-
-
+           
         }
+    }
 
+    private void CalculatePolarPoints()
+    {
+
+        yawDiff = Mathf.Atan2(targetRelative.x, targetRelative.z) * Mathf.Rad2Deg;
+        pitchDiff = Mathf.Atan2(targetRelative.y, targetRelative.z) * Mathf.Rad2Deg;
+
+        //Debug.Log("yawDiff = " + yawDiff + "    pitchDiff = " + pitchDiff);
+
+        blipFromCenterScale = Mathf.Max(Mathf.Abs(pitchDiff), Mathf.Abs(yawDiff)) / 90.0f;
+
+        angleAngToBlip = Mathf.Atan2(pitchDiff, yawDiff);
+
+        polarPtOnRadarX = blipFromCenterScale * radarRadius * Mathf.Cos(angleAngToBlip);
+        polarPtOnRadarY = blipFromCenterScale * radarRadius * Mathf.Sin(angleAngToBlip);
+
+    }
+
+    public GameObject[] returnEnemiesArray()
+    {
+        return enemies;
+    }
+
+    public GameObject[] returnRadarDotsArray()
+    {
+        return radarDots;
     }
 
 }

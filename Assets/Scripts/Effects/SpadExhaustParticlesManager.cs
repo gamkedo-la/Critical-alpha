@@ -31,7 +31,7 @@ public class SpadExhaustParticlesManager : MonoBehaviour
         float minRate = m_maxRate * m_minEmissionRateFraction;
         float speed = m_flyingControlScript.ForwardSpeed;
 
-        float rateValue = minRate + (m_maxRate - minRate) * speed / m_maxSpeed;
+        float rateValue = Mathf.Lerp(minRate, m_maxRate, speed / m_maxSpeed);
 
         var rate = m_emission.rate;
         rate.constantMin = rateValue;

@@ -19,11 +19,6 @@ public class DisplayTargetAuto : MonoBehaviour {
 
     private Camera targetCamera;
 
-    public Color enemyAirColor;
-    public Color enemySeaColor;
-    public Color enemyLandColor;
-    public Color noTargetColor;
-
     private Color targetBorderColor;
 
     private Image targetBorderTop;
@@ -49,8 +44,7 @@ public class DisplayTargetAuto : MonoBehaviour {
         targetBorderTop = GameObject.Find("Target Border Top").GetComponent<Image>();
         targetBorderBottom = GameObject.Find("Target Border Bottom").GetComponent<Image>();
 
-        targetBorderTop.color = enemyAirColor;
-        targetBorderBottom.color = enemyAirColor;
+        updateBorderColor();
 
         targetSelectIcon = GameObject.Find("Target Select Icon");
         //targetSelectIcon.transform.SetAsLastSibling();
@@ -104,6 +98,8 @@ public class DisplayTargetAuto : MonoBehaviour {
             {
                 targetIndex = enemies.Length - 1;
             }
+
+            updateBorderColor();
         }
         else if (Input.GetKeyDown(KeyCode.R))
         {
@@ -118,9 +114,11 @@ public class DisplayTargetAuto : MonoBehaviour {
                     targetIndex = key;
                 }
             }
+
+            updateBorderColor();
         }
 
-        updateBorderColor();
+        
 
         Debug.Log("Target Index: " + targetIndex);
 
@@ -140,7 +138,10 @@ public class DisplayTargetAuto : MonoBehaviour {
         targetBorderBottom.color = targetBorderColor;
     }
 
-
+    public GameObject returnCurrentTarget()
+    {
+        return enemies[targetIndex];
+    }
 
 
 }

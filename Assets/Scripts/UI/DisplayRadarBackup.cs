@@ -27,6 +27,11 @@ public class DisplayRadarBackup : MonoBehaviour
     private Vector3 targetRelative;
     private float angleAngToBlip;
 
+    public Color enemyAirColor;
+    public Color enemySeaColor;
+    public Color enemyLandColor;
+    public Color noTargetColor;
+
     // Use this for initialization
     void Start()
     {
@@ -46,7 +51,7 @@ public class DisplayRadarBackup : MonoBehaviour
         {
             radarDots[key] = (GameObject)Instantiate(radarBlip, frontRadarPanelTransform.transform.position, frontRadarPanelTransform.transform.rotation);
             radarDots[key].transform.SetParent(frontRadarPanelTransform);
-            radarDots[key].transform.localScale = new Vector3(0.75f, 0.75f, 1);
+            radarDots[key].transform.localScale = new Vector3(0.75F, 0.75f, 1);
 
             //Debug.Log(enemies[key].name);
         }

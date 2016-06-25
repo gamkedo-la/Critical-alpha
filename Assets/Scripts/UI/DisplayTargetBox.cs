@@ -4,17 +4,25 @@ using System.Collections;
 
 public class DisplayTargetBox : MonoBehaviour
 {
+
+    //Leaves room around the edges of the target
 	public float scaleMultiplier = 1.0f;
-	private RectTransform rectTransform;
-	public GameObject target;
-    DisplayTargetAuto displayTargetAuto;
-    //Renderer renderChild;
+
+    public float minTargetBoxSize;
+
+    private Image targetBox;
+	private RectTransform targetBoxRectTransform;
+
+	private GameObject target;
+    DisplayTarget displayTarget;
+
 
     // Use this for initialization
     void Start ()
 	{
-		rectTransform = GetComponent<RectTransform>();
-        displayTargetAuto = FindObjectOfType<DisplayTargetAuto>().GetComponent<DisplayTargetAuto>();
+        targetBox = GameObject.Find("Target Box").GetComponent<Image>();
+        targetBoxRectTransform = targetBox.GetComponent<RectTransform>();
+        displayTarget = FindObjectOfType<DisplayTarget>().GetComponent<DisplayTarget>();
 
     }
 	
@@ -22,26 +30,47 @@ public class DisplayTargetBox : MonoBehaviour
 	void LateUpdate ()
 	{
 
-        target = displayTargetAuto.returnCurrentTarget();
+        target = displayTarget.returnCurrentTarget();
 
+        //Checks to make sure target exists and is in front of you
         if(target != null && Vector3.Dot(target.transform.position - Camera.main.transform.position, Camera.main.transform.forward) > 0)
         {
 
-            this.GetComponent<Image>().enabled = true;
-            transform.position = Camera.main.WorldToScreenPoint(target.transform.position);
+            targetBox.enabled = true;
+            targetBox.transform.position = Camera.main.WorldToScreenPoint(target.transform.position);
             Rect worldBounds = GUIRectWithObject(target);
 
-            rectTransform.sizeDelta = new Vector2(worldBounds.width, worldBounds.height) * scaleMultiplier;
+            //Sets minimum size of target box so that it does not dissapear on the horizon
+            if (worldBounds.width < minTargetBoxSize)
+                worldBounds.width = minTargetBoxSize;
+
+            if (worldBounds.height < minTargetBoxSize)
+                worldBounds.height = minTargetBoxSize;
+
+            //Takes whichever value is larger, height or width, and sets the other one to it so that the box is always square
+            if (worldBounds.height > worldBounds.width)
+                worldBounds.width = worldBounds.height;
+            else{
+                worldBounds.height = worldBounds.width;
+            }
+
+            targetBoxRectTransform.sizeDelta = new Vector2(worldBounds.width, worldBounds.height) * scaleMultiplier;
+
+            //Sets Z to zero to prevent the target box dissapear on the horizon
+            targetBoxRectTransform.anchoredPosition3D = new Vector3(targetBoxRectTransform.anchoredPosition.x, targetBoxRectTransform.anchoredPosition.y, 0);
         }
         else
         {
-            this.GetComponent<Image>().enabled = false;
+            //prevents target from showing up when it is offscreen
+            targetBox.enabled = false;
         }
     }
 
-	public static Rect GUIRectWithObject(GameObject trans)
+    //Takes 
+	public static Rect GUIRectWithObject(GameObject go)
 	{
-        var overallBounds = BoundsUtilities.OverallBounds(trans);
+        //Combines all renderer bounds together for multipart objects
+        var overallBounds = BoundsUtilities.OverallBounds(go);
 
         Vector3 cen = overallBounds.Value.center;
         Vector3 ext = overallBounds.Value.extents;

@@ -5,6 +5,7 @@ public class EnemyHealth : MonoBehaviour, IDamageable
 {
 	[SerializeField] int m_startingHealth = 100;
 	[SerializeField] ParticleSystem m_explosion;
+    [SerializeField] MeshFilter m_explosionMesh;
 
 	private int m_currentHealth;
 
@@ -27,6 +28,17 @@ public class EnemyHealth : MonoBehaviour, IDamageable
             {
                 var explosion = Instantiate(m_explosion);
                 explosion.transform.position = transform.position;
+
+                if (m_explosionMesh != null)
+                {
+                    print(m_explosionMesh.transform.lossyScale);
+                    explosion.transform.localScale = m_explosionMesh.transform.lossyScale;
+                    var shape = explosion.shape;
+                    shape.shapeType = ParticleSystemShapeType.Mesh;
+                    shape.mesh = m_explosionMesh.mesh;
+                    explosion.transform.rotation = m_explosionMesh.transform.rotation;
+                }
+
                 float lifetime = explosion.startLifetime;
                 Destroy(explosion.gameObject, lifetime);
             }

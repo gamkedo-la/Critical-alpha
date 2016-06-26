@@ -108,6 +108,8 @@ public class EnemyAircraftAiInput : MonoBehaviour
                     break;
             }
 
+            CheckAltitude();
+
             yield return m_waitTime;
         }
     }
@@ -210,9 +212,7 @@ public class EnemyAircraftAiInput : MonoBehaviour
     {
         BankAngleToAimFor(m_forwardAngleToPlayer);
         SetHorizontal();
-        //BankToAimAtPlayer();
         PitchToAimAtPlayer();
-        CheckAltitude();
     }
 
 
@@ -253,21 +253,49 @@ public class EnemyAircraftAiInput : MonoBehaviour
     {
         if (m_bankAngle < m_bankAngleMinMaxForPitching.x || m_bankAngle > m_bankAngleMinMaxForPitching.y)
             return;
+              
+        m_v = -m_pitchAngleToPlayer * 0.1f;
 
-        if (m_pitchAngle > m_pitchAngleMinMax.x || m_pitchAngle < m_pitchAngleMinMax.y)
-            m_v = -m_pitchAngleToPlayer * 0.1f;
+        if (m_v > 0 && m_pitchAngle > m_pitchAngleMinMax.y)
+            m_v = 0;
+        else if (m_v < 0 && m_pitchAngle < m_pitchAngleMinMax.x)
+            m_v = 0;
 
         m_v = Mathf.Clamp(m_v, -1f, 1f);
-        //FlattenPitch();
     }
 
 
     private void CheckAltitude()
     {
         if (transform.position.y < m_altitudeMinMax.x)
+        {
+            FlattenRoll();
             m_v = -1f;
+
+            if (m_pitchAngle < m_pitchAngleMinMax.x)
+                m_v = 0;
+        }
         else if (transform.position.y > m_altitudeMinMax.y)
+        {
+            FlattenRoll();
             m_v = 1f;
+
+            if (m_pitchAngle > m_pitchAngleMinMax.y)
+                m_v = 0;
+        }
+
+        //if (transform.position.y < m_altitudeMinMax.x || transform.position.y > m_altitudeMinMax.y)
+        //{
+        //    bool pitchWithinLimits = m_pitchAngle > m_pitchAngleMinMax.x || m_pitchAngle < m_pitchAngleMinMax.y;
+
+        //    FlattenRoll();
+
+        //    if (!pitchWithinLimits || m_bankAngle < m_bankAngleMinMaxForPitching.x || m_bankAngle > m_bankAngleMinMaxForPitching.y)
+        //    {
+        //        print("Banked too much to pitch");
+        //        m_v = 0;
+        //    }
+        //}
     }
 
 

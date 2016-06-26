@@ -31,9 +31,20 @@ public class DisplayRadar : MonoBehaviour
     public Color enemyLandColor;
     public Color noTargetColor;
 
+    private bool initialised;
+
+
     // Use this for initialization
     void Start()
     {
+        Initialise();
+    }
+
+
+    public void Initialise()
+    {
+        if (initialised)
+            return;
 
         //blip = GameObject.Find("Radar Blip").GetComponent<RectTransform>();
         frontRadarPanelTransform = GameObject.Find("Front Radar Panel").GetComponent<RectTransform>();
@@ -48,15 +59,14 @@ public class DisplayRadar : MonoBehaviour
         //Instantiate radar blips for each enemy;
         for (int key = 0; key < enemies.Length; key++)
         {
-            radarDots[key] = (GameObject)Instantiate(radarBlip, frontRadarPanelTransform.transform.position, frontRadarPanelTransform.transform.rotation);
+            radarDots[key] = (GameObject) Instantiate(radarBlip, frontRadarPanelTransform.transform.position, frontRadarPanelTransform.transform.rotation);
             radarDots[key].transform.SetParent(frontRadarPanelTransform);
             radarDots[key].transform.localScale = new Vector3(0.5F, 0.5f, 1);
 
             //Debug.Log(enemies[key].name);
         }
-
-
     }
+
 
     // Update is called once per frame
     void Update()

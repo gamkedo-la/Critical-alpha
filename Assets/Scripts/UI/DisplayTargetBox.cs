@@ -4,9 +4,9 @@ using System.Collections;
 
 public class DisplayTargetBox : MonoBehaviour
 {
-
+    public DisplayTarget displayTarget;
     //Leaves room around the edges of the target
-	public float scaleMultiplier = 1.0f;
+    public float scaleMultiplier = 1.0f;
 
     public float minTargetBoxSize;
 
@@ -14,16 +14,14 @@ public class DisplayTargetBox : MonoBehaviour
 	private RectTransform targetBoxRectTransform;
 
 	private GameObject target;
-    DisplayTarget displayTarget;
-
+   
 
     // Use this for initialization
     void Start ()
 	{
         targetBox = GameObject.Find("Target Box").GetComponent<Image>();
         targetBoxRectTransform = targetBox.GetComponent<RectTransform>();
-        displayTarget = FindObjectOfType<DisplayTarget>().GetComponent<DisplayTarget>();
-
+        displayTarget.Initialise();
     }
 	
 	// Update is called once per frame

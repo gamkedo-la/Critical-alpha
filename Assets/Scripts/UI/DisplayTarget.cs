@@ -26,15 +26,28 @@ public class DisplayTarget : MonoBehaviour {
 
     private GameObject targetSelectIcon;
 
+    private bool initialised;
+
+
     // Use this for initialization
     void Start () {
+        Initialise();   
+    }
+
+
+    public void Initialise() {
+        if (initialised)
+            return;
 
         targetIndex = 0;
 
         radarTarget = GameObject.Find("Target Canvas");
 
-        enemies = FindObjectOfType<DisplayRadar>().returnEnemiesArray();
-        radarDots = FindObjectOfType<DisplayRadar>().GetComponent<DisplayRadar>().returnRadarDotsArray();
+        var radar = FindObjectOfType<DisplayRadar>();
+        radar.Initialise();
+
+        enemies = radar.returnEnemiesArray();
+        radarDots = radar.returnRadarDotsArray();
 
         targetName = GameObject.Find("Target Name").GetComponent<Text>();
         targetDistance = GameObject.Find("Target Distance").GetComponent<Text>();
@@ -48,8 +61,8 @@ public class DisplayTarget : MonoBehaviour {
 
         targetSelectIcon = GameObject.Find("Target Select Icon");
         //targetSelectIcon.transform.SetAsLastSibling();
-
     }
+
 
     // Update is called once per frame
     void Update () {
@@ -120,7 +133,7 @@ public class DisplayTarget : MonoBehaviour {
 
         
 
-        Debug.Log("Target Index: " + targetIndex);
+        //Debug.Log("Target Index: " + targetIndex);
 
     }
 

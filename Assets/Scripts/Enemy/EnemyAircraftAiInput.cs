@@ -117,9 +117,6 @@ public class EnemyAircraftAiInput : MonoBehaviour
 
     void Update()
     {
-        if (m_player == null)
-            return;
-
         m_flyingControlScript.PitchAndRollInput(m_v * m_controlsSensitivity, m_h * m_controlsSensitivity);
         m_flyingControlScript.ThrustInput(m_a * m_controlsSensitivity);
     }
@@ -191,6 +188,12 @@ public class EnemyAircraftAiInput : MonoBehaviour
 
     private void CheckPlayerRange()
     {
+        if (m_player == null)
+        {
+            m_state = State.Patrol;
+            return;
+        }
+
         float range = m_playerDirection.magnitude;
 
         m_playerInRange = range <= m_playerInRangeAttackThreshold;

@@ -44,9 +44,6 @@ public class EnemyGunTurretAiInput : MonoBehaviour
 
     void Update()
     {
-        if (m_player == null)
-            return;
-
         m_gunTurretControlScript.Move(m_v, m_h);
     }
 

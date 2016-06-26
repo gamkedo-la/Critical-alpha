@@ -17,7 +17,7 @@ public class GunTurretControl : MonoBehaviour
 
     void Awake()
     {
-        m_verticalPivotPoint.rotation = Quaternion.Euler(-m_startPitch, 0f, 0f);
+        m_verticalPivotPoint.localRotation = Quaternion.Euler(-m_startPitch, 0f, 0f);
     }
    
 

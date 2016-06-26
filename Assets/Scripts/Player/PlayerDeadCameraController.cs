@@ -24,12 +24,18 @@ public class PlayerDeadCameraController : MonoBehaviour
         transform.rotation = Quaternion.identity;
 
         if (colliderTag == Tags.Water && m_waterSplashParticles != null)
-            Instantiate(m_waterSplashParticles, transform.position, Quaternion.identity);
+        {
+            var waterSplash = (ParticleSystem) Instantiate(m_waterSplashParticles, transform.position, m_waterSplashParticles.transform.rotation);
+            Destroy(waterSplash.gameObject, waterSplash.duration);
+        }
 
         if (m_explosionParticles != null)
-            Instantiate(m_explosionParticles, transform.position, Quaternion.identity);
+        {
+            var explosion = (ParticleSystem) Instantiate(m_explosionParticles, transform.position, Quaternion.identity);
+            Destroy(explosion.gameObject, explosion.duration);
+        }
 
-        if (m_fireParticles != null)
+        if (m_fireParticles != null && colliderTag != Tags.Water)
             Instantiate(m_fireParticles, transform.position, Quaternion.identity);
 
         var cameraPosition = transform.GetChild(0);

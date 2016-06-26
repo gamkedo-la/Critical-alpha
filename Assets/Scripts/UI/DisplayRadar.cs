@@ -6,7 +6,7 @@ public class DisplayRadar : MonoBehaviour
 {
 
 
-    public float radarRadius;
+    public float radarRadius = 250f;
     private Transform frontRadarPanelTransform;
     private Transform rearRadarPanelTransform;
     private Transform playerTransform;
@@ -54,6 +54,7 @@ public class DisplayRadar : MonoBehaviour
 
         //populate enemies array with all enemies tagged with Enemy
         enemies = GameObject.FindGameObjectsWithTag("Enemy");
+        //print(enemies.Length + " enemies found");
         radarDots = new GameObject[enemies.Length];
 
         //Instantiate radar blips for each enemy;
@@ -65,12 +66,17 @@ public class DisplayRadar : MonoBehaviour
 
             //Debug.Log(enemies[key].name);
         }
+
+        initialised = true;
     }
 
 
     // Update is called once per frame
     void Update()
     {
+        if (playerTransform == null)
+            return;
+
         for (int key = 0; key < enemies.Length; key++)
         {
             //If enemy hasn't been destroyed, update radar dot position, otherwise destroy

@@ -61,12 +61,16 @@ public class DisplayTarget : MonoBehaviour {
 
         targetSelectIcon = GameObject.Find("Target Select Icon");
         //targetSelectIcon.transform.SetAsLastSibling();
+
+        initialised = true;
     }
 
 
     // Update is called once per frame
     void Update () {
 
+        if (playerTransform == null)
+            return;
 
         if (enemies[targetIndex] != null)
         {

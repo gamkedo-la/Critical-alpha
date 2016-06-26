@@ -30,6 +30,9 @@ public class DisplayAltitude : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
+        if (playerTransform == null)
+            return;
+
         //Altitude Text
         altitude = Mathf.Ceil(playerTransform.position.y * altitudeMultiplier);
         altitudeText.text = altitude.ToString();

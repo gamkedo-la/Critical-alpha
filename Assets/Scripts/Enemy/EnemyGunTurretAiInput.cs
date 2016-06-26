@@ -78,6 +78,12 @@ public class EnemyGunTurretAiInput : MonoBehaviour
 
     private void CheckOrientation()
     {
+        if (m_player == null)
+        {
+            m_state = State.Rest;
+            return;
+        }
+
         m_playerDirection = m_player.position - m_gunBarrelTransform.position;
 
         var playerDirectionNormalized = m_playerDirection.normalized;

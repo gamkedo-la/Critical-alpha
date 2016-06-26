@@ -137,6 +137,12 @@ public class EnemyAircraftAiInput : MonoBehaviour
 
     private void CheckOrientation()
     {
+        if (m_player == null)
+        {
+            m_state = State.Patrol;
+            return;
+        }
+
         m_playerDirection = m_player.position - transform.position;
         var playerDirectionOnGround = new Vector2(m_playerDirection.x, m_playerDirection.z);
         var playerDirectionVertical = new Vector2(playerDirectionOnGround.magnitude, m_playerDirection.y);

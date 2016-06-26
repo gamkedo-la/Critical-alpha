@@ -21,6 +21,8 @@ public class PitchIndicator : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
+        if (playerTransform == null)
+            return;
 
         //Rotates Pitch Indicator to stay level with the horizon by inversing the rotation of the player 
         offsetZ = playerTransform.eulerAngles.z;

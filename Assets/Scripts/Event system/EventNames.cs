@@ -44,6 +44,7 @@ public enum StringEventName
     None = 0,
 
     ChangeGraphicsQuality = 1,
+    PlayerDead = 2,
 }
 
 

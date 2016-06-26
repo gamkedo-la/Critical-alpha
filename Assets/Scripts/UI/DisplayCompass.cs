@@ -25,6 +25,9 @@ public class DisplayCompass : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
+        if (playerTransform == null)
+            return;
+
         compassText.text = Mathf.Floor(playerTransform.eulerAngles.y).ToString(); 
 
         offsetX = playerTransform.eulerAngles.y;
@@ -34,8 +37,5 @@ public class DisplayCompass : MonoBehaviour {
 
         //Keep all the values the same except for X
         compassRawImage.uvRect = new Rect(offsetX, compassRawImage.uvRect.y, compassRawImage.uvRect.width, compassRawImage.uvRect.height);
-
-
-
     }
 }

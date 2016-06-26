@@ -49,7 +49,7 @@ public class BulletFlight : MonoBehaviour
 
         ParticleSystem particles;
 
-        if (other.CompareTag("Water"))
+        if (other.CompareTag(Tags.Water))
             particles = m_splash;
         else
             particles = m_explosion;

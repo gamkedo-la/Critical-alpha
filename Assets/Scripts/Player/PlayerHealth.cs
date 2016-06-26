@@ -4,6 +4,7 @@ using System.Collections;
 public class PlayerHealth : MonoBehaviour, IDamageable
 {
     [SerializeField] int m_startingHealth = 300;
+    [SerializeField] int m_damageCausedToOthers = 100;
 
     private int m_currentHealth;
     private bool m_dead;
@@ -36,7 +37,10 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         if (m_dead || other.CompareTag(Tags.Bullet))
             return;
 
-        //print(other.name);
+        var otherDamageScript = other.gameObject.GetComponentInParent<IDamageable>();
+
+        if (otherDamageScript != null)
+            otherDamageScript.Damage(m_damageCausedToOthers);
 
         //if (other.CompareTag(Tags.Ground) || other.CompareTag(Tags.Water))
         PlayerDead(other.tag);

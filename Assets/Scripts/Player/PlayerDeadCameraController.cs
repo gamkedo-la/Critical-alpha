@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class PlayerDeadCameraController : MonoBehaviour
 {
@@ -14,7 +15,12 @@ public class PlayerDeadCameraController : MonoBehaviour
     void Update()
     {
         if (m_dead)
+        {
             transform.Rotate(Vector3.up, m_deathCameraPanSpeed * Time.deltaTime, Space.World);
+
+            if (Input.GetKeyDown(KeyCode.R))
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
     }
 
 

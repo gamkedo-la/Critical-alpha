@@ -12,7 +12,7 @@ public class EnemyAircraftAiInput : MonoBehaviour
     [SerializeField] Vector2 m_evadeChangeTimeMinMax = new Vector2(0.5f, 4f);
     [SerializeField] Vector2 m_pitchAngleMinMax = new Vector2(-45f, 45f); 
     [SerializeField] Vector2 m_bankAngleMinMaxForPitching = new Vector2(-45f, 45f);
-    [SerializeField] Vector2 m_altitudeMinMax = new Vector2(100f, 2000f);
+    [SerializeField] Vector2 m_altitudeMinMax = new Vector2(100f, 1000f);
 
     private WaitForSeconds m_waitTime;
 

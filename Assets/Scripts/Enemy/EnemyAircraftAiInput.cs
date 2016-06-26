@@ -9,7 +9,10 @@ public class EnemyAircraftAiInput : MonoBehaviour
     [SerializeField] float m_evadeMaxDotThreshold = -0.5f;
     [SerializeField] float m_controlsSensitivity = 0.5f;
     [SerializeField] float m_decisionRate = 0.2f;
-    [SerializeField] Vector2 m_evadeChangeTimeMinMax = new Vector2(0.5f, 4f); 
+    [SerializeField] Vector2 m_evadeChangeTimeMinMax = new Vector2(0.5f, 4f);
+    [SerializeField] Vector2 m_pitchAngleMinMax = new Vector2(-45f, 45f); 
+    [SerializeField] Vector2 m_bankAngleMinMaxForPitching = new Vector2(-45f, 45f);
+    [SerializeField] Vector2 m_altitudeMinMax = new Vector2(100f, 2000f);
 
     private WaitForSeconds m_waitTime;
 
@@ -33,6 +36,8 @@ public class EnemyAircraftAiInput : MonoBehaviour
     private float m_dotThisUpToUp;
     private float m_dotThisRightToUp;
     private float m_forwardAngleToPlayer;
+    private float m_pitchAngleToPlayer;
+    private float m_pitchAngle;
     private float m_bankAngle;
     private float m_bankMagnitude;
     private float m_bankAngleToAimFor;
@@ -131,6 +136,8 @@ public class EnemyAircraftAiInput : MonoBehaviour
     private void CheckOrientation()
     {
         m_playerDirection = m_player.position - transform.position;
+        var playerDirectionOnGround = new Vector2(m_playerDirection.x, m_playerDirection.z);
+        var playerDirectionVertical = new Vector2(playerDirectionOnGround.magnitude, m_playerDirection.y);
 
         var playerDirectionNormalized = m_playerDirection.normalized;
 
@@ -141,8 +148,7 @@ public class EnemyAircraftAiInput : MonoBehaviour
         m_dotThisRightToUp = Vector3.Dot(transform.right, Vector3.up);
         m_dotUpToPlayer = Vector3.Dot(Vector3.up, playerDirectionNormalized);
 
-        var forwardOnGround = new Vector2(transform.forward.x, transform.forward.z).normalized;
-        var playerDirectionOnGround = new Vector2(m_playerDirection.x, m_playerDirection.z).normalized;
+        var forwardOnGround = new Vector2(transform.forward.x, transform.forward.z);
 
         float angleForwards = Mathf.Atan2(forwardOnGround.x, forwardOnGround.y);
         float anglePlayer = Mathf.Atan2(playerDirectionOnGround.x, playerDirectionOnGround.y);
@@ -155,6 +161,12 @@ public class EnemyAircraftAiInput : MonoBehaviour
             m_bankAngle -= 360f;
 
         m_bankAngle = -m_bankAngle;
+
+        float playerVerticalAngle = Mathf.Atan2(playerDirectionVertical.y, playerDirectionVertical.x);
+        m_pitchAngle = Mathf.Atan2(transform.forward.y, forwardOnGround.magnitude);
+
+        m_pitchAngleToPlayer = Mathf.Rad2Deg * (playerVerticalAngle - m_pitchAngle);
+        m_pitchAngle *= -Mathf.Rad2Deg;
     }
 
 
@@ -199,7 +211,8 @@ public class EnemyAircraftAiInput : MonoBehaviour
         BankAngleToAimFor(m_forwardAngleToPlayer);
         SetHorizontal();
         //BankToAimAtPlayer();
-        //PitchToAimAtPlayer();
+        PitchToAimAtPlayer();
+        CheckAltitude();
     }
 
 
@@ -220,14 +233,14 @@ public class EnemyAircraftAiInput : MonoBehaviour
     }
 
 
-    private void BankToAimAtPlayer()
-    {
-        float dotUpAim = Mathf.Abs(m_dotThisUpToPlayer);
+    //private void BankToAimAtPlayer()
+    //{
+    //    float dotUpAim = Mathf.Abs(m_dotThisUpToPlayer);
 
-        m_turnRight = m_dotThisForwardToPlayer > 0 ? true : false;
+    //    m_turnRight = m_dotThisForwardToPlayer > 0 ? true : false;
  
-        BankTowardsPlayer(); 
-    }
+    //    BankTowardsPlayer(); 
+    //}
 
 
     private void BankTowardsPlayer()
@@ -238,8 +251,23 @@ public class EnemyAircraftAiInput : MonoBehaviour
 
     private void PitchToAimAtPlayer()
     {
-        // TODO: check dot up to player
-        FlattenPitch();
+        if (m_bankAngle < m_bankAngleMinMaxForPitching.x || m_bankAngle > m_bankAngleMinMaxForPitching.y)
+            return;
+
+        if (m_pitchAngle > m_pitchAngleMinMax.x || m_pitchAngle < m_pitchAngleMinMax.y)
+            m_v = -m_pitchAngleToPlayer * 0.1f;
+
+        m_v = Mathf.Clamp(m_v, -1f, 1f);
+        //FlattenPitch();
+    }
+
+
+    private void CheckAltitude()
+    {
+        if (transform.position.y < m_altitudeMinMax.x)
+            m_v = -1f;
+        else if (transform.position.y > m_altitudeMinMax.y)
+            m_v = 1f;
     }
 
 

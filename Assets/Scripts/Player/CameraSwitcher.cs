@@ -5,6 +5,7 @@ using UnityEngine.UI;
 public class CameraSwitcher : MonoBehaviour
 {
     [SerializeField] Transform[] m_cameraPositions;
+    [SerializeField] int[] m_indicesToShowHud = new int[] { 0, 1 };
     [SerializeField] float m_cameraSwitchCooldown = 0.3f;
 
     private Transform m_cameraTransform;
@@ -62,10 +63,15 @@ public class CameraSwitcher : MonoBehaviour
             m_cameraTransform.rotation = newTransform.rotation;
             m_cameraTransform.parent = newTransform;
 
-            if (m_index == 0)
-                EventManager.TriggerEvent(BooleanEventName.ActivateHud, true);
-            else
-                EventManager.TriggerEvent(BooleanEventName.ActivateHud, false);
+            EventManager.TriggerEvent(BooleanEventName.ActivateHud, false);
+
+            for (int i = 0; i < m_indicesToShowHud.Length; i++)
+            {
+                int indexToShow = m_indicesToShowHud[i];
+
+                if (m_index == indexToShow)
+                    EventManager.TriggerEvent(BooleanEventName.ActivateHud, true);             
+            }
         }   
     }
 }

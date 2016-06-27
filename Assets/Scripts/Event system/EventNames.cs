@@ -22,6 +22,8 @@ public enum BooleanEventName
     None = 0,
 
     ActivateHud = 1,
+    ActivateRadar = 2,
+    ActivateTargetSystem = 3,
 }
 
 

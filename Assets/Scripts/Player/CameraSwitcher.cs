@@ -6,6 +6,8 @@ public class CameraSwitcher : MonoBehaviour
 {
     [SerializeField] Transform[] m_cameraPositions;
     [SerializeField] int[] m_indicesToShowHud = new int[] { 0, 1 };
+    [SerializeField] int[] m_indicesToShowRadar = new int[] { 0, 1 };
+    [SerializeField] int[] m_indicesToShowTargetSystem = new int[] { 0, 1 };
     [SerializeField] float m_cameraSwitchCooldown = 0.3f;
 
     private Transform m_cameraTransform;
@@ -64,6 +66,8 @@ public class CameraSwitcher : MonoBehaviour
             m_cameraTransform.parent = newTransform;
 
             EventManager.TriggerEvent(BooleanEventName.ActivateHud, false);
+            EventManager.TriggerEvent(BooleanEventName.ActivateRadar, false);
+            EventManager.TriggerEvent(BooleanEventName.ActivateTargetSystem, false);
 
             for (int i = 0; i < m_indicesToShowHud.Length; i++)
             {
@@ -71,6 +75,22 @@ public class CameraSwitcher : MonoBehaviour
 
                 if (m_index == indexToShow)
                     EventManager.TriggerEvent(BooleanEventName.ActivateHud, true);             
+            }
+
+            for (int i = 0; i < m_indicesToShowRadar.Length; i++)
+            {
+                int indexToShow = m_indicesToShowRadar[i];
+
+                if (m_index == indexToShow)
+                    EventManager.TriggerEvent(BooleanEventName.ActivateRadar, true);
+            }
+
+            for (int i = 0; i < m_indicesToShowTargetSystem.Length; i++)
+            {
+                int indexToShow = m_indicesToShowTargetSystem[i];
+
+                if (m_index == indexToShow)
+                    EventManager.TriggerEvent(BooleanEventName.ActivateTargetSystem, true);
             }
         }   
     }

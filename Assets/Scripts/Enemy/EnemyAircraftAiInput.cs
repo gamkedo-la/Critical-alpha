@@ -20,8 +20,8 @@ public class EnemyAircraftAiInput : MonoBehaviour
     private EnemyHealth m_health;
     private Transform m_player;
 
-    private Vector3 m_spawnPoint;
-    private Quaternion m_spawnRotation;
+    //private Vector3 m_spawnPoint;
+    //private Quaternion m_spawnRotation;
     private float m_spawnBankAngle;
     private float m_patrolSpeed;
     private int m_fleeHealth;
@@ -30,9 +30,9 @@ public class EnemyAircraftAiInput : MonoBehaviour
     private Vector3 m_playerDirection;
     private bool m_playerInRange;
     private float m_dotThisForwardToPlayer;
-    private float m_dotThisUpToPlayer;
-    private float m_dotThisRightToPlayer;
-    private float m_dotUpToPlayer; 
+    //private float m_dotThisUpToPlayer;
+    //private float m_dotThisRightToPlayer;
+    //private float m_dotUpToPlayer; 
     private float m_dotThisUpToUp;
     private float m_dotThisRightToUp;
     private float m_forwardAngleToPlayer;
@@ -67,8 +67,8 @@ public class EnemyAircraftAiInput : MonoBehaviour
 
     void Start()
     {
-        m_spawnPoint = transform.position;
-        m_spawnRotation = transform.rotation;
+        //m_spawnPoint = transform.position;
+        //m_spawnRotation = transform.rotation;
         m_spawnBankAngle = transform.rotation.eulerAngles.z;
         m_fleeHealth = Mathf.RoundToInt(m_health.CurrentHealth * m_fleeHealthProportion);
         m_patrolSpeed = m_flyingControlScript.ForwardSpeed;
@@ -134,6 +134,18 @@ public class EnemyAircraftAiInput : MonoBehaviour
 
     private void CheckOrientation()
     {
+        m_bankAngle = StandardiseAngle(transform.rotation.eulerAngles.z);
+
+        if (m_bankAngle > 180f)
+            m_bankAngle -= 360f;
+
+        m_bankAngle = -m_bankAngle;
+
+        var forwardOnGround = new Vector2(transform.forward.x, transform.forward.z);
+        m_pitchAngle = Mathf.Atan2(transform.forward.y, forwardOnGround.magnitude);
+
+        m_pitchAngle *= -Mathf.Rad2Deg;
+
         if (m_player == null)
         {
             m_state = State.Patrol;
@@ -147,31 +159,20 @@ public class EnemyAircraftAiInput : MonoBehaviour
         var playerDirectionNormalized = m_playerDirection.normalized;
 
         m_dotThisForwardToPlayer = Vector3.Dot(transform.forward, playerDirectionNormalized);
-        m_dotThisUpToPlayer = Vector3.Dot(transform.up, playerDirectionNormalized);
-        m_dotThisRightToPlayer = Vector3.Dot(transform.right, playerDirectionNormalized);
+        //m_dotThisUpToPlayer = Vector3.Dot(transform.up, playerDirectionNormalized);
+        //m_dotThisRightToPlayer = Vector3.Dot(transform.right, playerDirectionNormalized);
         m_dotThisUpToUp = Vector3.Dot(transform.up, Vector3.up);
         m_dotThisRightToUp = Vector3.Dot(transform.right, Vector3.up);
-        m_dotUpToPlayer = Vector3.Dot(Vector3.up, playerDirectionNormalized);
-
-        var forwardOnGround = new Vector2(transform.forward.x, transform.forward.z);
+        //m_dotUpToPlayer = Vector3.Dot(Vector3.up, playerDirectionNormalized);
 
         float angleForwards = Mathf.Atan2(forwardOnGround.x, forwardOnGround.y);
         float anglePlayer = Mathf.Atan2(playerDirectionOnGround.x, playerDirectionOnGround.y);
 
         m_forwardAngleToPlayer = StandardiseAngle(Mathf.Rad2Deg * (anglePlayer - angleForwards));
 
-        m_bankAngle = StandardiseAngle(transform.rotation.eulerAngles.z);
-
-        if (m_bankAngle > 180f)
-            m_bankAngle -= 360f;
-
-        m_bankAngle = -m_bankAngle;
-
         float playerVerticalAngle = Mathf.Atan2(playerDirectionVertical.y, playerDirectionVertical.x);
-        m_pitchAngle = Mathf.Atan2(transform.forward.y, forwardOnGround.magnitude);
-
-        m_pitchAngleToPlayer = Mathf.Rad2Deg * (playerVerticalAngle - m_pitchAngle);
-        m_pitchAngle *= -Mathf.Rad2Deg;
+        
+        m_pitchAngleToPlayer = (Mathf.Rad2Deg * playerVerticalAngle) - m_pitchAngle;    
     }
 
 
@@ -191,6 +192,7 @@ public class EnemyAircraftAiInput : MonoBehaviour
         if (m_player == null)
         {
             m_state = State.Patrol;
+            m_playerInRange = false;
             return;
         }
 
@@ -209,10 +211,9 @@ public class EnemyAircraftAiInput : MonoBehaviour
     {
         m_a = Mathf.Clamp(m_patrolSpeed - m_flyingControlScript.ForwardSpeed, -1f, 1f);
 
-        float bankAngle = transform.rotation.eulerAngles.z;
+        m_bankAngleToAimFor = m_spawnBankAngle;
 
-        m_h = Mathf.Clamp((bankAngle - m_spawnBankAngle) * 0.05f, -1f, 1f);
-
+        SetHorizontal();
         FlattenPitch();
     }
 
@@ -240,16 +241,6 @@ public class EnemyAircraftAiInput : MonoBehaviour
         m_h = bankAngleToChange / m_flyingControlScript.turnRate;
         m_h = Mathf.Clamp(m_h, -1f, 1f);
     }
-
-
-    //private void BankToAimAtPlayer()
-    //{
-    //    float dotUpAim = Mathf.Abs(m_dotThisUpToPlayer);
-
-    //    m_turnRight = m_dotThisForwardToPlayer > 0 ? true : false;
- 
-    //    BankTowardsPlayer(); 
-    //}
 
 
     private void BankTowardsPlayer()
@@ -292,19 +283,6 @@ public class EnemyAircraftAiInput : MonoBehaviour
             if (m_pitchAngle > m_pitchAngleMinMax.y)
                 m_v = 0;
         }
-
-        //if (transform.position.y < m_altitudeMinMax.x || transform.position.y > m_altitudeMinMax.y)
-        //{
-        //    bool pitchWithinLimits = m_pitchAngle > m_pitchAngleMinMax.x || m_pitchAngle < m_pitchAngleMinMax.y;
-
-        //    FlattenRoll();
-
-        //    if (!pitchWithinLimits || m_bankAngle < m_bankAngleMinMaxForPitching.x || m_bankAngle > m_bankAngleMinMaxForPitching.y)
-        //    {
-        //        print("Banked too much to pitch");
-        //        m_v = 0;
-        //    }
-        //}
     }
 
 
@@ -382,8 +360,6 @@ public class EnemyAircraftAiInput : MonoBehaviour
     private void FlattenPitch()
     {
         var forward = transform.forward;
-        var forwardOnGround = new Vector3(forward.x, 0f, forward.z);
-        float dotForward = Vector3.Dot(forward, forwardOnGround.normalized);
         float dotUp = Vector3.Dot(Vector3.up, forward);
         m_v = dotUp;
     }

@@ -83,8 +83,6 @@ public class EnemyGunTurretAiInput : MonoBehaviour
 
         m_playerDirection = m_player.position - m_gunBarrelTransform.position;
 
-        var playerDirectionNormalized = m_playerDirection.normalized;
-
         if (m_playerDirection.magnitude <= m_playerInRangeAttackThreshold)
             m_state = State.Attack;
         else

@@ -32,13 +32,13 @@ public class PlayerDeadCameraController : MonoBehaviour
         if (colliderTag == Tags.Water && m_waterSplashParticles != null)
         {
             var waterSplash = (ParticleSystem) Instantiate(m_waterSplashParticles, transform.position, m_waterSplashParticles.transform.rotation);
-            Destroy(waterSplash.gameObject, waterSplash.duration);
+            Destroy(waterSplash.gameObject, waterSplash.startLifetime);
         }
 
         if (m_explosionParticles != null)
         {
             var explosion = (ParticleSystem) Instantiate(m_explosionParticles, transform.position, Quaternion.identity);
-            Destroy(explosion.gameObject, explosion.duration);
+            Destroy(explosion.gameObject, explosion.startLifetime);
         }
 
         if (m_fireParticles != null && colliderTag != Tags.Water)

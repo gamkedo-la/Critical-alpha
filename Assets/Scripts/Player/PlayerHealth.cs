@@ -5,6 +5,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 {
     [SerializeField] int m_startingHealth = 300;
     [SerializeField] int m_damageCausedToOthers = 100;
+    [SerializeField] Transform[] m_objectsToDetatchOnDeath;
 
     private int m_currentHealth;
     private bool m_dead;
@@ -52,6 +53,10 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         //print(colliderTag);
         m_dead = true;
         EventManager.TriggerEvent(StringEventName.PlayerDead, colliderTag);
+
+        for (int i = 0; i < m_objectsToDetatchOnDeath.Length; i++)
+            m_objectsToDetatchOnDeath[i].parent = null;
+
         Destroy(gameObject);
     }
 }

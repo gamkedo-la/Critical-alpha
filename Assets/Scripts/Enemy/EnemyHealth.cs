@@ -9,6 +9,7 @@ public class EnemyHealth : MonoBehaviour, IDamageable
     [SerializeField] int m_damageCausedToOthers = 100;
     [SerializeField] bool m_allowDestroyedByGround;
     [SerializeField] bool m_allowDestroyedByWater;
+    [SerializeField] Transform[] m_objectsToDetatchOnDeath;
 
 	private int m_currentHealth;
 
@@ -70,6 +71,9 @@ public class EnemyHealth : MonoBehaviour, IDamageable
             float lifetime = explosion.startLifetime;
             Destroy(explosion.gameObject, lifetime);
         }
+
+        for (int i = 0; i < m_objectsToDetatchOnDeath.Length; i++)
+            m_objectsToDetatchOnDeath[i].parent = null;
 
         Destroy(gameObject);
     }

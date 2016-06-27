@@ -11,6 +11,7 @@ public class SpadExhaustParticlesManager : MonoBehaviour
     private FlyingControl m_flyingControlScript;
     private float m_maxRate;
     private float m_maxSpeed;
+    private bool m_dead;
 
 
 	void Awake()
@@ -25,15 +26,27 @@ public class SpadExhaustParticlesManager : MonoBehaviour
 
     void Update()
     {
-        if (m_flyingControlScript == null)
+        if (m_dead)
             return;
+
+        var rate = m_emission.rate;
+
+        if (m_flyingControlScript == null)
+        {
+            m_dead = true;
+            transform.parent = null;
+            rate.constantMin = 0;
+            rate.constantMax = 0;
+            m_emission.rate = rate;
+            Destroy(gameObject, m_particleSystem.startLifetime);
+            return;
+        }
 
         float minRate = m_maxRate * m_minEmissionRateFraction;
         float speed = m_flyingControlScript.ForwardSpeed;
 
         float rateValue = Mathf.Lerp(minRate, m_maxRate, speed / m_maxSpeed);
-
-        var rate = m_emission.rate;
+   
         rate.constantMin = rateValue;
         rate.constantMax = rateValue;
 

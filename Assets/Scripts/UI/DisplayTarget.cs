@@ -1,11 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using System.Collections.Generic;
+
+
 public class DisplayTarget : MonoBehaviour {
 
     //Arrays
-    private GameObject[] enemies;
-    private GameObject[] radarDots;
+    private List<GameObject> enemies;
+    private List<GameObject> radarDots;
 
     private GameObject radarTarget;
 
@@ -46,8 +49,8 @@ public class DisplayTarget : MonoBehaviour {
         var radar = FindObjectOfType<DisplayRadar>();
         radar.Initialise();
 
-        enemies = radar.returnEnemiesArray();
-        radarDots = radar.returnRadarDotsArray();
+        enemies = radar.returnEnemyList();
+        radarDots = radar.returnRadarDotList();
 
         targetName = GameObject.Find("Target Name").GetComponent<Text>();
         targetDistance = GameObject.Find("Target Distance").GetComponent<Text>();
@@ -94,7 +97,7 @@ public class DisplayTarget : MonoBehaviour {
         {
             targetIndex++;
 
-            if (targetIndex >= enemies.Length)
+            if (targetIndex >= enemies.Count)
             {
                 targetIndex = 0;
             }
@@ -113,7 +116,7 @@ public class DisplayTarget : MonoBehaviour {
 
             if (targetIndex < 0)
             {
-                targetIndex = enemies.Length - 1;
+                targetIndex = enemies.Count - 1;
             }
 
             updateBorderColor();
@@ -122,7 +125,7 @@ public class DisplayTarget : MonoBehaviour {
         {
             float lowestMagnitude = direction.magnitude;
 
-            for (int key = 0; key < enemies.Length; key++)
+            for (int key = 0; key < enemies.Count; key++)
             {
                 direction = enemies[key].transform.position - playerTransform.position;
                 if(direction.magnitude < lowestMagnitude)

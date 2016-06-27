@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 public class DisplayRadar : MonoBehaviour
 {
@@ -20,6 +21,8 @@ public class DisplayRadar : MonoBehaviour
 
     private GameObject[] enemies;
     private GameObject[] radarDots;
+    private List<GameObject> enemyList = new List<GameObject>();
+    private List<GameObject> radarDotList = new List<GameObject>();
 
     public GameObject radarBlip;
 
@@ -29,7 +32,7 @@ public class DisplayRadar : MonoBehaviour
     public Color enemyAirColor;
     public Color enemySeaColor;
     public Color enemyLandColor;
-    public Color noTargetColor;
+    public Color defaultTargetColor;
 
     private bool initialised;
 
@@ -53,19 +56,40 @@ public class DisplayRadar : MonoBehaviour
         playerTransform = FindObjectOfType<PlayerFlyingInput>().transform;
 
         //populate enemies array with all enemies tagged with Enemy
-        enemies = GameObject.FindGameObjectsWithTag("Enemy");
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
         //print(enemies.Length + " enemies found");
         radarDots = new GameObject[enemies.Length];
 
-        //Instantiate radar blips for each enemy;
-        for (int key = 0; key < enemies.Length; key++)
-        {
-            radarDots[key] = (GameObject) Instantiate(radarBlip, frontRadarPanelTransform.transform.position, frontRadarPanelTransform.transform.rotation);
-            radarDots[key].transform.SetParent(frontRadarPanelTransform);
-            radarDots[key].transform.localScale = new Vector3(0.5F, 0.5f, 1);
+        GameObject[] enemyAir = GameObject.FindGameObjectsWithTag("Enemy Air");
+        enemyList.AddRange(enemyAir);
+        GameObject[] enemyLand = GameObject.FindGameObjectsWithTag("Enemy Land");
+        enemyList.AddRange(enemyLand);
+        GameObject[] enemySea = GameObject.FindGameObjectsWithTag("Enemy Sea");
+        enemyList.AddRange(enemySea);
 
-            //Debug.Log(enemies[key].name);
+        //Instantiate radar blips with the appropriate color for each enemy and assign them to a list
+        GameObject tempRadarDot;
+
+        for (int key = 0; key < enemyList.Count; key++)
+        {
+            tempRadarDot = (GameObject) Instantiate(radarBlip, frontRadarPanelTransform.transform.position, frontRadarPanelTransform.transform.rotation);
+            tempRadarDot.transform.SetParent(frontRadarPanelTransform);
+            tempRadarDot.transform.localScale = new Vector3(0.5F, 0.5f, 1);
+
+            if (enemyList[key].tag == "Enemy Air")
+                tempRadarDot.GetComponent<Image>().color = enemyAirColor;
+            else if (enemyList[key].tag == "Enemy Sea")
+                tempRadarDot.GetComponent<Image>().color = enemySeaColor;
+            else if (enemyList[key].tag == "Enemy Land")
+                tempRadarDot.GetComponent<Image>().color = enemyLandColor;
+            else
+                tempRadarDot.GetComponent<Image>().color = defaultTargetColor;
+
+            radarDotList.Add(tempRadarDot);
         }
+
+        
+        Debug.Log("Radar Dots List : " + radarDotList.Count);
 
         initialised = true;
     }
@@ -77,38 +101,38 @@ public class DisplayRadar : MonoBehaviour
         if (playerTransform == null)
             return;
 
-        for (int key = 0; key < enemies.Length; key++)
+        for (int key = 0; key < enemyList.Count; key++)
         {
             //If enemy hasn't been destroyed, update radar dot position, otherwise destroy
-            if (enemies[key] != null)
+            if (enemyList[key] != null)
             {
 
 
-                targetRelative = playerTransform.InverseTransformDirection(enemies[key].transform.position - playerTransform.position);
+                targetRelative = playerTransform.InverseTransformDirection(enemyList[key].transform.position - playerTransform.position);
 
                 CalculatePolarPoints();
 
                 if (yawDiff >= -90 && yawDiff <= 90 && pitchDiff >= -90 && pitchDiff <= 90)
                 {
 
-                    radarDots[key].GetComponent<RectTransform>().SetParent(frontRadarPanelTransform);
-                    radarDots[key].GetComponent<RectTransform>().anchoredPosition = new Vector2(polarPtOnRadarX, polarPtOnRadarY);
+                    radarDotList[key].GetComponent<RectTransform>().SetParent(frontRadarPanelTransform);
+                    radarDotList[key].GetComponent<RectTransform>().anchoredPosition = new Vector2(polarPtOnRadarX, polarPtOnRadarY);
                 }
                 else
                 {
 
-                    targetRelative = playerTransform.InverseTransformDirection(playerTransform.position - enemies[key].transform.position);
+                    targetRelative = playerTransform.InverseTransformDirection(playerTransform.position - enemyList[key].transform.position);
 
                     CalculatePolarPoints();
 
                     //Use negatives to mirror the view for the Rear Radar
-                    radarDots[key].GetComponent<RectTransform>().SetParent(rearRadarPanelTransform);
-                    radarDots[key].GetComponent<RectTransform>().anchoredPosition = new Vector2(-polarPtOnRadarX, -polarPtOnRadarY);
+                    radarDotList[key].GetComponent<RectTransform>().SetParent(rearRadarPanelTransform);
+                    radarDotList[key].GetComponent<RectTransform>().anchoredPosition = new Vector2(-polarPtOnRadarX, -polarPtOnRadarY);
                 }
             }
             else
             {
-                GameObject.Destroy(radarDots[key]);
+                GameObject.Destroy(radarDotList[key]);
             }
            
         }
@@ -131,14 +155,14 @@ public class DisplayRadar : MonoBehaviour
 
     }
 
-    public GameObject[] returnEnemiesArray()
+    public List<GameObject> returnEnemyList()
     {
-        return enemies;
+        return enemyList;
     }
 
-    public GameObject[] returnRadarDotsArray()
+    public List<GameObject> returnRadarDotList()
     {
-        return radarDots;
+        return radarDotList;
     }
 
 }

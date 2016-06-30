@@ -124,7 +124,7 @@ public class EnemyAircraftAiInput : MonoBehaviour
 
     private void CheckHealth()
     {
-        int health = m_health.CurrentHealth;
+        float health = m_health.CurrentHealth;
 
         if (health <= m_fleeHealth 
             && m_playerInRange)

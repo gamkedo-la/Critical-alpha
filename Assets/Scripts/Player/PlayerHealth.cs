@@ -52,11 +52,25 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     {
         //print(colliderTag);
         m_dead = true;
+        
         EventManager.TriggerEvent(StringEventName.PlayerDead, colliderTag);
 
         for (int i = 0; i < m_objectsToDetatchOnDeath.Length; i++)
             m_objectsToDetatchOnDeath[i].parent = null;
 
         Destroy(gameObject);
+
+        m_currentHealth = 0;
     }
+
+    public float CurrentHealth
+    {
+        get { return m_currentHealth; }
+    }
+
+    public float StartingHealth
+    {
+        get { return m_startingHealth; }
+    }
+
 }

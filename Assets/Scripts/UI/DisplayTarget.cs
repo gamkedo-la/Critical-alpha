@@ -16,6 +16,9 @@ public class DisplayTarget : MonoBehaviour {
 
     private Text targetName;
     private Text targetDistance;
+    private Text targetHealth;
+
+    private EnemyHealth enemyHealth;
 
     private int targetIndex;
     private Vector3 direction;
@@ -54,6 +57,8 @@ public class DisplayTarget : MonoBehaviour {
 
         targetName = GameObject.Find("Target Name").GetComponent<Text>();
         targetDistance = GameObject.Find("Target Distance").GetComponent<Text>();
+        targetHealth = GameObject.Find("Target Health").GetComponent<Text>();
+
         playerTransform = FindObjectOfType<PlayerFlyingInput>().GetComponent<Transform>();
         targetCamera = GameObject.Find("Target Camera").GetComponent<Camera>();
 
@@ -84,7 +89,12 @@ public class DisplayTarget : MonoBehaviour {
 
             //Makes sure whatever colored dot you are over is rendered on top
             radarDots[targetIndex].transform.SetAsLastSibling();
+
             targetDistance.text = "Dist: " + (direction.magnitude / 100).ToString("f1");
+
+            enemyHealth = enemies[targetIndex].GetComponent<EnemyHealth>();
+            targetHealth.text = "Hull: " + (enemyHealth.CurrentHealth / enemyHealth.StartingHealth) * 100 + "%";
+
             cameraTrackTarget();
 
         }

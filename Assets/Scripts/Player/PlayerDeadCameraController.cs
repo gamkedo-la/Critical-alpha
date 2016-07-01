@@ -53,6 +53,8 @@ public class PlayerDeadCameraController : MonoBehaviour
         transform.parent = null;
 
         EventManager.TriggerEvent(BooleanEventName.ActivateHud, false);
+        EventManager.TriggerEvent(BooleanEventName.ActivateRadar, false);
+        EventManager.TriggerEvent(BooleanEventName.ActivateTargetSystem, false);
     }
 
 

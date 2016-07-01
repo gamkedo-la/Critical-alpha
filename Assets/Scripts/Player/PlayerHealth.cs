@@ -3,6 +3,7 @@ using System.Collections;
 
 public class PlayerHealth : MonoBehaviour, IDamageable
 {
+    [SerializeField] bool m_invulnerable = false;
     [SerializeField] int m_startingHealth = 300;
     [SerializeField] int m_damageCausedToOthers = 100;
     [SerializeField] Transform[] m_objectsToDetatchOnDeath;
@@ -19,6 +20,9 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
     public void Damage(int damage)
     {
+        if (m_invulnerable)
+            return;
+
         m_currentHealth -= damage;
 
         if (m_currentHealth <= 0)
@@ -35,7 +39,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
     void OnTriggerStay(Collider other)
     {     
-        if (m_dead || other.CompareTag(Tags.Bullet))
+        if (m_invulnerable || m_dead || other.CompareTag(Tags.Bullet))
             return;
 
         var otherDamageScript = other.gameObject.GetComponentInParent<IDamageable>();
@@ -58,17 +62,19 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         for (int i = 0; i < m_objectsToDetatchOnDeath.Length; i++)
             m_objectsToDetatchOnDeath[i].parent = null;
 
-        Destroy(gameObject);
-
         m_currentHealth = 0;
+
+        Destroy(gameObject);
     }
 
-    public float CurrentHealth
+
+    public int CurrentHealth
     {
         get { return m_currentHealth; }
     }
 
-    public float StartingHealth
+
+    public int StartingHealth
     {
         get { return m_startingHealth; }
     }

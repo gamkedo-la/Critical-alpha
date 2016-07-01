@@ -93,7 +93,7 @@ public class DisplayTarget : MonoBehaviour {
             targetDistance.text = "Dist: " + (direction.magnitude / 100).ToString("f1");
 
             enemyHealth = enemies[targetIndex].GetComponent<EnemyHealth>();
-            targetHealth.text = "Hull: " + (enemyHealth.CurrentHealth / enemyHealth.StartingHealth) * 100 + "%";
+            targetHealth.text = "Hull: " + ((float) enemyHealth.CurrentHealth / enemyHealth.StartingHealth) * 100 + "%";
 
             cameraTrackTarget();
 

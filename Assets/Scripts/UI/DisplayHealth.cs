@@ -22,7 +22,7 @@ public class DisplayHealth : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-        healthPercentage.text = ((playerHealth.CurrentHealth / playerHealth.StartingHealth) * 100).ToString() + "%";
+        healthPercentage.text = (((float) playerHealth.CurrentHealth / playerHealth.StartingHealth) * 100).ToString() + "%";
 
     }
 }

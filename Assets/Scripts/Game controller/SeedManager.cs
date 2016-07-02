@@ -9,31 +9,49 @@ public class SeedManager : MonoBehaviour
     public static string MissionSeedString;
     public static int MissionSeed;
 
+    [SerializeField] string m_year;
     [SerializeField] InputField m_terrainSeedText;
     [SerializeField] InputField m_missionSeedText;
-	
+
+    private string m_terrainSeedStringKey;
+    private string m_missionSeedStringKey;
+
+
+    void Awake()
+    {
+        m_terrainSeedStringKey = string.Format("Terrain seed string - {0}", m_year);
+        m_missionSeedStringKey = string.Format("Mission seed string - {0}", m_year);
+    }
+
 
     void Start()
     {
-        print("Seed mamager awake");
+        TerrainSeedString = PlayerPrefs.GetString(m_terrainSeedStringKey);
+        MissionSeedString = PlayerPrefs.GetString(m_missionSeedStringKey);
+
+        if (string.IsNullOrEmpty(TerrainSeedString))
+            TerrainSeedString = "0";
+
+        if (string.IsNullOrEmpty(MissionSeedString))
+            MissionSeedString = "0";
 
         if (TerrainSeedString == null)
+        {
+            TerrainSeed = TerrainSeedString.GetHashCode();
             TerrainSeedString = TerrainSeed.ToString();
+        }
 
-        if(MissionSeedString == null)
+        if (MissionSeedString == null)
+        {
+            MissionSeed = MissionSeedString.GetHashCode();
             MissionSeedString = MissionSeed.ToString();
+        }
 
         if (m_terrainSeedText != null)
-        {
             m_terrainSeedText.text = TerrainSeedString;
-            //print(string.Format("Terrain seed: {0} ({1}, {2})", TerrainSeed, TerrainSeedString, m_terrainSeedText.text));
-        }
 
         if (m_missionSeedText != null)
-        {
             m_missionSeedText.text = MissionSeedString;
-            //print(string.Format("Mission seed: {0} ({1})", MissionSeed, MissionSeedString));
-        }
     }
 
 
@@ -47,7 +65,7 @@ public class SeedManager : MonoBehaviour
         TerrainSeed = seed;
         TerrainSeedString = input;
 
-        //print(string.Format("Terrain seed: {0} ({1})", TerrainSeed, TerrainSeedString));
+        PlayerPrefs.SetString(m_terrainSeedStringKey, input);
     }
 
 
@@ -61,6 +79,6 @@ public class SeedManager : MonoBehaviour
         MissionSeed = seed;
         MissionSeedString = input;
 
-        //print(string.Format("Mission seed: {0} ({1})", MissionSeed, MissionSeedString));
+        PlayerPrefs.SetString(m_missionSeedStringKey, input);
     }
 }

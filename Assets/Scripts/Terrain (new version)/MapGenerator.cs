@@ -16,6 +16,8 @@ public class MapGenerator : MonoBehaviour
 
     public const int MapChunkSize = 129;//241;
 
+    [SerializeField] bool m_useGlobalSeed = true;
+    [SerializeField] int m_seed = 0;
     [SerializeField] TerrainEquationBase m_terrainEquation;
     [SerializeField] DrawMode m_drawMode;
 
@@ -61,7 +63,7 @@ public class MapGenerator : MonoBehaviour
 
     public void DrawMapInEditor()
     {
-        m_terrainEquation.Initialise();
+        m_terrainEquation.Initialise(m_useGlobalSeed ? SeedManager.TerrainSeed : m_seed);
         var mapData = GenerateMapData(Vector2.zero);
 
         MapDisplay display = FindObjectOfType<MapDisplay>();
@@ -126,7 +128,7 @@ public class MapGenerator : MonoBehaviour
     public void Initialise()
     {
         if (!m_initialised)
-            m_terrainEquation.Initialise();
+            m_terrainEquation.Initialise(m_useGlobalSeed ? SeedManager.TerrainSeed : m_seed);
     }
 
 

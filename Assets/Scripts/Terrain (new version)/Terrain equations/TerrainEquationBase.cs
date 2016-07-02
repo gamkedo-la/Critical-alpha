@@ -3,9 +3,12 @@ using System.Collections;
 
 public abstract class TerrainEquationBase : MonoBehaviour, ITerrainEquation
 {
-    public virtual void Initialise()
-    {
+    public int seed = 0;
 
+
+    public virtual void Initialise(int seed)
+    {
+        this.seed = seed;
     }
 
 

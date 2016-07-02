@@ -4,7 +4,7 @@ using System.Collections;
 public interface ITerrainEquation
 {
     // Perform any initialisation that might be required
-    void Initialise();
+    void Initialise(int seed);
 
 
     /// <summary>

@@ -13,6 +13,7 @@ public class ProceduralPlacement : MonoBehaviour
 
     [Header("Options")]
     [SerializeField] bool m_showDebugSpheres = false;
+    [SerializeField] bool m_useGlobalSeed = true;
     [SerializeField] int m_seed = 1;
     [SerializeField] int m_maxPlacementAttempts = 100;
 
@@ -71,7 +72,7 @@ public class ProceduralPlacement : MonoBehaviour
 
     private void PlaceMainTarget()
     {
-        Random.seed = m_seed;
+        Random.seed = m_useGlobalSeed ? SeedManager.MissionSeed : m_seed;
     
         if (m_mainTargetPrefab == null)
         {

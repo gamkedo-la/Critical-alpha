@@ -10,19 +10,20 @@ public class TerrainEquationPerlinNoise : TerrainEquationBase
     [SerializeField] float m_persistance = 0.5f;
     [SerializeField] float m_lacunarity = 2f;
 
-    [SerializeField] int m_seed = 0;
     //[SerializeField] Vector2 m_offset = Vector2.zero;   // Not currently used
 
     private Vector2[] m_octaveOffsets;
     private float m_totalAmplitude;
 
 
-    public override void Initialise()
+    public override void Initialise(int seed)
     {
+        base.Initialise(seed);
+
         m_totalAmplitude = 0;
         float amplitude = 1;
 
-        System.Random prng = new System.Random(m_seed);
+        System.Random prng = new System.Random(seed);
         m_octaveOffsets = new Vector2[m_octaves];
         for (int i = 0; i < m_octaves; i++)
         {

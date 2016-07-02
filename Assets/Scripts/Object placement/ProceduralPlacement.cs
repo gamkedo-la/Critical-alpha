@@ -44,6 +44,9 @@ public class ProceduralPlacement : MonoBehaviour
 
     void Awake()
     {
+        m_seed = m_useGlobalSeed ? SeedManager.MissionSeed : m_seed;
+        print("Mission seed: " + m_seed);
+
         var mapGeneratorObject = GameObject.FindGameObjectWithTag(Tags.MapGenerator);
 
         if (mapGeneratorObject != null)
@@ -72,7 +75,7 @@ public class ProceduralPlacement : MonoBehaviour
 
     private void PlaceMainTarget()
     {
-        Random.seed = m_useGlobalSeed ? SeedManager.MissionSeed : m_seed;
+        Random.seed = m_seed;
     
         if (m_mainTargetPrefab == null)
         {
@@ -323,7 +326,7 @@ public class ProceduralPlacement : MonoBehaviour
 
 
     private bool TestAirPosition(PlaceableObjectAir testPlaceableObject, 
-        PlacementOptions options, bool mainTarget = false)
+        PlacementOptionsAir options, bool mainTarget = false)
     {
         var testObject = testPlaceableObject.gameObject;
         var objectsToAvoid = mainTarget ? null : m_airObjectPositions;
@@ -365,7 +368,7 @@ public class ProceduralPlacement : MonoBehaviour
 
             testObject.transform.rotation = rotation;
 
-            float altitude = Random.Range(testPlaceableObject.m_minAltitude, testPlaceableObject.m_maxAltitude);
+            float altitude = Random.Range(options.minAltitude, options.maxAltitude);
 
             trialPosition.y = altitude;
             testObject.transform.position = trialPosition;
@@ -378,7 +381,7 @@ public class ProceduralPlacement : MonoBehaviour
 
 
     private bool TestGroundPosition(PlaceableObjectGround testPlaceableObject,
-        PlacementOptions options, bool mainTarget = false)
+        PlacementOptionsGround options, bool mainTarget = false)
     {
         var testObject = testPlaceableObject.gameObject;
         var objectsToAvoid = mainTarget ? null : m_groundObjectPositions;
@@ -403,9 +406,9 @@ public class ProceduralPlacement : MonoBehaviour
         {
             var boundsData = FindTerrainHeightAtCorners(bounds.Value, trialPosition, trialRotation);
 
-            float minHeight = testPlaceableObject.m_minHeight;
-            float maxHeight = testPlaceableObject.m_maxHeight;
-            float maxHeightDifference = testPlaceableObject.m_maxHeightDifference;
+            float minHeight = options.minHeight;
+            float maxHeight = options.maxHeight;
+            float maxHeightDifference = testPlaceableObject.maxHeightDifference;
 
             float heightDifference = boundsData.HeightDifference();
 

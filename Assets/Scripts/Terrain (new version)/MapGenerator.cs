@@ -63,7 +63,7 @@ public class MapGenerator : MonoBehaviour
 
     public void DrawMapInEditor()
     {
-        m_terrainEquation.Initialise(m_useGlobalSeed ? SeedManager.TerrainSeed : m_seed);
+        m_terrainEquation.Initialise(m_seed);
         var mapData = GenerateMapData(Vector2.zero);
 
         MapDisplay display = FindObjectOfType<MapDisplay>();
@@ -128,7 +128,14 @@ public class MapGenerator : MonoBehaviour
     public void Initialise()
     {
         if (!m_initialised)
-            m_terrainEquation.Initialise(m_useGlobalSeed ? SeedManager.TerrainSeed : m_seed);
+        {
+            m_initialised = true;
+
+            m_seed = m_useGlobalSeed ? SeedManager.TerrainSeed : m_seed;
+            print("Terrain seed: " + m_seed);
+
+            m_terrainEquation.Initialise(m_seed);
+        }
     }
 
 

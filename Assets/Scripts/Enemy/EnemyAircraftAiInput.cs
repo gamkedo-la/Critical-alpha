@@ -7,7 +7,8 @@ public class EnemyAircraftAiInput : MonoBehaviour
     [SerializeField] float m_playerInRangeAttackThreshold = 500f;
     [SerializeField] float m_fleeHealthProportion = 0.3f; 
     [SerializeField] float m_evadeMaxDotThreshold = -0.5f;
-    [SerializeField] float m_controlsSensitivity = 0.5f;
+    [SerializeField] float m_directionControlsSensitivity = 0.5f;
+    [SerializeField] float m_thrustControlsSensitivity = 0.5f;
     [SerializeField] float m_decisionRate = 0.2f;
     [SerializeField] Vector2 m_evadeChangeTimeMinMax = new Vector2(0.5f, 4f);
     [SerializeField] Vector2 m_pitchAngleMinMax = new Vector2(-45f, 45f); 
@@ -36,6 +37,7 @@ public class EnemyAircraftAiInput : MonoBehaviour
     private float m_dotThisUpToUp;
     private float m_dotThisRightToUp;
     private float m_forwardAngleToPlayer;
+    private float m_playerVerticalAngle;
     private float m_pitchAngleToPlayer;
     private float m_pitchAngle;
     private float m_bankAngle;
@@ -117,8 +119,8 @@ public class EnemyAircraftAiInput : MonoBehaviour
 
     void Update()
     {
-        m_flyingControlScript.PitchAndRollInput(m_v * m_controlsSensitivity, m_h * m_controlsSensitivity);
-        m_flyingControlScript.ThrustInput(m_a * m_controlsSensitivity);
+        m_flyingControlScript.PitchAndRollInput(m_v * m_directionControlsSensitivity, m_h * m_directionControlsSensitivity);
+        m_flyingControlScript.ThrustInput(m_a * m_directionControlsSensitivity);
     }
 
 
@@ -170,9 +172,9 @@ public class EnemyAircraftAiInput : MonoBehaviour
 
         m_forwardAngleToPlayer = StandardiseAngle(Mathf.Rad2Deg * (anglePlayer - angleForwards));
 
-        float playerVerticalAngle = Mathf.Atan2(playerDirectionVertical.y, playerDirectionVertical.x);
+        m_playerVerticalAngle = -Mathf.Rad2Deg * Mathf.Atan2(playerDirectionVertical.y, playerDirectionVertical.x);
         
-        m_pitchAngleToPlayer = (Mathf.Rad2Deg * playerVerticalAngle) - m_pitchAngle;    
+        m_pitchAngleToPlayer = m_playerVerticalAngle - m_pitchAngle;    
     }
 
 
@@ -252,9 +254,12 @@ public class EnemyAircraftAiInput : MonoBehaviour
     private void PitchToAimAtPlayer()
     {
         if (m_bankAngle < m_bankAngleMinMaxForPitching.x || m_bankAngle > m_bankAngleMinMaxForPitching.y)
+        {
+            m_v = 0;
             return;
-              
-        m_v = -m_pitchAngleToPlayer * 0.1f;
+        }
+            
+        m_v = m_pitchAngleToPlayer * 0.1f;
 
         if (m_v > 0 && m_pitchAngle > m_pitchAngleMinMax.y)
             m_v = 0;

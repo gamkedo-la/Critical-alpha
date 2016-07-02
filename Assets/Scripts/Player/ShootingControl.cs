@@ -13,6 +13,8 @@ public class ShootingControl : MonoBehaviour
     private int m_spawnPointIndex;
     private int m_numSpawnPoints;
     private WaitForSeconds m_muzzleFlashWait;
+    private GameObject[] m_muzzleFlashes;
+    private AudioSource[] m_gunShotAudioSources;
 
 
     void Awake()
@@ -25,15 +27,27 @@ public class ShootingControl : MonoBehaviour
 
     void Start()
     {
+        m_muzzleFlashes = new GameObject[m_bulletSpawnPoints.Length];
+        m_gunShotAudioSources = new AudioSource[m_bulletSpawnPoints.Length];
+
         for (int i = 0; i < m_bulletSpawnPoints.Length; i++)
         {
             var spawnPoint = m_bulletSpawnPoints[i];
-            
-            if (spawnPoint.childCount > 0)
+
+            var muzzleFlash = spawnPoint.GetComponentInChildren<MeshRenderer>();
+
+            if (muzzleFlash != null)
             {
-                var muzzleFlash = spawnPoint.GetChild(0);
                 muzzleFlash.gameObject.SetActive(false);
-            }              
+                m_muzzleFlashes[i] = muzzleFlash.gameObject;
+            }
+
+            var gunShotAudio = spawnPoint.GetComponentInChildren<AudioSource>();
+
+            if (gunShotAudio != null)
+            {
+                m_gunShotAudioSources[i] = gunShotAudio;
+            }
         }
     }
 
@@ -64,12 +78,20 @@ public class ShootingControl : MonoBehaviour
             else
                 bullet.SetInitialVelocity(Vector3.zero);
 
-            if (spawnPoint.childCount > 0)
-            {
-                var muzzleFlash = spawnPoint.GetChild(0);
-                muzzleFlash.gameObject.SetActive(true);
+            var muzzleFlash = m_muzzleFlashes[m_spawnPointIndex];
 
-                StartCoroutine(TurnOffQuad(muzzleFlash.gameObject));
+            if (muzzleFlash != null)
+            { 
+                muzzleFlash.SetActive(true);
+
+                StartCoroutine(TurnOffQuad(muzzleFlash));
+            }
+
+            var gunShotAudio = m_gunShotAudioSources[m_spawnPointIndex];
+
+            if (gunShotAudio != null && gunShotAudio.clip != null)
+            {
+                gunShotAudio.PlayOneShot(gunShotAudio.clip);
             }
 
             m_spawnPointIndex++;

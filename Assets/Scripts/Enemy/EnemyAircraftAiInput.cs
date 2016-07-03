@@ -71,7 +71,7 @@ public class EnemyAircraftAiInput : MonoBehaviour
     {
         //m_spawnPoint = transform.position;
         //m_spawnRotation = transform.rotation;
-        m_spawnBankAngle = StandardiseAngle(transform.rotation.eulerAngles.z);
+        m_spawnBankAngle = StandardiseAngle(-transform.rotation.eulerAngles.z);
         m_fleeHealth = Mathf.RoundToInt(m_health.CurrentHealth * m_fleeHealthProportion);
         m_patrolSpeed = m_flyingControlScript.ForwardSpeed;
 
@@ -364,6 +364,12 @@ public class EnemyAircraftAiInput : MonoBehaviour
 
     private void FlattenPitch()
     {
+        if (m_bankAngle < m_bankAngleMinMaxForPitching.x || m_bankAngle > m_bankAngleMinMaxForPitching.y)
+        {
+            m_v = 0;
+            return;
+        }
+
         var forward = transform.forward;
         float dotUp = Vector3.Dot(Vector3.up, forward);
         m_v = dotUp;

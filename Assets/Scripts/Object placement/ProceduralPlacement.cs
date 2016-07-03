@@ -23,6 +23,8 @@ public class ProceduralPlacement : MonoBehaviour
     [SerializeField] float m_maxDistanceFromPlayer = 1200f;
     [SerializeField] float m_minAngleFromNorth = -45f;
     [SerializeField] float m_maxAngleFromNorth = 45f;
+    [SerializeField] Vector2 m_groubObjectHeightMinMax = new Vector2(0f, 1000f);
+    [SerializeField] Vector2 m_airObjectAltitudeMinMax = new Vector2(100f, 500f);
 
     [Header("Enemy aircraft")]
     [SerializeField] PlacementOptionsAir[] m_aircraftPlacementOptions;
@@ -337,11 +339,13 @@ public class ProceduralPlacement : MonoBehaviour
         if (success)
         {
             var rotation = Quaternion.identity;
+            float altitude = 0f;
 
             if (mainTarget)
             {
                 float rotationY = Random.Range(0f, 360f);
                 rotation = Quaternion.Euler(0, rotationY, 0);
+                altitude = Random.Range(m_airObjectAltitudeMinMax.x, m_airObjectAltitudeMinMax.y);
             }
             else
             {
@@ -358,17 +362,19 @@ public class ProceduralPlacement : MonoBehaviour
                 float speed = flyingControlScript.ForwardSpeed;
                 float turnRateRad = Mathf.Deg2Rad * flyingControlScript.turnRate;
                 float sinThi = speed / (distance * turnRateRad);
-                float bankAngleDeg = -flip * Mathf.Rad2Deg * (Mathf.Abs(sinThi) > 1f ? 90f : Mathf.Asin(sinThi));
+                float bankAngleDeg = -flip * (Mathf.Abs(sinThi) > 1f 
+                    ? Mathf.Sign(sinThi) * 90f 
+                    : Mathf.Asin(sinThi) * Mathf.Rad2Deg);
 
                 rotation *= Quaternion.Euler(0f, 0f, bankAngleDeg);
+
+                altitude = Random.Range(options.minAltitude, options.maxAltitude);
 
                 //print(string.Format("Speed: {0}, turn rate: {1}, distance: {2}, sinThi: {3}, bank angle: {4}", 
                 //    speed, turnRate, distance, sinThi, bankAngle));
             }
 
             testObject.transform.rotation = rotation;
-
-            float altitude = Random.Range(options.minAltitude, options.maxAltitude);
 
             trialPosition.y = altitude;
             testObject.transform.position = trialPosition;
@@ -406,8 +412,8 @@ public class ProceduralPlacement : MonoBehaviour
         {
             var boundsData = FindTerrainHeightAtCorners(bounds.Value, trialPosition, trialRotation);
 
-            float minHeight = options.minHeight;
-            float maxHeight = options.maxHeight;
+            float minHeight = options != null ? options.minHeight : m_groubObjectHeightMinMax.x;
+            float maxHeight = options != null ? options.maxHeight : m_groubObjectHeightMinMax.y;
             float maxHeightDifference = testPlaceableObject.maxHeightDifference;
 
             float heightDifference = boundsData.HeightDifference();

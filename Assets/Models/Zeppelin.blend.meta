@@ -8,15 +8,20 @@ ModelImporter:
     100000: //RootNode
     100002: Zeppelin_body
     100004: Zeppelin_tail_fin
+    100006: Zeppelin_cockpit
     400000: //RootNode
     400002: Zeppelin_body
     400004: Zeppelin_tail_fin
+    400006: Zeppelin_cockpit
     2300000: Zeppelin_body
     2300002: Zeppelin_tail_fin
+    2300004: Zeppelin_cockpit
     3300000: Zeppelin_body
     3300002: Zeppelin_tail_fin
+    3300004: Zeppelin_cockpit
     4300000: Zeppelin_tail_fin
     4300002: Zeppelin_body
+    4300004: Zeppelin_cockpit
     7400000: Default Take
     9500000: //RootNode
   materials:

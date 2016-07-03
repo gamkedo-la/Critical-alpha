@@ -71,7 +71,7 @@ public class EnemyAircraftAiInput : MonoBehaviour
     {
         //m_spawnPoint = transform.position;
         //m_spawnRotation = transform.rotation;
-        m_spawnBankAngle = transform.rotation.eulerAngles.z;
+        m_spawnBankAngle = StandardiseAngle(transform.rotation.eulerAngles.z);
         m_fleeHealth = Mathf.RoundToInt(m_health.CurrentHealth * m_fleeHealthProportion);
         m_patrolSpeed = m_flyingControlScript.ForwardSpeed;
 

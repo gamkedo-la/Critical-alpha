@@ -10,6 +10,7 @@ public class EnemyAircraftAiInput : MonoBehaviour
     [SerializeField] float m_directionControlsSensitivity = 0.5f;
     [SerializeField] float m_thrustControlsSensitivity = 0.5f;
     [SerializeField] float m_decisionRate = 0.2f;
+    [SerializeField] float m_chaseBankSensitivity = 1f;
     [SerializeField] Vector2 m_evadeChangeTimeMinMax = new Vector2(0.5f, 4f);
     [SerializeField] Vector2 m_pitchAngleMinMax = new Vector2(-45f, 45f); 
     [SerializeField] Vector2 m_bankAngleMinMaxForPitching = new Vector2(-45f, 45f);
@@ -240,7 +241,7 @@ public class EnemyAircraftAiInput : MonoBehaviour
     {
         float bankAngleToChange = m_bankAngleToAimFor - m_bankAngle;
 
-        m_h = bankAngleToChange / m_flyingControlScript.turnRate;
+        m_h = m_chaseBankSensitivity * bankAngleToChange / m_flyingControlScript.turnRate;
         m_h = Mathf.Clamp(m_h, -1f, 1f);
     }
 

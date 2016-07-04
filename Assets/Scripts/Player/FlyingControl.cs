@@ -9,8 +9,8 @@ public class FlyingControl : MonoBehaviour
     [SerializeField] float m_minForwardSpeed = 10f;
     [SerializeField] float m_maxForwardSpeed = 100f;
     [SerializeField] float m_forwardSpeed = 60f;
-    [SerializeField] float m_liftMultiplier = 0.1f;
-	[SerializeField] float m_downSpeed = 5f;
+    [SerializeField] float m_liftMultiplier = 0f;
+	[SerializeField] float m_downSpeed = 0f;
 
     [Range(0f, 100f)]
     [SerializeField] float m_accelerationRate = 50f;
@@ -26,6 +26,9 @@ public class FlyingControl : MonoBehaviour
     private float m_v;
     private float m_h;
     private float m_a;
+
+
+    public float BankRate { get { return m_bankRate; } }
 
 
     void Start()

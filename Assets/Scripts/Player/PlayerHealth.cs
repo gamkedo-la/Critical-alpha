@@ -20,7 +20,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
     public void Damage(int damage)
     {
-        if (m_invulnerable)
+        if (m_invulnerable || m_dead)
             return;
 
         m_currentHealth -= damage;
@@ -60,7 +60,11 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         EventManager.TriggerEvent(StringEventName.PlayerDead, colliderTag);
 
         for (int i = 0; i < m_objectsToDetatchOnDeath.Length; i++)
-            m_objectsToDetatchOnDeath[i].parent = null;
+        {
+            var objectToDetatch = m_objectsToDetatchOnDeath[i];
+            if (objectToDetatch != null)
+                objectToDetatch.parent = null;
+        }
 
         m_currentHealth = 0;
 

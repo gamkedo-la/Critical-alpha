@@ -4,19 +4,31 @@ using UnityEngine.UI;
 
 public class DisplayHealthMeter : MonoBehaviour {
 
-    PlayerHealth playerHealth;
+    private PlayerHealth playerHealth;
+    private Transform playerTransform;
+    private Transform canvasTransform;
 
     private Image healthMeter;
     private Image damageIndicator;
     private float currentFillAmount;
     private float previousFillAmount;
 
-	// Use this for initialization
-	void Start () {
+    public float sceneMagnitude;
+    public float canvasMagnitude;
+    public float duration;
+
+    
+
+
+
+    // Use this for initialization
+    void Start () {
         playerHealth = FindObjectOfType<PlayerHealth>();
 
         healthMeter = GameObject.Find("Health Meter").GetComponent<Image>();
         damageIndicator = GameObject.Find("Damage Indicator").GetComponent<Image>();
+        playerTransform = FindObjectOfType<PlayerFlyingInput>().GetComponent<Transform>();
+        canvasTransform = GameObject.Find("Canvases").GetComponent<Transform>();
     }
 	
 	// Update is called once per frame
@@ -28,7 +40,10 @@ public class DisplayHealthMeter : MonoBehaviour {
         if (currentFillAmount <= 0)
             damageIndicator.color = new Color(Color.red.r, Color.red.g, Color.red.b, 0.587f);
         else if (currentFillAmount < previousFillAmount)
+        {
             StartCoroutine("FlashDamage");
+            StartCoroutine("Shake");
+        }
 
         previousFillAmount = currentFillAmount;
 
@@ -39,7 +54,43 @@ public class DisplayHealthMeter : MonoBehaviour {
         damageIndicator.color = new Color(Color.red.r, Color.red.g, Color.red.b, 0.587f);
         yield return new WaitForSeconds(0.1f);
         damageIndicator.color = new Color(Color.white.r, Color.white.g, Color.white.b, 0.587f);
-
-
     }
+
+
+    IEnumerator Shake()
+    {
+
+        float elapsed = 0.0f;
+
+        Vector3 oroginalCanvasPos = canvasTransform.position;
+        Quaternion originalCamRot = Camera.main.transform.localRotation;
+
+
+        while (elapsed < duration)
+        {
+
+            elapsed += Time.deltaTime;
+
+            float percentComplete = elapsed / duration;
+            float damper = 1.0f - Mathf.Clamp(4.0f * percentComplete - 3.0f, 0.0f, 1.0f);
+
+            // map value to [-1, 1]
+            float z = Random.value * 2.0f - 1.0f;
+            float x = Random.value * 2.0f - 1.0f;
+            z *= damper;
+            x *= damper;
+
+            canvasTransform.position = new Vector3(z * canvasMagnitude, x * canvasMagnitude, oroginalCanvasPos.z);
+            Camera.main.transform.localRotation = originalCamRot;
+
+            Camera.main.transform.localRotation *= Quaternion.AngleAxis(z * sceneMagnitude, Vector3.forward);
+            Camera.main.transform.localRotation *= Quaternion.AngleAxis(x * sceneMagnitude, Vector3.right);
+
+            yield return null;
+        }
+
+        canvasTransform.position = oroginalCanvasPos;
+        Camera.main.transform.localRotation = originalCamRot;
+    }
+
 }

@@ -8,6 +8,7 @@ public class CameraSwitcher : MonoBehaviour
     [SerializeField] int[] m_indicesToShowHud = new int[] { 0, 1 };
     [SerializeField] int[] m_indicesToShowRadar = new int[] { 0, 1 };
     [SerializeField] int[] m_indicesToShowTargetSystem = new int[] { 0, 1 };
+    [SerializeField] int[] m_indicesToShowHealthMeter = new int[] { 0, 1 };
     [SerializeField] float m_cameraSwitchCooldown = 0.3f;
 
     private Transform m_cameraTransform;
@@ -68,6 +69,7 @@ public class CameraSwitcher : MonoBehaviour
             EventManager.TriggerEvent(BooleanEventName.ActivateHud, false);
             EventManager.TriggerEvent(BooleanEventName.ActivateRadar, false);
             EventManager.TriggerEvent(BooleanEventName.ActivateTargetSystem, false);
+            EventManager.TriggerEvent(BooleanEventName.ActivateHealthMeter, false);
 
             for (int i = 0; i < m_indicesToShowHud.Length; i++)
             {
@@ -91,6 +93,14 @@ public class CameraSwitcher : MonoBehaviour
 
                 if (m_index == indexToShow)
                     EventManager.TriggerEvent(BooleanEventName.ActivateTargetSystem, true);
+            }
+
+            for (int i = 0; i < m_indicesToShowHealthMeter.Length; i++)
+            {
+                int indexToShow = m_indicesToShowHealthMeter[i];
+
+                if (m_index == indexToShow)
+                    EventManager.TriggerEvent(BooleanEventName.ActivateHealthMeter, true);
             }
         }   
     }

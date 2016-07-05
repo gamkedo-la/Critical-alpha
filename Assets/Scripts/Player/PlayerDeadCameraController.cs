@@ -18,8 +18,8 @@ public class PlayerDeadCameraController : MonoBehaviour
         {
             transform.Rotate(Vector3.up, m_deathCameraPanSpeed * Time.deltaTime, Space.World);
 
-            if (Input.GetKeyDown(KeyCode.R))
-                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            //if (Input.GetKeyDown(KeyCode.R))
+            //    SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
     }
 
@@ -55,6 +55,8 @@ public class PlayerDeadCameraController : MonoBehaviour
         EventManager.TriggerEvent(BooleanEventName.ActivateHud, false);
         EventManager.TriggerEvent(BooleanEventName.ActivateRadar, false);
         EventManager.TriggerEvent(BooleanEventName.ActivateTargetSystem, false);
+        EventManager.TriggerEvent(BooleanEventName.ActivateHealthMeter, false);
+        EventManager.TriggerEvent(StandardEventName.MissionFailed);
     }
 
 

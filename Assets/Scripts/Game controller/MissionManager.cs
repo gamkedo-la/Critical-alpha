@@ -12,7 +12,6 @@ public class MissionManager : MonoBehaviour
     [SerializeField] ProceduralPlacement[] m_missions;
 
 
-
     void Awake()
     {
         if (m_missions.Length == 0)

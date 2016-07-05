@@ -11,6 +11,8 @@ public enum StandardEventName
 
     SetGraphicsQuality = 1,
     SetTerrainDetail = 2,
+    MissionSuccessful = 3,
+    MissionFailed = 4,
 }
 
 
@@ -24,6 +26,7 @@ public enum BooleanEventName
     ActivateHud = 1,
     ActivateRadar = 2,
     ActivateTargetSystem = 3,
+    ActivateHealthMeter = 4,
 }
 
 

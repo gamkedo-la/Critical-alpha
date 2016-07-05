@@ -7,6 +7,7 @@ public class GameController : MonoBehaviour
     public void LoadLevel(string levelToLoad)
     {
         Time.timeScale = 1;
+        LastMenuUsed.LastMenuUsedName = SceneManager.GetActiveScene().name;
         SceneManager.LoadScene(levelToLoad);
     }
 

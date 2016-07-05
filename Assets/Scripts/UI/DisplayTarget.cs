@@ -37,7 +37,7 @@ public class DisplayTarget : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        Initialise();   
+        Initialise();           
     }
 
 
@@ -75,7 +75,7 @@ public class DisplayTarget : MonoBehaviour {
 
 
     // Update is called once per frame
-    void Update () {
+    void LateUpdate () {
 
         if (playerTransform == null)
             return;

@@ -133,6 +133,8 @@ public class DisplayRadar : MonoBehaviour
             else
             {
                 GameObject.Destroy(radarDotList[key]);
+                enemyList.Remove(enemyList[key]);
+                radarDotList.Remove(radarDotList[key]);
             }
            
         }

@@ -80,8 +80,19 @@ public class DisplayTarget : MonoBehaviour {
         if (playerTransform == null)
             return;
 
+        if (targetIndex == 0 && enemies[targetIndex] == null)
+            return;
+
+        if (targetIndex > enemies.Count - 1)
+        {
+            targetIndex = 0;
+            Debug.Log("Reset To Zero");
+        }
+
         if (enemies[targetIndex] != null)
         {
+            Debug.Log("Target Index = " + targetIndex + "Enemies Length: " + enemies.Count);
+
             targetName.text = enemies[targetIndex].name;
             direction = enemies[targetIndex].transform.position - playerTransform.position;
             //targetSelectIcon.transform.SetParent(radarDots[targetIndex].transform);
@@ -100,8 +111,12 @@ public class DisplayTarget : MonoBehaviour {
         }
         else
         {
-            targetIndex++;
+            enemies.Remove(enemies[targetIndex]);
+            radarDots.Remove(radarDots[targetIndex]);
+            Debug.Log("Enemies Length: " + enemies.Count);
+            //targetIndex++;
         }
+
 
         if (Input.GetKeyDown(KeyCode.T))
         {
@@ -170,7 +185,10 @@ public class DisplayTarget : MonoBehaviour {
 
     public GameObject returnCurrentTarget()
     {
-        return enemies[targetIndex];
+        if(targetIndex < enemies.Count)
+            return enemies[targetIndex];
+        else
+            return null;
     }
 
 

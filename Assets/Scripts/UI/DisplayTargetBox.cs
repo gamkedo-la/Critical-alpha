@@ -28,7 +28,8 @@ public class DisplayTargetBox : MonoBehaviour
 	void LateUpdate ()
 	{
 
-        target = displayTarget.returnCurrentTarget();
+        if (displayTarget.returnCurrentTarget() != null)
+            target = displayTarget.returnCurrentTarget();
 
         //Checks to make sure target exists and is in front of you
         if(target != null && Vector3.Dot(target.transform.position - Camera.main.transform.position, Camera.main.transform.forward) > 0)

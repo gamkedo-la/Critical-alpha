@@ -91,7 +91,7 @@ public class DisplayTarget : MonoBehaviour {
 
         if (enemies[targetIndex] != null)
         {
-            Debug.Log("Target Index = " + targetIndex + "Enemies Length: " + enemies.Count);
+            //Debug.Log("Target Index = " + targetIndex + "Enemies Length: " + enemies.Count);
 
             targetName.text = enemies[targetIndex].name;
             direction = enemies[targetIndex].transform.position - playerTransform.position;

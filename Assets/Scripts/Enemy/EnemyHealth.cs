@@ -31,7 +31,7 @@ public class EnemyHealth : MonoBehaviour, IDamageable
     }
 
 
-    void OnTriggerStay(Collider other)
+    void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag(Tags.Bullet))
             return;
@@ -45,9 +45,12 @@ public class EnemyHealth : MonoBehaviour, IDamageable
         var otherDamageScript = other.gameObject.GetComponentInParent<IDamageable>();
 
         if (otherDamageScript != null)
+        {
+            print(string.Format("{0} causes {1} damage to {2}", name, m_damageCausedToOthers, other.name));
             otherDamageScript.Damage(m_damageCausedToOthers);
+        }
 
-        Dead();
+        //Dead();
     }
 
 

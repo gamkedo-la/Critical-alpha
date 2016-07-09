@@ -9,9 +9,11 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     [SerializeField] int m_startingHealth = 300;
     [SerializeField] int m_damageCausedToOthers = 100;
     [SerializeField] Transform[] m_objectsToDetatchOnDeath;
+    [SerializeField] float m_transformJustDamagedResetTime = 0.1f;
 
     private int m_currentHealth;
     private bool m_dead;
+    private Transform m_transformJustDamaged;
 
 
     void Awake()
@@ -27,6 +29,8 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
         m_currentHealth -= damage;
 
+        print(string.Format("{0} damaged by {1}, current health = {2}", name, damage, m_currentHealth));
+
         if (m_currentHealth <= 0)
             Dead("");
     }
@@ -40,8 +44,9 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
 
     void OnTriggerEnter(Collider other)
-    {     
-        if (m_invulnerable || m_dead || other.CompareTag(Tags.Bullet))
+    {
+        if (other.CompareTag(Tags.Bullet) 
+            || (m_transformJustDamaged != null && m_transformJustDamaged == other.transform))
             return;
 
         var otherDamageScript = other.gameObject.GetComponentInParent<IDamageable>();
@@ -50,10 +55,20 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         {
             print(string.Format("{0} causes {1} damage to {2}", name, m_damageCausedToOthers, other.name));
             otherDamageScript.Damage(m_damageCausedToOthers);
-        }
+            m_transformJustDamaged = other.transform;
+            StartCoroutine(ResetTransformJustDamaged());
+        } 
 
-        if (other.CompareTag(Tags.Ground) || other.CompareTag(Tags.Water))
+        if (!m_invulnerable && (other.CompareTag(Tags.Ground) || other.CompareTag(Tags.Water)))
             Dead(other.tag);
+    }
+
+
+    private IEnumerator ResetTransformJustDamaged()
+    {
+        yield return new WaitForSeconds(m_transformJustDamagedResetTime);
+
+        m_transformJustDamaged = null;
     }
 
 
@@ -75,7 +90,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
         PlayerDead = true;
 
-        Destroy(gameObject);
+        Destroy(gameObject, 0.05f);
     }
 
 

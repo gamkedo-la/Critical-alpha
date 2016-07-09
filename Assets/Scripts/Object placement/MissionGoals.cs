@@ -73,17 +73,17 @@ public class MissionGoals : MonoBehaviour
         else if (m_groundDefences.Contains(transform))
         {
             m_groundDefences.Remove(transform);
-            print("ground object destroyed");
+            print(string.Format("ground object {0} destroyed", transform.name));
         }
         else if (m_airDefences.Contains(transform))
         {
             m_airDefences.Remove(transform);
-            print("Air object destroyed");
+            print(string.Format("Air object {0} destroyed", transform.name));
         }
         else if (m_waterDefences.Contains(transform))
         {
             m_waterDefences.Remove(transform);
-            print("Water object destroyed");
+            print(string.Format("Water object {0} destroyed", transform.name));
         }
 
         CheckStatus();

@@ -10,11 +10,14 @@ public class EnemyHealth : MonoBehaviour, IDamageable
     [SerializeField] bool m_allowDestroyedByGround;
     [SerializeField] bool m_allowDestroyedByWater;
     [SerializeField] Transform[] m_objectsToDetatchOnDeath;
+    [SerializeField] float m_transformJustDamagedResetTime = 0.1f;
 
 	private int m_currentHealth;
+    private bool m_dead;
+    private Transform m_transformJustDamaged;
 
 
-	void Awake()
+    void Awake()
 	{
 		m_currentHealth = m_startingHealth;
 	}
@@ -22,9 +25,12 @@ public class EnemyHealth : MonoBehaviour, IDamageable
 
     public void Damage(int damage)
     {
+        if (m_dead)
+            return;
+
         m_currentHealth -= damage;
 
-        //print("Damaged by " + damage + ", current health = " + m_currentHealth);
+        print(string.Format("{0} damaged by {1}, current health = {2}", name, damage, m_currentHealth));
 
         if (m_currentHealth <= 0)
             Dead();
@@ -33,7 +39,8 @@ public class EnemyHealth : MonoBehaviour, IDamageable
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag(Tags.Bullet))
+        if (other.CompareTag(Tags.Bullet) || m_dead 
+            || (m_transformJustDamaged != null && m_transformJustDamaged == other.transform))
             return;
 
         if (other.CompareTag(Tags.Water) && !m_allowDestroyedByWater)
@@ -48,14 +55,26 @@ public class EnemyHealth : MonoBehaviour, IDamageable
         {
             print(string.Format("{0} causes {1} damage to {2}", name, m_damageCausedToOthers, other.name));
             otherDamageScript.Damage(m_damageCausedToOthers);
+            m_transformJustDamaged = other.transform;
+            StartCoroutine(ResetTransformJustDamaged());
         }
+        else
+            Dead();
+    }
 
-        //Dead();
+
+    private IEnumerator ResetTransformJustDamaged()
+    {
+        yield return new WaitForSeconds(m_transformJustDamagedResetTime);
+
+        m_transformJustDamaged = null;
     }
 
 
     private void Dead()
     {
+        m_dead = true;
+
         if (m_explosion != null)
         {
             var explosion = Instantiate(m_explosion);
@@ -80,7 +99,7 @@ public class EnemyHealth : MonoBehaviour, IDamageable
 
         EventManager.TriggerEvent(TransformEventName.EnemyDead, transform);
 
-        Destroy(gameObject);
+        Destroy(gameObject, 0.05f);
     }
 
 

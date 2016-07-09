@@ -4,9 +4,14 @@ using System.Collections;
 
 public class GameController : MonoBehaviour
 {
-    public void LoadLevel(string levelToLoad)
+    void Awake()
     {
         Time.timeScale = 1;
+    }
+
+
+    public void LoadLevel(string levelToLoad)
+    {
         LastMenuUsed.LastMenuUsedName = SceneManager.GetActiveScene().name;
         SceneManager.LoadScene(levelToLoad);
     }

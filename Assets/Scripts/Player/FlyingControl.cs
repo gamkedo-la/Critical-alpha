@@ -37,7 +37,7 @@ public class FlyingControl : MonoBehaviour
 
         if (m_isPlayer)
         {
-            EventManager.TriggerEvent(FloatEventName.SetMinThrustLevel, m_minForwardSpeed);
+            EventManager.TriggerEvent(FloatEventName.SetMinThrustLevel, 0);
             EventManager.TriggerEvent(FloatEventName.SetMaxThrustLevel, m_maxForwardSpeed);
             EventManager.TriggerEvent(FloatEventName.SetThrustLevel, m_forwardSpeed);
         }

@@ -9,6 +9,7 @@ public class MissionManager : MonoBehaviour
 
     [SerializeField] Text m_missionNameText;
     [SerializeField] Text m_missionStoryText;
+    [SerializeField] Text m_missionGoalText;
     [SerializeField] ProceduralPlacement[] m_missions;
 
 
@@ -17,13 +18,7 @@ public class MissionManager : MonoBehaviour
         if (m_missions.Length == 0)
             return;
 
-        if (m_missionNameText != null)
-            m_missionNameText.text = GetMissionName(0);
-
-        if (m_missionStoryText != null)
-            m_missionStoryText.text = GetMissionStory(0);
-
-        MissionToLoad = m_missions[0];
+        SetMission(0);
     }
 
 	
@@ -36,6 +31,9 @@ public class MissionManager : MonoBehaviour
 
         if (m_missionStoryText != null)
             m_missionStoryText.text = GetMissionStory(index);
+
+        if (m_missionGoalText != null)
+            m_missionGoalText.text = GetMissionGoal(index);
     }
 
 
@@ -48,5 +46,11 @@ public class MissionManager : MonoBehaviour
     public string GetMissionStory(int index)
     {
         return m_missions[index].missionStory;
+    }
+
+
+    public string GetMissionGoal(int index)
+    {
+        return m_missions[index].missionGoal;
     }
 }

@@ -3,6 +3,8 @@ using System.Collections;
 
 public class PlayerHealth : MonoBehaviour, IDamageable
 {
+    public static bool PlayerDead;
+
     [SerializeField] bool m_invulnerable = false;
     [SerializeField] int m_startingHealth = 300;
     [SerializeField] int m_damageCausedToOthers = 100;
@@ -26,14 +28,14 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         m_currentHealth -= damage;
 
         if (m_currentHealth <= 0)
-            PlayerDead("");
+            Dead("");
     }
 
 
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.K))
-            PlayerDead("");
+            Dead("");
     }
 
 
@@ -50,12 +52,12 @@ public class PlayerHealth : MonoBehaviour, IDamageable
             otherDamageScript.Damage(m_damageCausedToOthers);
         }
 
-        //if (other.CompareTag(Tags.Ground) || other.CompareTag(Tags.Water))
-        //PlayerDead(other.tag);
+        if (other.CompareTag(Tags.Ground) || other.CompareTag(Tags.Water))
+            Dead(other.tag);
     }
 
 
-    private void PlayerDead(string colliderTag)
+    private void Dead(string colliderTag)
     {
         //print(colliderTag);
         m_dead = true;
@@ -70,6 +72,8 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         }
 
         m_currentHealth = 0;
+
+        PlayerDead = true;
 
         Destroy(gameObject);
     }

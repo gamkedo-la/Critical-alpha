@@ -13,6 +13,7 @@ public enum StandardEventName
     SetTerrainDetail = 2,
     MissionSuccessful = 3,
     MissionFailed = 4,
+    ActivateCameraPan = 5
 }
 
 
@@ -63,4 +64,15 @@ public enum FloatEventName
     SetThrustLevel = 1,
     SetMinThrustLevel = 2,
     SetMaxThrustLevel = 3,
+}
+
+
+/// <summary>
+/// Use transform event names that need a transform component sent to them
+/// </summary>
+public enum TransformEventName
+{
+    None = 0,
+
+    EnemyDead = 1,
 }

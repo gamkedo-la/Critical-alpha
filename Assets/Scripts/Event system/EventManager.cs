@@ -10,6 +10,7 @@ public class EventManager : MonoBehaviour
 	private Dictionary<FloatEventName, UnityEvent<float>> m_eventWithFloatDictionary;
     private Dictionary<StringEventName, UnityEvent<string>> m_eventWithStringDictionary;
     private Dictionary<IntegerEventName, UnityEvent<int>> m_eventWithIntDictionary;
+    private Dictionary<TransformEventName, UnityEvent<Transform>> m_eventWithTransformDictionary;
 
     private static EventManager m_eventManager;
 
@@ -53,6 +54,9 @@ public class EventManager : MonoBehaviour
 
         if (m_eventWithIntDictionary == null)
             m_eventWithIntDictionary = new Dictionary<IntegerEventName, UnityEvent<int>>();
+
+        if (m_eventWithTransformDictionary == null)
+            m_eventWithTransformDictionary = new Dictionary<TransformEventName, UnityEvent<Transform>>();
     }
 
 
@@ -246,6 +250,44 @@ public class EventManager : MonoBehaviour
     }
 
 
+    public static void StartListening(TransformEventName eventName, UnityAction<Transform> listener)
+    {
+        UnityEvent<Transform> thisEvent = null;
+        if (Instance.m_eventWithTransformDictionary.TryGetValue(eventName, out thisEvent))
+        {
+            thisEvent.AddListener(listener);
+        }
+        else
+        {
+            thisEvent = new TransformEvent();
+            thisEvent.AddListener(listener);
+            Instance.m_eventWithTransformDictionary.Add(eventName, thisEvent);
+        }
+    }
+
+
+    public static void StopListening(TransformEventName eventName, UnityAction<Transform> listener)
+    {
+        if (m_eventManager == null) return;
+
+        UnityEvent<Transform> thisEvent = null;
+        if (Instance.m_eventWithTransformDictionary.TryGetValue(eventName, out thisEvent))
+        {
+            thisEvent.RemoveListener(listener);
+        }
+    }
+
+
+    public static void TriggerEvent(TransformEventName eventName, Transform argument)
+    {
+        UnityEvent<Transform> thisEvent = null;
+        if (Instance.m_eventWithTransformDictionary.TryGetValue(eventName, out thisEvent))
+        {
+            thisEvent.Invoke(argument);
+        }
+    }
+
+
     public class BoolEvent : UnityEvent<bool>
 	{
 		
@@ -265,6 +307,12 @@ public class EventManager : MonoBehaviour
 
 
     public class IntEvent : UnityEvent<int>
+    {
+
+    }
+
+
+    public class TransformEvent : UnityEvent<Transform>
     {
 
     }

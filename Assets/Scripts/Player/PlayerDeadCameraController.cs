@@ -10,13 +10,14 @@ public class PlayerDeadCameraController : MonoBehaviour
     [SerializeField] ParticleSystem m_fireParticles;
 
     private bool m_dead;
+    private bool m_missionSuccessful;
 
 
     void Update()
     {
-        if (m_dead)
+        if (m_dead || m_missionSuccessful)
         {
-            transform.Rotate(Vector3.up, m_deathCameraPanSpeed * Time.deltaTime, Space.World);
+            transform.Rotate(Vector3.up, m_deathCameraPanSpeed * Time.unscaledDeltaTime, Space.World);
 
             //if (Input.GetKeyDown(KeyCode.R))
             //    SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
@@ -44,6 +45,24 @@ public class PlayerDeadCameraController : MonoBehaviour
         if (m_fireParticles != null && colliderTag != Tags.Water)
             Instantiate(m_fireParticles, transform.position, Quaternion.identity);
 
+        DetatchCamera();
+        
+        EventManager.TriggerEvent(StandardEventName.MissionFailed);
+        print("Mission failed");
+    }
+
+
+    private void MissionSuccessful()
+    {
+        transform.rotation = Quaternion.identity;
+        Time.timeScale = 0;
+        m_missionSuccessful = true;
+        DetatchCamera();
+    }
+
+
+    private void DetatchCamera()
+    {
         var cameraPosition = transform.GetChild(0);
 
         Camera.main.transform.parent = cameraPosition;
@@ -56,18 +75,19 @@ public class PlayerDeadCameraController : MonoBehaviour
         EventManager.TriggerEvent(BooleanEventName.ActivateRadar, false);
         EventManager.TriggerEvent(BooleanEventName.ActivateTargetSystem, false);
         EventManager.TriggerEvent(BooleanEventName.ActivateHealthMeter, false);
-        EventManager.TriggerEvent(StandardEventName.MissionFailed);
     }
 
 
     void OnEnable()
     {
         EventManager.StartListening(StringEventName.PlayerDead, PlayerDead);
+        EventManager.StartListening(StandardEventName.ActivateCameraPan, MissionSuccessful);
     }
 
 
     void OnDisable()
     {
         EventManager.StopListening(StringEventName.PlayerDead, PlayerDead);
+        EventManager.StopListening(StandardEventName.ActivateCameraPan, MissionSuccessful);
     }
 }

@@ -51,5 +51,10 @@ public class RigidbodyManager : MonoBehaviour
         yield return new WaitForSeconds(m_settlingTime);
      
         m_rigidbody.isKinematic = true;
+
+        var colliders = GetComponentsInChildren<Collider>();
+
+        for (int i = 0; i < colliders.Length; i++)
+            colliders[i].isTrigger = true;
     } 
 }

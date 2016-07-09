@@ -18,14 +18,20 @@ public class MissionCompleteCanvasManager : MonoBehaviour
 
     private void EnableCanvas()
     {
-        StartCoroutine(EnableCanvasDelayed());
+        if (!PlayerHealth.PlayerDead)
+            StartCoroutine(EnableCanvasDelayed());
     }
 
 
     private IEnumerator EnableCanvasDelayed()
     {
         yield return new WaitForSeconds(m_delay);
-        m_canvas.enabled = true;
+
+        if (!PlayerHealth.PlayerDead)
+        {
+            m_canvas.enabled = true;
+            EventManager.TriggerEvent(StandardEventName.ActivateCameraPan);
+        }
     }
 
 

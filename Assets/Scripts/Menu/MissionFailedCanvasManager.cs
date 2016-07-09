@@ -18,7 +18,8 @@ public class MissionFailedCanvasManager : MonoBehaviour
 
     private void EnableCanvas()
     {
-        StartCoroutine(EnableCanvasDelayed());
+        //if (!MissionGoals.MissionSuccessful)
+            StartCoroutine(EnableCanvasDelayed());
     }
 
 

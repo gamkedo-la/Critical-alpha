@@ -78,6 +78,8 @@ public class EnemyHealth : MonoBehaviour, IDamageable
         for (int i = 0; i < m_objectsToDetatchOnDeath.Length; i++)
             m_objectsToDetatchOnDeath[i].parent = null;
 
+        EventManager.TriggerEvent(TransformEventName.EnemyDead, transform);
+
         Destroy(gameObject);
     }
 

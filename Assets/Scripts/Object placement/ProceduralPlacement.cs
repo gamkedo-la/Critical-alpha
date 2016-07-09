@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
+[RequireComponent(typeof(MissionGoals))]
 public class ProceduralPlacement : MonoBehaviour
 {
     [Header("Mission details")]
@@ -10,6 +11,8 @@ public class ProceduralPlacement : MonoBehaviour
     public string missionGoal;
     [TextArea(3, 10)]
     public string missionStory;
+
+    private MissionGoals m_missionGoals;
 
     [Header("Options")]
     [SerializeField] bool m_showDebugSpheres = false;
@@ -68,6 +71,9 @@ public class ProceduralPlacement : MonoBehaviour
         if (playerObject != null)
             m_playerPosition = playerObject.transform.position;
 
+        m_missionGoals = GetComponent<MissionGoals>();
+        //m_missionGoals.Initialise();
+
         PlaceMainTarget();
         PlaceEnemyAircraft();
         PlaceEnemyGroundDefences();
@@ -121,7 +127,10 @@ public class ProceduralPlacement : MonoBehaviour
             print(string.Format("Main target took {0} attempts to place", --attempts));
 
         if (mainTarget != null)
+        {
             m_groundZeroPosition = mainTarget.transform.position;
+            m_missionGoals.AddMainTarget(mainTarget.transform);
+        }
         else
             SetBackupGroundZeroPosition();
     }
@@ -177,6 +186,8 @@ public class ProceduralPlacement : MonoBehaviour
                     print(string.Format("Failed to place enemy aircraft number {0} in wave {1}", i + 1, k + 1));
                     Destroy(airGameObject);
                 }
+                else
+                    m_missionGoals.AddAirObject(airGameObject.transform);
             }
         }
     }
@@ -225,6 +236,8 @@ public class ProceduralPlacement : MonoBehaviour
                     print(string.Format("Failed to place enemy ground defence number {0} in wave {1}", i + 1, k + 1));
                     Destroy(groundGameObject);
                 }
+                else
+                    m_missionGoals.AddGroundObject(groundGameObject.transform);
             }
         }
     }
@@ -273,6 +286,8 @@ public class ProceduralPlacement : MonoBehaviour
                     print(string.Format("Failed to place enemy water defence number {0} in wave {1}", i + 1, k + 1));
                     Destroy(waterGameObject);
                 }
+                else
+                    m_missionGoals.AddWaterObject(waterGameObject.transform);
             }
         }
     }

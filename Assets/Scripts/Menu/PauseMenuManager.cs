@@ -6,6 +6,7 @@ using System.Collections;
 public class PauseMenuManager : MonoBehaviour
 {
     private Canvas m_canvasComponent;
+    private bool m_inputInUse;
 
 
     void Awake()
@@ -17,22 +18,29 @@ public class PauseMenuManager : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape)
+        if (Input.GetAxisRaw("Pause") == 1
             && !PlayerHealth.PlayerDead
             && !MissionGoals.MissionSuccessful)
-
-            if (Time.timeScale != 0)
+        {
+            if (!m_inputInUse)
             {
-                Time.timeScale = 0;
-                m_canvasComponent.enabled = true;
-            }
-            else
-            {
-                Time.timeScale = 1;
-                m_canvasComponent.enabled = false;
-            }
+                m_inputInUse = true;
 
-            Application.Quit();
+                if (Time.timeScale != 0)
+                {
+                    Time.timeScale = 0;
+                    m_canvasComponent.enabled = true;
+                }
+                else
+                {
+                    Time.timeScale = 1;
+                    m_canvasComponent.enabled = false;
+                }
+            }
+        }
+        
+        if (Input.GetAxisRaw("Pause") != 1)
+            m_inputInUse = false;
     }
 
 

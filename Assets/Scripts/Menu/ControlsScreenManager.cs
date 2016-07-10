@@ -6,6 +6,12 @@ public class ControlsScreenManager : MonoBehaviour
     [SerializeField] GameObject m_keyboardControls;
     [SerializeField] GameObject m_joypadControls;
 
+
+    void Awake()
+    {
+        ShowKeyboardControls();
+    }
+
 	
     public void ShowKeyboardControls()
     {

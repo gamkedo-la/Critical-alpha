@@ -2,7 +2,7 @@
 using System.Collections;
 using UnityEngine.SceneManagement;
 
-public class PlayerDeadCameraController : MonoBehaviour
+public class GameOverCameraController : MonoBehaviour
 {
     [SerializeField] float m_deathCameraPanSpeed = 20f;
     [SerializeField] ParticleSystem m_explosionParticles;

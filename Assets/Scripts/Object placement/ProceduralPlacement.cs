@@ -41,6 +41,7 @@ public class ProceduralPlacement : MonoBehaviour
     private MapGenerator m_mapGenerator;
     private Vector3 m_playerPosition;
     private Vector3 m_groundZeroPosition;
+    private Transform m_mainTargetTransform;
 
     private List<Vector3> m_groundObjectPositions = new List<Vector3>();
     private List<Vector3> m_waterObjectPositions = new List<Vector3>();
@@ -129,6 +130,7 @@ public class ProceduralPlacement : MonoBehaviour
         if (mainTarget != null)
         {
             m_groundZeroPosition = mainTarget.transform.position;
+            m_mainTargetTransform = mainTarget.transform;
             m_missionGoals.AddMainTarget(mainTarget.transform);
         }
         else
@@ -462,7 +464,7 @@ public class ProceduralPlacement : MonoBehaviour
 
 
     private bool TestWaterPosition(PlaceableObjectWater testPlaceableObject,
-        PlacementOptions options, bool mainTarget = false)
+        PlacementOptionsWater options, bool mainTarget = false)
     {
         var testObject = testPlaceableObject.gameObject;
         var objectsToAvoid = mainTarget ? null : m_waterObjectPositions;
@@ -475,7 +477,9 @@ public class ProceduralPlacement : MonoBehaviour
             return false;
 
         float rotationY = Random.Range(0f, 360f);
-        var trialRotation = Quaternion.Euler(0, rotationY, 0);
+        var trialRotation = m_mainTargetTransform != null && options.alignWithMainTarget 
+            ? m_mainTargetTransform.rotation
+            : Quaternion.Euler(0, rotationY, 0);
 
         testObject.transform.position = trialPosition;
 

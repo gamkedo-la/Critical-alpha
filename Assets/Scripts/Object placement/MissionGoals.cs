@@ -20,23 +20,10 @@ public class MissionGoals : MonoBehaviour
     private bool m_initialised;
 
 
-    //void Awake()
-    //{
-    //    Initialise();
-    //}
-
-
-    //public void Initialise()
-    //{
-    //    if (!m_initialised)
-    //    {
-    //        m_initialised = true;
-
-    //        m_groundDefences = new HashSet<Transform>();
-    //        m_airDefences = new HashSet<Transform>();
-    //        m_waterDefences = new HashSet<Transform>();
-    //    }
-    //}
+    void Awake()
+    {
+        MissionSuccessful = false;
+    }
 
 
     public void AddMainTarget(Transform mainTarget)

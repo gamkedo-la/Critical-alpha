@@ -18,9 +18,6 @@ public class GameOverCameraController : MonoBehaviour
         if (m_dead || m_missionSuccessful)
         {
             transform.Rotate(Vector3.up, m_deathCameraPanSpeed * Time.unscaledDeltaTime, Space.World);
-
-            //if (Input.GetKeyDown(KeyCode.R))
-            //    SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
     }
 

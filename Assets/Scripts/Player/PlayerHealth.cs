@@ -19,6 +19,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     void Awake()
     {
         m_currentHealth = m_startingHealth;
+        PlayerDead = false;
     }
 
 

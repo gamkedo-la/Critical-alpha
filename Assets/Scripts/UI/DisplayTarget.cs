@@ -68,7 +68,6 @@ public class DisplayTarget : MonoBehaviour {
         updateBorderColor();
 
         targetSelectIcon = GameObject.Find("Target Select Icon");
-        //targetSelectIcon.transform.SetAsLastSibling();
 
         initialised = true;
     }
@@ -80,8 +79,14 @@ public class DisplayTarget : MonoBehaviour {
         if (playerTransform == null)
             return;
 
-        if (targetIndex == 0 && enemies[targetIndex] == null)
+        if (enemies.Count == 0)
+        {
+            targetName.text = "No Target";
+            targetDistance.text = " ";
+            targetHealth.text = " ";
+            targetSelectIcon.active = false;
             return;
+        }
 
         if (targetIndex > enemies.Count - 1)
         {
@@ -92,6 +97,7 @@ public class DisplayTarget : MonoBehaviour {
         if (enemies[targetIndex] != null)
         {
             //Debug.Log("Target Index = " + targetIndex + "Enemies Length: " + enemies.Count);
+            updateBorderColor();
 
             targetName.text = enemies[targetIndex].name;
             direction = enemies[targetIndex].transform.position - playerTransform.position;
@@ -104,13 +110,14 @@ public class DisplayTarget : MonoBehaviour {
             targetDistance.text = "Dist: " + (direction.magnitude / 100).ToString("f1");
 
             enemyHealth = enemies[targetIndex].GetComponent<EnemyHealth>();
-            targetHealth.text = "Hull: " + ((float) enemyHealth.CurrentHealth / enemyHealth.StartingHealth) * 100 + "%";
+            targetHealth.text = "Hull: " + Mathf.Ceil(((float) enemyHealth.CurrentHealth / enemyHealth.StartingHealth) * 100) + "%";
 
             cameraTrackTarget();
 
         }
         else
         {
+            GameObject.Destroy(radarDots[targetIndex]);
             enemies.Remove(enemies[targetIndex]);
             radarDots.Remove(radarDots[targetIndex]);
             Debug.Log("Enemies Length: " + enemies.Count);
@@ -132,7 +139,7 @@ public class DisplayTarget : MonoBehaviour {
                 Debug.Log("Enemy Air");
             }
 
-            updateBorderColor();
+            //updateBorderColor();
 
         }
         else if (Input.GetKeyDown(KeyCode.Y))
@@ -144,7 +151,7 @@ public class DisplayTarget : MonoBehaviour {
                 targetIndex = enemies.Count - 1;
             }
 
-            updateBorderColor();
+            //updateBorderColor();
         }
         else if (Input.GetKeyDown(KeyCode.R))
         {
@@ -160,7 +167,7 @@ public class DisplayTarget : MonoBehaviour {
                 }
             }
 
-            updateBorderColor();
+            //updateBorderColor();
         }
 
         

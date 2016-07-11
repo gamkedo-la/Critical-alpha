@@ -19,8 +19,8 @@ public class DisplayRadar : MonoBehaviour
     private float polarPtOnRadarX;
     private float polarPtOnRadarY;
 
-    private GameObject[] enemies;
-    private GameObject[] radarDots;
+    //private GameObject[] enemies;
+    //private GameObject[] radarDots;
     private List<GameObject> enemyList = new List<GameObject>();
     private List<GameObject> radarDotList = new List<GameObject>();
 
@@ -56,9 +56,9 @@ public class DisplayRadar : MonoBehaviour
         playerTransform = FindObjectOfType<PlayerFlyingInput>().transform;
 
         //populate enemies array with all enemies tagged with Enemy
-        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+        //GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
         //print(enemies.Length + " enemies found");
-        radarDots = new GameObject[enemies.Length];
+        //radarDots = new GameObject[enemies.Length];
 
         GameObject[] enemyAir = GameObject.FindGameObjectsWithTag("Enemy Air");
         enemyList.AddRange(enemyAir);
@@ -132,9 +132,12 @@ public class DisplayRadar : MonoBehaviour
             }
             else
             {
+               
                 GameObject.Destroy(radarDotList[key]);
                 enemyList.Remove(enemyList[key]);
                 radarDotList.Remove(radarDotList[key]);
+                //Debug.Log("Enemy Object Destroy");
+
             }
            
         }

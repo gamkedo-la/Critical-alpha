@@ -16,6 +16,7 @@ public class PauseMenuManager : MonoBehaviour
         m_canvasComponent = GetComponent<Canvas>();
         m_canvasComponent.enabled = false;
         m_eventSystem = GameObject.Find("EventSystem").GetComponent<EventSystem>();
+        m_eventSystem.sendNavigationEvents = false;
     }
 
 

@@ -84,7 +84,8 @@ public class DisplayTarget : MonoBehaviour {
             targetName.text = "No Target";
             targetDistance.text = " ";
             targetHealth.text = " ";
-            targetSelectIcon.active = false;
+            targetBorderTop.color = Color.white;
+            targetBorderBottom.color = Color.white;
             return;
         }
 

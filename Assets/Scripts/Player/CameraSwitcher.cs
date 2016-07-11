@@ -27,6 +27,9 @@ public class CameraSwitcher : MonoBehaviour
         m_timeSinceSwitched += Time.unscaledDeltaTime;
         int index = m_index;
 
+        if (Time.timeScale == 0)
+            return;
+
         if (Input.GetKeyDown(KeyCode.Alpha1) && m_cameraPositions.Length > 0)
             index = 0;
         else if (Input.GetKeyDown(KeyCode.Alpha2) && m_cameraPositions.Length > 1)

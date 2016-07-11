@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.EventSystems;
 using System.Collections;
 
 [RequireComponent(typeof(Canvas))]
@@ -7,12 +8,14 @@ public class PauseMenuManager : MonoBehaviour
 {
     private Canvas m_canvasComponent;
     private bool m_inputInUse;
+    private EventSystem m_eventSystem;
 
 
     void Awake()
     {
         m_canvasComponent = GetComponent<Canvas>();
         m_canvasComponent.enabled = false;
+        m_eventSystem = GameObject.Find("EventSystem").GetComponent<EventSystem>();
     }
 
 
@@ -30,11 +33,13 @@ public class PauseMenuManager : MonoBehaviour
                 {
                     Time.timeScale = 0;
                     m_canvasComponent.enabled = true;
+                    m_eventSystem.sendNavigationEvents = true;
                 }
                 else
                 {
                     Time.timeScale = 1;
                     m_canvasComponent.enabled = false;
+                    m_eventSystem.sendNavigationEvents = false;
                 }
             }
         }

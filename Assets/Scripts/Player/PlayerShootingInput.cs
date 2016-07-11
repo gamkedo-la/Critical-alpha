@@ -15,7 +15,7 @@ public class PlayerShootingInput : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetAxisRaw("Jump") == 1)
+        if (Input.GetAxisRaw("Jump") == 1 && Time.timeScale > 0)
             m_shootingControlScript.Shoot();
     }
 }

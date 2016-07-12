@@ -41,7 +41,11 @@ public class ExplosionAudioManager : MonoBehaviour
 
     public void SetClips(AudioClip[] audioClips)
     {
+        if (audioClips.Length == 0)
+            return;
+
         int index = Random.Range(0, audioClips.Length);
+
         m_audioSource.clip = audioClips[index];
 
         if (m_audioSource.playOnAwake)

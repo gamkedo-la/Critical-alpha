@@ -66,11 +66,13 @@ public class BulletFlight : MonoBehaviour
         explosion.transform.position = transform.position;
 
         var explosionAudio = explosion.gameObject.GetComponent<ExplosionAudioManager>();
+        var audioClipBucket = other.gameObject.GetComponentInParent<AudioClipBucket>();
+
         float clipLength = 0;
 
-        if (explosionAudio != null)
+        if (explosionAudio != null && audioClipBucket != null)
         {
-            explosionAudio.SetClip(other.tag);
+            explosionAudio.SetClips(audioClipBucket.bulletHitAudioClips);
             clipLength = explosionAudio.ClipLength;
         }
 

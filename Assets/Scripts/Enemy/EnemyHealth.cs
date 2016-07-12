@@ -15,11 +15,13 @@ public class EnemyHealth : MonoBehaviour, IDamageable
 	private int m_currentHealth;
     private bool m_dead;
     private Transform m_transformJustDamaged;
+    private AudioClipBucket m_audioClipBucket;
 
 
     void Awake()
 	{
 		m_currentHealth = m_startingHealth;
+        m_audioClipBucket = GetComponent<AudioClipBucket>();
 	}
 
 
@@ -96,9 +98,9 @@ public class EnemyHealth : MonoBehaviour, IDamageable
             var explosionAudio = explosion.gameObject.GetComponent<ExplosionAudioManager>();
             float clipLength = 0;
 
-            if (explosionAudio != null)
+            if (explosionAudio != null && m_audioClipBucket != null)
             {
-                explosionAudio.SetClip(tag);
+                explosionAudio.SetClips(m_audioClipBucket.explosionAudioClips);
                 clipLength = explosionAudio.ClipLength;
             }
 

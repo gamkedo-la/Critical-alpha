@@ -39,7 +39,7 @@ public class EnemyHealth : MonoBehaviour, IDamageable
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag(Tags.Bullet) || m_dead 
+        if (other.CompareTag(Tags.Bullet)
             || (m_transformJustDamaged != null && m_transformJustDamaged == other.transform))
             return;
 
@@ -73,6 +73,9 @@ public class EnemyHealth : MonoBehaviour, IDamageable
 
     private void Dead()
     {
+        if (m_dead)
+            return;
+
         m_dead = true;
 
         if (m_explosion != null)
@@ -82,7 +85,7 @@ public class EnemyHealth : MonoBehaviour, IDamageable
 
             if (m_explosionMesh != null)
             {
-                print(m_explosionMesh.transform.lossyScale);
+                //print(m_explosionMesh.transform.lossyScale);
                 explosion.transform.localScale = m_explosionMesh.transform.lossyScale;
                 var shape = explosion.shape;
                 shape.shapeType = ParticleSystemShapeType.Mesh;

@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
-[RequireComponent(typeof(SphereCollider))]
+[RequireComponent(typeof(Collider))]
 [RequireComponent(typeof(TrailRenderer))]
 public class BulletFlight : MonoBehaviour
 {
@@ -10,6 +11,7 @@ public class BulletFlight : MonoBehaviour
     [SerializeField] float m_bulletSpeed = 100f;
     [SerializeField] ParticleSystem m_explosion;
     [SerializeField] ParticleSystem m_splash;
+    [SerializeField] AudioClipByTag[] m_audioClips;
     
     private Vector3 m_velocity;
     private bool m_bulletImpacted;
@@ -64,6 +66,20 @@ public class BulletFlight : MonoBehaviour
         var explosion = Instantiate(particles);
         explosion.transform.position = transform.position;
         float lifetime = explosion.startLifetime;
+
+        var explosionAudio = explosion.gameObject.GetComponent<ExplosionAudioManager>();
+
+        if (explosionAudio != null)
+        {
+            for (int i = 0; i < m_audioClips.Length; i++)
+            {
+                var clip = m_audioClips[i];
+
+                if (other.CompareTag(clip.tag))
+                    explosionAudio.SetClip(clip.audioClip);
+            }
+        }
+
         Destroy(explosion.gameObject, lifetime);
         Destroy(gameObject);
     }

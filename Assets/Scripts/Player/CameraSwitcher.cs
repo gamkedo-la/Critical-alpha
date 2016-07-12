@@ -9,11 +9,10 @@ public class CameraSwitcher : MonoBehaviour
     [SerializeField] int[] m_indicesToShowRadar = new int[] { 0, 1 };
     [SerializeField] int[] m_indicesToShowTargetSystem = new int[] { 0, 1 };
     [SerializeField] int[] m_indicesToShowHealthMeter = new int[] { 0, 1 };
-    [SerializeField] float m_cameraSwitchCooldown = 0.3f;
 
     private Transform m_cameraTransform;
     private int m_index;
-    private double m_timeSinceSwitched;
+    private bool m_inputAxisInUse; 
 
 
     void Awake()
@@ -24,7 +23,6 @@ public class CameraSwitcher : MonoBehaviour
 	
 	void Update()
     {
-        m_timeSinceSwitched += Time.unscaledDeltaTime;
         int index = m_index;
 
         if (Time.timeScale == 0)
@@ -51,17 +49,19 @@ public class CameraSwitcher : MonoBehaviour
         else if (Input.GetKeyDown(KeyCode.Alpha0) && m_cameraPositions.Length > 9)
             index = 9;
 
-        if (m_timeSinceSwitched > m_cameraSwitchCooldown)
+        int increment = (int) Input.GetAxisRaw("Camera");
+
+        if (increment == 0)
+            m_inputAxisInUse = false;
+        else if (!m_inputAxisInUse)
         {
-            int increment = (int) Input.GetAxisRaw("Camera");
+            m_inputAxisInUse = true;
             index += increment;
             index = (index + m_cameraPositions.Length) % m_cameraPositions.Length;
         }
 
         if (m_index != index)
         {
-            m_timeSinceSwitched = 0;
-
             m_index = index;
             var newTransform = m_cameraPositions[m_index];
 

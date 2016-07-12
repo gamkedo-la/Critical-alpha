@@ -64,12 +64,17 @@ public class BulletFlight : MonoBehaviour
 
         var explosion = Instantiate(particles);
         explosion.transform.position = transform.position;
-        float lifetime = explosion.startLifetime;
 
         var explosionAudio = explosion.gameObject.GetComponent<ExplosionAudioManager>();
+        float clipLength = 0;
 
         if (explosionAudio != null)
+        {
             explosionAudio.SetClip(other.tag);
+            clipLength = explosionAudio.ClipLength;
+        }
+
+        float lifetime = Mathf.Max(clipLength, explosion.startLifetime);
 
         Destroy(explosion.gameObject, lifetime);
         Destroy(gameObject);

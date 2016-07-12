@@ -94,11 +94,15 @@ public class EnemyHealth : MonoBehaviour, IDamageable
             }
 
             var explosionAudio = explosion.gameObject.GetComponent<ExplosionAudioManager>();
+            float clipLength = 0;
 
             if (explosionAudio != null)
+            {
                 explosionAudio.SetClip(tag);
+                clipLength = explosionAudio.ClipLength;
+            }
 
-            float lifetime = explosion.startLifetime;
+            float lifetime = Mathf.Max(clipLength, explosion.startLifetime);
             Destroy(explosion.gameObject, lifetime);
         }
 

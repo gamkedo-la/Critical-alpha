@@ -33,5 +33,14 @@ public class ExplosionAudioManager : MonoBehaviour
                 break;
             }
         }
+
+        if (m_audioSource.playOnAwake)
+            m_audioSource.Play();
+    }
+
+
+    public float ClipLength
+    {
+        get { return m_audioSource.clip != null ? m_audioSource.clip.length : 0; }
     }
 }

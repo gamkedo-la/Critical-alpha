@@ -435,7 +435,7 @@ public class ProceduralPlacement : MonoBehaviour
 
             float heightDifference = boundsData.HeightDifference();
 
-            float y = rigidbody == null
+            float y = rigidbody == null || rigidbody.useGravity == false
                 ? boundsData.minTerrainHeight
                 : boundsData.maxTerrainHeight + 0.5f * maxHeightDifference;
 

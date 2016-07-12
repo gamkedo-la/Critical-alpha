@@ -11,7 +11,6 @@ public class BulletFlight : MonoBehaviour
     [SerializeField] float m_bulletSpeed = 100f;
     [SerializeField] ParticleSystem m_explosion;
     [SerializeField] ParticleSystem m_splash;
-    [SerializeField] AudioClipByTag[] m_audioClips;
     
     private Vector3 m_velocity;
     private bool m_bulletImpacted;
@@ -70,15 +69,7 @@ public class BulletFlight : MonoBehaviour
         var explosionAudio = explosion.gameObject.GetComponent<ExplosionAudioManager>();
 
         if (explosionAudio != null)
-        {
-            for (int i = 0; i < m_audioClips.Length; i++)
-            {
-                var clip = m_audioClips[i];
-
-                if (other.CompareTag(clip.tag))
-                    explosionAudio.SetClip(clip.audioClip);
-            }
-        }
+            explosionAudio.SetClip(other.tag);
 
         Destroy(explosion.gameObject, lifetime);
         Destroy(gameObject);

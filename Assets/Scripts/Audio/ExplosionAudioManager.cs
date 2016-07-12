@@ -5,6 +5,8 @@ using System.Collections;
 public class ExplosionAudioManager : MonoBehaviour
 {
     [SerializeField] Vector2 m_pitchMinMax = new Vector2(0.8f, 1.2f);
+    [SerializeField] AudioClipsByTag[] m_audioClips;
+
 
     private AudioSource m_audioSource;
 
@@ -16,8 +18,18 @@ public class ExplosionAudioManager : MonoBehaviour
     }
 
 
-    public void SetClip(AudioClip clip)
+    public void SetClip(string tag)
     {
-        m_audioSource.clip = clip;
+        for (int i = 0; i < m_audioClips.Length; i++)
+        {
+            var clip = m_audioClips[i];
+
+            if (tag == clip.tag)
+            {
+                int index = Random.Range(0, clip.audioClips.Length);
+                m_audioSource.clip = clip.audioClips[index];
+                break;
+            }
+        }
     }
 }

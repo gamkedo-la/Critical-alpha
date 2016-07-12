@@ -2,8 +2,8 @@
 using System.Collections;
 
 [System.Serializable]
-public class AudioClipByTag
+public class AudioClipsByTag
 {
     public string tag;
-    public AudioClip audioClip;
+    public AudioClip[] audioClips;
 }

@@ -20,6 +20,8 @@ public class ExplosionAudioManager : MonoBehaviour
 
     public void SetClip(string tag)
     {
+        print(string.Format("Explosion audio triggered by object with tag: {0}", tag));
+
         for (int i = 0; i < m_audioClips.Length; i++)
         {
             var clip = m_audioClips[i];

@@ -93,6 +93,11 @@ public class EnemyHealth : MonoBehaviour, IDamageable
                 explosion.transform.rotation = m_explosionMesh.transform.rotation;
             }
 
+            var explosionAudio = explosion.gameObject.GetComponent<ExplosionAudioManager>();
+
+            if (explosionAudio != null)
+                explosionAudio.SetClip(tag);
+
             float lifetime = explosion.startLifetime;
             Destroy(explosion.gameObject, lifetime);
         }

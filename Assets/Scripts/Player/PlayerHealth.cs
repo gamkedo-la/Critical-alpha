@@ -46,7 +46,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag(Tags.Bullet) 
+        if (other.CompareTag(Tags.Bullet)
             || (m_transformJustDamaged != null && m_transformJustDamaged == other.transform))
             return;
 
@@ -75,6 +75,9 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
     private void Dead(string colliderTag)
     {
+        if (m_dead)
+            return;
+
         //print(colliderTag);
         m_dead = true;
         

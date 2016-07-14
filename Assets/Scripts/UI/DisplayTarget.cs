@@ -34,6 +34,9 @@ public class DisplayTarget : MonoBehaviour {
 
     private bool initialised;
 
+    private bool closestTargetAxisInUse;
+    private bool cycleTargetAxisInUse;
+
 
     // Use this for initialization
     void Start () {
@@ -149,9 +152,19 @@ public class DisplayTarget : MonoBehaviour {
             Debug.Log("Enemies Length: " + enemies.Count);
         }
 
+        float cycleTargetInput = Input.GetAxisRaw("Cycle Target");
+        float closestTargetInput = Input.GetAxisRaw("Closest Target");
 
-        if (Input.GetKeyDown(KeyCode.T))
+        if (cycleTargetInput == 0)
+            cycleTargetAxisInUse = false;
+
+        if (closestTargetInput == 0)
+            closestTargetAxisInUse = false;
+
+        if (!cycleTargetAxisInUse && cycleTargetInput == 1)
         {
+            cycleTargetAxisInUse = true;
+
             //Reset Previous Target back to Enemy Layer
             ChangeLayersRecursively(enemies[targetIndex].transform, "Enemy");
 
@@ -170,8 +183,10 @@ public class DisplayTarget : MonoBehaviour {
             //updateBorderColor();
 
         }
-        else if (Input.GetKeyDown(KeyCode.Y))
+        else if (!cycleTargetAxisInUse && cycleTargetInput == -1)
         {
+            cycleTargetAxisInUse = true;
+
             //Reset Previous Target back to Enemy Layer
             ChangeLayersRecursively(enemies[targetIndex].transform, "Enemy");
 
@@ -184,8 +199,10 @@ public class DisplayTarget : MonoBehaviour {
 
             //updateBorderColor();
         }
-        else if (Input.GetKeyDown(KeyCode.R))
+        else if (!closestTargetAxisInUse && closestTargetInput == 1)
         {
+            closestTargetAxisInUse = true;
+
             //Reset Previous Target back to Enemy Layer
             ChangeLayersRecursively(enemies[targetIndex].transform, "Enemy");
 

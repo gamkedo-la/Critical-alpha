@@ -11,6 +11,13 @@ public class GameOverCameraController : MonoBehaviour
 
     private bool m_dead;
     private bool m_missionSuccessful;
+    private AudioClipBucket m_audioClipBucket;
+
+
+    void Awake()
+    {
+        m_audioClipBucket = GetComponentInParent<AudioClipBucket>();
+    }
 
 
     void Update()
@@ -30,13 +37,36 @@ public class GameOverCameraController : MonoBehaviour
         if (colliderTag == Tags.Water && m_waterSplashParticles != null)
         {
             var waterSplash = (ParticleSystem) Instantiate(m_waterSplashParticles, transform.position, m_waterSplashParticles.transform.rotation);
-            Destroy(waterSplash.gameObject, waterSplash.startLifetime);
+
+            var waterSplashAudio = waterSplash.gameObject.GetComponent<ExplosionAudioManager>();
+            float clipLength = 0;
+
+            if (waterSplashAudio != null)
+            {
+                clipLength = waterSplashAudio.ClipLength;
+            }
+
+            float lifetime = Mathf.Max(clipLength, waterSplash.startLifetime);
+            Destroy(waterSplash.gameObject, lifetime * 1.5f);
         }
 
         if (m_explosionParticles != null)
         {
             var explosion = (ParticleSystem) Instantiate(m_explosionParticles, transform.position, Quaternion.identity);
-            Destroy(explosion.gameObject, explosion.startLifetime);
+
+            var explosionAudio = explosion.gameObject.GetComponent<ExplosionAudioManager>();
+            float clipLength = 0;
+
+            if (explosionAudio != null)
+            {
+                clipLength = explosionAudio.ClipLength;
+
+                if (m_audioClipBucket != null)
+                    explosionAudio.SetClips(m_audioClipBucket.explosionAudioClips);             
+            }
+
+            float lifetime = Mathf.Max(clipLength, explosion.startLifetime);
+            Destroy(explosion.gameObject, lifetime * 1.5f);
         }
 
         if (m_fireParticles != null && colliderTag != Tags.Water)

@@ -423,7 +423,7 @@ public class ProceduralPlacement : MonoBehaviour
 
         var rigidbody = testObject.GetComponent<Rigidbody>();
 
-        var bounds = BoundsUtilities.OverallBounds(testObject);
+        var bounds = BoundsUtilities.OverallBounds(testPlaceableObject.gameObject);
 
         if (bounds != null)
         {
@@ -483,7 +483,7 @@ public class ProceduralPlacement : MonoBehaviour
 
         testObject.transform.position = trialPosition;
 
-        var bounds = BoundsUtilities.OverallBounds(testObject);
+        var bounds = BoundsUtilities.OverallBounds(testPlaceableObject.gameObject);
 
         if (bounds != null)
         {

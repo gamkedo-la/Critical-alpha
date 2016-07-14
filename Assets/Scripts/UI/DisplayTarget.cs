@@ -86,6 +86,7 @@ public class DisplayTarget : MonoBehaviour {
             targetHealth.text = " ";
             targetBorderTop.color = Color.white;
             targetBorderBottom.color = Color.white;
+            targetSelectIcon.active = false;
             return;
         }
 
@@ -97,7 +98,32 @@ public class DisplayTarget : MonoBehaviour {
 
         if (enemies[targetIndex] != null)
         {
-            //Debug.Log("Target Index = " + targetIndex + "Enemies Length: " + enemies.Count);
+
+            //enemies[targetIndex].layer = LayerMask.NameToLayer("Target");
+            //targetCamera.cullingMask = 1 << 10;
+            
+
+            //Gets object bounds of mesh and then chooses whichever is largest, x y or z.
+            var overallBounds = enemies[targetIndex].GetComponent<PlaceableObject>().GetUnrotatedBounds();
+            var largestBound = 0f;
+            if(overallBounds.Value.size.x > overallBounds.Value.size.y && overallBounds.Value.size.x > overallBounds.Value.size.z)
+            {
+
+                largestBound = overallBounds.Value.size.x;
+
+            }
+            else if(overallBounds.Value.size.y > overallBounds.Value.size.x && overallBounds.Value.size.y > overallBounds.Value.size.z){
+                largestBound = overallBounds.Value.size.y;
+            }
+            else
+            {
+                largestBound = overallBounds.Value.size.z;
+            }
+
+            Debug.Log("Overall Bounds Max: " + largestBound);
+            targetCamera.orthographicSize = (largestBound / 2f) + 5.5f;
+
+            targetSelectIcon.active = true;
             updateBorderColor();
 
             targetName.text = enemies[targetIndex].name;
@@ -128,6 +154,8 @@ public class DisplayTarget : MonoBehaviour {
 
         if (Input.GetKeyDown(KeyCode.T))
         {
+            //enemies[targetIndex].layer = LayerMask.NameToLayer("Enemy");
+
             targetIndex++;
 
             if (targetIndex >= enemies.Count)
@@ -145,6 +173,8 @@ public class DisplayTarget : MonoBehaviour {
         }
         else if (Input.GetKeyDown(KeyCode.Y))
         {
+            //enemies[targetIndex].layer = LayerMask.NameToLayer("Enemy");
+
             targetIndex--;
 
             if (targetIndex < 0)
@@ -156,6 +186,8 @@ public class DisplayTarget : MonoBehaviour {
         }
         else if (Input.GetKeyDown(KeyCode.R))
         {
+            //enemies[targetIndex].layer = LayerMask.NameToLayer("Enemy");
+
             float lowestMagnitude = direction.magnitude;
 
             for (int key = 0; key < enemies.Count; key++)

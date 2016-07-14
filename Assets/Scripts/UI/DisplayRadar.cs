@@ -88,8 +88,7 @@ public class DisplayRadar : MonoBehaviour
             radarDotList.Add(tempRadarDot);
         }
 
-        
-        Debug.Log("Radar Dots List : " + radarDotList.Count);
+        //Debug.Log("Radar Dots List : " + radarDotList.Count + "       Enemy count: " + enemyList.Count);
 
         initialised = true;
     }

@@ -37,6 +37,8 @@ public class DisplayTarget : MonoBehaviour {
     private bool closestTargetAxisInUse;
     private bool cycleTargetAxisInUse;
 
+    private AudioSource targetSelectAudioSource;
+
 
     // Use this for initialization
     void Start () {
@@ -71,6 +73,8 @@ public class DisplayTarget : MonoBehaviour {
         updateBorderColor();
 
         targetSelectIcon = GameObject.Find("Target Select Icon");
+
+        targetSelectAudioSource = GetComponent<AudioSource>();
 
         initialised = true;
     }
@@ -165,6 +169,8 @@ public class DisplayTarget : MonoBehaviour {
         {
             cycleTargetAxisInUse = true;
 
+            targetSelectAudioSource.Play();
+
             //Reset Previous Target back to Enemy Layer
             ChangeLayersRecursively(enemies[targetIndex].transform, "Enemy");
 
@@ -187,6 +193,8 @@ public class DisplayTarget : MonoBehaviour {
         {
             cycleTargetAxisInUse = true;
 
+            targetSelectAudioSource.Play();
+
             //Reset Previous Target back to Enemy Layer
             ChangeLayersRecursively(enemies[targetIndex].transform, "Enemy");
 
@@ -202,6 +210,8 @@ public class DisplayTarget : MonoBehaviour {
         else if (!closestTargetAxisInUse && closestTargetInput == 1)
         {
             closestTargetAxisInUse = true;
+
+            targetSelectAudioSource.Play();
 
             //Reset Previous Target back to Enemy Layer
             ChangeLayersRecursively(enemies[targetIndex].transform, "Enemy");

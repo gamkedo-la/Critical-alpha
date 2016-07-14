@@ -99,9 +99,8 @@ public class DisplayTarget : MonoBehaviour {
         if (enemies[targetIndex] != null)
         {
 
-            //enemies[targetIndex].layer = LayerMask.NameToLayer("Target");
-            //targetCamera.cullingMask = 1 << 10;
-            
+            //Move current target to Target layer which is what the culling mask of Target Camera is set to
+            ChangeLayersRecursively(enemies[targetIndex].transform, "Target");
 
             //Gets object bounds of mesh and then chooses whichever is largest, x y or z.
             var overallBounds = enemies[targetIndex].GetComponent<PlaceableObject>().GetUnrotatedBounds();
@@ -148,13 +147,13 @@ public class DisplayTarget : MonoBehaviour {
             enemies.Remove(enemies[targetIndex]);
             radarDots.Remove(radarDots[targetIndex]);
             Debug.Log("Enemies Length: " + enemies.Count);
-            //targetIndex++;
         }
 
 
         if (Input.GetKeyDown(KeyCode.T))
         {
-            //enemies[targetIndex].layer = LayerMask.NameToLayer("Enemy");
+            //Reset Previous Target back to Enemy Layer
+            ChangeLayersRecursively(enemies[targetIndex].transform, "Enemy");
 
             targetIndex++;
 
@@ -173,7 +172,8 @@ public class DisplayTarget : MonoBehaviour {
         }
         else if (Input.GetKeyDown(KeyCode.Y))
         {
-            //enemies[targetIndex].layer = LayerMask.NameToLayer("Enemy");
+            //Reset Previous Target back to Enemy Layer
+            ChangeLayersRecursively(enemies[targetIndex].transform, "Enemy");
 
             targetIndex--;
 
@@ -186,7 +186,8 @@ public class DisplayTarget : MonoBehaviour {
         }
         else if (Input.GetKeyDown(KeyCode.R))
         {
-            //enemies[targetIndex].layer = LayerMask.NameToLayer("Enemy");
+            //Reset Previous Target back to Enemy Layer
+            ChangeLayersRecursively(enemies[targetIndex].transform, "Enemy");
 
             float lowestMagnitude = direction.magnitude;
 
@@ -229,6 +230,15 @@ public class DisplayTarget : MonoBehaviour {
             return enemies[targetIndex];
         else
             return null;
+    }
+
+    void ChangeLayersRecursively(Transform trans, string name)
+    {
+        trans.gameObject.layer = LayerMask.NameToLayer(name);
+        foreach (Transform child in trans)
+        {
+            ChangeLayersRecursively(child, name);
+        }
     }
 
 

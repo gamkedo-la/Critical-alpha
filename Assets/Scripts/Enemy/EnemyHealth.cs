@@ -42,6 +42,7 @@ public class EnemyHealth : MonoBehaviour, IDamageable
     void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag(Tags.Bullet)
+            || Time.time < 0.1f     // To make sure no collisions happen during the placement algorithm
             || (m_transformJustDamaged != null && m_transformJustDamaged == other.transform))
             return;
 

@@ -235,7 +235,7 @@ public class ProceduralPlacement : MonoBehaviour
 
                 if (attempts > m_maxPlacementAttempts)
                 {
-                    print(string.Format("Failed to place enemy ground defence number {0} in wave {1}", i + 1, k + 1));
+                    print(string.Format("Failed to place enemy ground defence number {0} ({1}) in wave {2}", i + 1, groundGameObject.name, k + 1));
                     Destroy(groundGameObject);
                 }
                 else

@@ -3,16 +3,15 @@ using System.Collections;
 
 public class PlaceableObject : MonoBehaviour
 {
-    public Bounds? bounds;
-
-
-    void Awake()
+    public Bounds? GetUnrotatedBounds()
     {
         var rotation = transform.rotation;
         transform.rotation = Quaternion.identity;
 
-        bounds = BoundsUtilities.OverallBounds(gameObject);
+        var bounds = BoundsUtilities.OverallBounds(gameObject);
 
         transform.rotation = rotation;
+
+        return bounds;
     }
 }

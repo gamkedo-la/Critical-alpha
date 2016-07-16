@@ -1,9 +1,9 @@
 ﻿Shader "Custom/Over Draw"
 {
-	Properties
-	{
-		_OverDrawColor("Over Draw Color", Color) = (1,1,1,1)
-	}
+	//Properties
+	//{
+	//	_OverDrawColor("Over Draw Color", Color) = (1,1,1,1)
+	//}
 	SubShader
 	{
 		Tags
@@ -45,7 +45,9 @@
 
 			fixed4 frag(v2f i) : SV_Target
 			{
-				return _OverDrawColor;
+				fixed4 col = _OverDrawColor;
+				UNITY_OPAQUE_ALPHA(col.a);
+				return col;
 			}
 			ENDCG
 		}

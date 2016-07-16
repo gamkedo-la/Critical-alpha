@@ -13,7 +13,9 @@ public enum StandardEventName
     SetTerrainDetail = 2,
     MissionSuccessful = 3,
     MissionFailed = 4,
-    ActivateCameraPan = 5
+    ActivateCameraPan = 5,
+    Pause = 6,
+    Unpause = 7
 }
 
 

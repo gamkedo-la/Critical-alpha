@@ -32,13 +32,13 @@ public class PauseMenuManager : MonoBehaviour
 
                 if (Time.timeScale != 0)
                 {
-                    Time.timeScale = 0;
+                    EventManager.TriggerEvent(StandardEventName.Pause);
                     m_canvasComponent.enabled = true;
                     m_eventSystem.sendNavigationEvents = true;
                 }
                 else
                 {
-                    Time.timeScale = 1;
+                    EventManager.TriggerEvent(StandardEventName.Unpause);
                     m_canvasComponent.enabled = false;
                     m_eventSystem.sendNavigationEvents = false;
                 }
@@ -52,7 +52,7 @@ public class PauseMenuManager : MonoBehaviour
 
     public void LoadLevel(string levelToLoad)
     {
-        Time.timeScale = 1;
+        EventManager.TriggerEvent(StandardEventName.Unpause);
         SceneManager.LoadScene(levelToLoad);
     }
 

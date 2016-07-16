@@ -5,15 +5,50 @@ using System.Collections.Generic;
 [RequireComponent(typeof(PlaceableObject))]
 public class CallsignManager : MonoBehaviour
 {
+    private int m_maxAttempts = 100;
+
+
     void Awake()
     {
         if (name.EndsWith("(Clone)"))
             name = name.Remove(name.Length - 7);
 
-        int index = Random.Range(0, m_callsigns.Count);
+        var placeableObject = GetComponent<PlaceableObject>();
 
-        name = string.Format("{0}: {1}", name, m_callsigns[index]);
+        var placeableObjectAir = placeableObject as PlaceableObjectAir;
+
+        int index = -1;
+        
+        if (placeableObjectAir != null)
+        {
+            int attempt = 1;
+            bool indexFound = false;
+            while (!indexFound && attempt <= m_maxAttempts)
+            {
+                index = Random.Range(0, m_callsigns.Count);
+
+                if (!m_usedIndices.Contains(index))
+                {
+                    indexFound = true;
+                    m_usedIndices.Add(index);
+                }
+
+                attempt++;
+            }
+        }
+
+        if (index >= 0)
+            name = string.Format("{0}: {1}", name, m_callsigns[index]);
     }
+
+
+    public static void ResetUsedIndices()
+    {
+        m_usedIndices = new HashSet<int>();
+    }
+
+
+    private static HashSet<int> m_usedIndices;
 
 
     private static List<string> m_callsigns = new List<string>

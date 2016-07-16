@@ -53,6 +53,7 @@ public class ProceduralPlacement : MonoBehaviour
         m_seed = m_useGlobalSeed ? SeedManager.MissionSeed : m_seed;
         print("Mission seed: " + m_seed);
 
+        CallsignManager.ResetUsedIndices();
         var mapGeneratorObject = GameObject.FindGameObjectWithTag(Tags.MapGenerator);
 
         if (mapGeneratorObject != null)

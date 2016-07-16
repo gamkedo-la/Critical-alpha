@@ -126,7 +126,7 @@ public class DisplayTarget : MonoBehaviour {
                 largestBound = overallBounds.Value.size.z;
             }
 
-            Debug.Log("Overall Bounds Max: " + largestBound);
+            //Debug.Log("Overall Bounds Max: " + largestBound);
             targetCamera.orthographicSize = (largestBound / 2f) + 5.5f;
 
             targetSelectIcon.active = true;
@@ -241,7 +241,9 @@ public class DisplayTarget : MonoBehaviour {
     {
         targetCamera.transform.position = enemies[targetIndex].transform.position - (direction.normalized * 15.0f);
         targetCamera.transform.LookAt(enemies[targetIndex].transform.position, Camera.main.transform.up);
-
+        var angles = targetCamera.transform.rotation.eulerAngles;
+        angles.z = 0;
+        targetCamera.transform.rotation = Quaternion.Euler(angles);
     }
 
     void updateBorderColor()

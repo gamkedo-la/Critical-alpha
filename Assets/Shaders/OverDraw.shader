@@ -1,11 +1,16 @@
-﻿Shader "Hidden/Over Draw"
+﻿Shader "Custom/Over Draw"
 {
+	Properties
+	{
+		_OverDrawColor("Over Draw Color", Color) = (1,1,1,1)
+	}
 	SubShader
 	{
 		Tags
 		{
 			"Queue" = "Transparent"
 		}
+		//Tags{ "RenderType" = "Transparent" }
 
 		ZTest Always
 		ZWrite Off

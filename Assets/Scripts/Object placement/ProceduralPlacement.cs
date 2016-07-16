@@ -26,7 +26,7 @@ public class ProceduralPlacement : MonoBehaviour
     [SerializeField] float m_maxDistanceFromPlayer = 1200f;
     [SerializeField] float m_minAngleFromNorth = -45f;
     [SerializeField] float m_maxAngleFromNorth = 45f;
-    [SerializeField] Vector2 m_groubObjectHeightMinMax = new Vector2(0f, 1000f);
+    [SerializeField] Vector2 m_groundObjectHeightMinMax = new Vector2(0f, 1000f);
     [SerializeField] Vector2 m_airObjectAltitudeMinMax = new Vector2(100f, 500f);
 
     [Header("Enemy aircraft")]
@@ -431,8 +431,8 @@ public class ProceduralPlacement : MonoBehaviour
         {
             var boundsData = FindTerrainHeightAtCorners(bounds.Value, trialPosition, trialRotation);
 
-            float minHeight = options != null ? options.minHeight : m_groubObjectHeightMinMax.x;
-            float maxHeight = options != null ? options.maxHeight : m_groubObjectHeightMinMax.y;
+            float minHeight = options != null ? options.minHeight : m_groundObjectHeightMinMax.x;
+            float maxHeight = options != null ? options.maxHeight : m_groundObjectHeightMinMax.y;
             float maxHeightDifference = testPlaceableObject.maxHeightDifference;
 
             float heightDifference = boundsData.HeightDifference();

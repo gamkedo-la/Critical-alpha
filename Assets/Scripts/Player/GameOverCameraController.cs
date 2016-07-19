@@ -7,16 +7,22 @@ public class GameOverCameraController : MonoBehaviour
     [SerializeField] float m_deathCameraPanSpeed = 20f;
     [SerializeField] ParticleSystem m_explosionParticles;
     [SerializeField] ParticleSystem m_waterSplashParticles;
-    [SerializeField] ParticleSystem m_fireParticles;
+    [SerializeField] GameObject m_fireParticles;
 
     private bool m_dead;
     private bool m_missionSuccessful;
     private AudioClipBucket m_audioClipBucket;
+    private MapGenerator m_mapGenerator;
 
 
     void Awake()
     {
         m_audioClipBucket = GetComponentInParent<AudioClipBucket>();
+
+        var mapGeneratorObject = GameObject.FindGameObjectWithTag(Tags.MapGenerator);
+
+        if (mapGeneratorObject != null)
+            m_mapGenerator = mapGeneratorObject.GetComponent<MapGenerator>();
     }
 
 
@@ -70,7 +76,14 @@ public class GameOverCameraController : MonoBehaviour
         }
 
         if (m_fireParticles != null && colliderTag != Tags.Water)
-            Instantiate(m_fireParticles, transform.position, Quaternion.identity);
+        {
+            Vector3 position = transform.position;
+
+            if (m_mapGenerator != null)
+                position.y = m_mapGenerator.GetTerrainHeight(position.x, position.z);
+
+            Instantiate(m_fireParticles, position, m_fireParticles.transform.rotation);
+        }
 
         DetatchCamera();
         

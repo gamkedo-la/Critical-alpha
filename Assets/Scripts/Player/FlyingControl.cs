@@ -5,6 +5,7 @@ using System;
 public class FlyingControl : MonoBehaviour
 {
     public Vector3 ForwardVelocity;
+    public Vector3 ForwardVelocityInWorld;
 
     [SerializeField] float m_minForwardSpeed = 10f;
     [SerializeField] float m_maxForwardSpeed = 100f;
@@ -54,6 +55,7 @@ public class FlyingControl : MonoBehaviour
         m_liftSpeed = m_forwardSpeed * m_liftMultiplier;
 
         ForwardVelocity = Vector3.forward * m_forwardSpeed;
+        ForwardVelocityInWorld = transform.forward * m_forwardSpeed;
         transform.Translate((ForwardVelocity + Vector3.up * m_liftSpeed) * Time.deltaTime);
 		transform.Translate(m_downSpeed * Vector3.down * Time.deltaTime, Space.World);
 

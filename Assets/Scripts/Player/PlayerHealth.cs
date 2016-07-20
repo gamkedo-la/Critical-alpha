@@ -37,6 +37,9 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     }
 
 
+    public bool IsDead { get { return m_dead; } }
+
+
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.K))

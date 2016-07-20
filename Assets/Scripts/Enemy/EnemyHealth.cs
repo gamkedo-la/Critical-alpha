@@ -4,7 +4,10 @@ using System.Collections;
 public class EnemyHealth : MonoBehaviour, IDamageable 
 {
 	[SerializeField] int m_startingHealth = 100;
+    [SerializeField] GameObject m_aliveModel;
+    [SerializeField] GameObject m_deadModel;
 	[SerializeField] ParticleSystem m_explosion;
+    [SerializeField] GameObject m_fireAndSmoke;
     [SerializeField] MeshFilter m_explosionMesh;
     [SerializeField] int m_damageCausedToOthers = 100;
     [SerializeField] bool m_allowDestroyedByGround;
@@ -111,12 +114,24 @@ public class EnemyHealth : MonoBehaviour, IDamageable
             Destroy(explosion.gameObject, lifetime * 1.5f);
         }
 
+        if (m_fireAndSmoke != null)
+        {
+            var fire = Instantiate(m_fireAndSmoke);
+            fire.transform.position = transform.position;
+        }
+
         for (int i = 0; i < m_objectsToDetatchOnDeath.Length; i++)
             m_objectsToDetatchOnDeath[i].parent = null;
 
         EventManager.TriggerEvent(TransformEventName.EnemyDead, transform);
 
-        Destroy(gameObject, 0.05f);
+        if (m_aliveModel != null && m_deadModel != null)
+        {
+            m_aliveModel.SetActive(false);
+            m_deadModel.SetActive(true);
+        }
+        else
+            Destroy(gameObject, 0.05f);
     }
 
 

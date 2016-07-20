@@ -10,6 +10,9 @@ public class CallsignManager : MonoBehaviour
 
     void Awake()
     {
+        if (m_usedIndices == null)
+            ResetUsedIndices();
+
         if (name.EndsWith("(Clone)"))
             name = name.Remove(name.Length - 7);
 

@@ -33,7 +33,7 @@ public class GameController : MonoBehaviour
     private void OnPause()
     {
         Time.timeScale = 0;
-        print("Pause");
+        //print("Pause");
         if (m_sfxMuted != null)
             m_sfxMuted.TransitionTo(0.01f);
     }
@@ -42,7 +42,7 @@ public class GameController : MonoBehaviour
     private void OnUnpause()
     {
         Time.timeScale = 1;
-        print("Unpause");
+        //print("Unpause");
         if (m_sfxFullVolume != null)
             m_sfxFullVolume.TransitionTo(0.01f);
     }

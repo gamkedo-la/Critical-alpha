@@ -30,7 +30,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
         m_currentHealth -= damage;
 
-        print(string.Format("{0} damaged by {1}, current health = {2}", name, damage, m_currentHealth));
+        //print(string.Format("{0} damaged by {1}, current health = {2}", name, damage, m_currentHealth));
 
         if (m_currentHealth <= 0)
             Dead("");
@@ -57,7 +57,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
         if (otherDamageScript != null)
         {
-            print(string.Format("{0} causes {1} damage to {2}", name, m_damageCausedToOthers, other.name));
+            //print(string.Format("{0} causes {1} damage to {2}", name, m_damageCausedToOthers, other.name));
             otherDamageScript.Damage(m_damageCausedToOthers);
             m_transformJustDamaged = other.transform;
             StartCoroutine(ResetTransformJustDamaged());

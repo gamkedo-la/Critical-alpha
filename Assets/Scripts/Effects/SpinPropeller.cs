@@ -12,7 +12,7 @@ public class SpinPropeller : MonoBehaviour
 
     void Awake()
     {
-        m_flyingControlScript = transform.root.gameObject.GetComponent<FlyingControl>();
+        m_flyingControlScript = gameObject.GetComponentInParent<FlyingControl>();
         m_maxForwardSpeed = m_flyingControlScript.MaxForwardSpeed;
     }
 

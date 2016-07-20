@@ -55,22 +55,22 @@ public class MissionGoals : MonoBehaviour
         if (m_mainTarget != null && m_mainTarget == transform)
         {
             m_mainTarget = null;
-            print("Main target destroyed");
+            //print("Main target destroyed");
         }
         else if (m_groundDefences.Contains(transform))
         {
             m_groundDefences.Remove(transform);
-            print(string.Format("ground object {0} destroyed", transform.name));
+            //print(string.Format("ground object {0} destroyed", transform.name));
         }
         else if (m_airDefences.Contains(transform))
         {
             m_airDefences.Remove(transform);
-            print(string.Format("Air object {0} destroyed", transform.name));
+            //print(string.Format("Air object {0} destroyed", transform.name));
         }
         else if (m_waterDefences.Contains(transform))
         {
             m_waterDefences.Remove(transform);
-            print(string.Format("Water object {0} destroyed", transform.name));
+            //print(string.Format("Water object {0} destroyed", transform.name));
         }
 
         CheckStatus();
@@ -85,32 +85,32 @@ public class MissionGoals : MonoBehaviour
         {
             success = success && m_mainTarget == null;
 
-            if (m_mainTarget == null)
-                print("Main target criterion met");
+            //if (m_mainTarget == null)
+            //    print("Main target criterion met");
         }
 
         if (m_destroyAllGroundDefences)
         {
             success = success && m_groundDefences.Count == 0;
 
-            if (m_groundDefences.Count == 0)
-                print("Ground defences criterion met");
+            //if (m_groundDefences.Count == 0)
+            //    print("Ground defences criterion met");
         }
 
         if (m_destroyAllAirDefences)
         {
             success = success && m_airDefences.Count == 0;
 
-            if (m_airDefences.Count == 0)
-                print("Air defences criterion met");
+            //if (m_airDefences.Count == 0)
+            //    print("Air defences criterion met");
         }
 
         if (m_destroyAllWaterDefences)
         {
             success = success && m_waterDefences.Count == 0;
 
-            if (m_waterDefences.Count == 0)
-                print("Water defences criterion met");
+            //if (m_waterDefences.Count == 0)
+            //    print("Water defences criterion met");
         }
 
         if (success)

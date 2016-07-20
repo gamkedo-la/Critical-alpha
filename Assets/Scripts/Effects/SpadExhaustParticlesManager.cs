@@ -31,7 +31,7 @@ public class SpadExhaustParticlesManager : MonoBehaviour
 
         var rate = m_emission.rate;
 
-        if (m_flyingControlScript == null)
+        if (m_flyingControlScript == null || transform.parent == null)
         {
             m_dead = true;
             transform.parent = null;

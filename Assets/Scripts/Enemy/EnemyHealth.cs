@@ -16,6 +16,8 @@ public class EnemyHealth : MonoBehaviour, IDamageable
     [SerializeField] bool m_allowDestroyedByWater;
     [SerializeField] Transform[] m_objectsToDetatchOnDeath;
     [SerializeField] float m_transformJustDamagedResetTime = 0.1f;
+    [SerializeField] float m_maxSpinRateOnDeath = 30f;
+    [SerializeField] bool m_allowKillKey;
 
 	private int m_currentHealth;
     private bool m_dead;
@@ -25,6 +27,7 @@ public class EnemyHealth : MonoBehaviour, IDamageable
     private bool m_inWater;
     private bool m_crashedOnGround;
     private GameObject m_activeFireAndSmoke;
+    private float m_spinRate;
 
 
     void Awake()
@@ -41,6 +44,28 @@ public class EnemyHealth : MonoBehaviour, IDamageable
     }
 
 
+    void Update()
+    {
+        if (m_allowKillKey && Input.GetKeyDown(KeyCode.Q))
+            Damage(m_startingHealth);
+    }
+
+
+    void FixedUpdate()
+    {
+        if (!m_dead || m_rigidBody.isKinematic || m_inWater || m_crashedOnGround)
+            return;
+
+        float rotationZ = m_rigidBody.rotation.eulerAngles.z;
+        var rotation = Quaternion.LookRotation(m_rigidBody.velocity);
+        var eulerAngles = rotation.eulerAngles;
+        eulerAngles.z = rotationZ += m_spinRate * Time.deltaTime;
+        rotation = Quaternion.Euler(eulerAngles);
+
+        m_rigidBody.MoveRotation(rotation);
+    }
+
+
     public void Damage(int damage)
     {
         if (m_dead)
@@ -48,7 +73,7 @@ public class EnemyHealth : MonoBehaviour, IDamageable
 
         m_currentHealth -= damage;
 
-        print(string.Format("{0} damaged by {1}, current health = {2}", name, damage, m_currentHealth));
+        //print(string.Format("{0} damaged by {1}, current health = {2}", name, damage, m_currentHealth));
 
         if (m_currentHealth <= 0)
             Dead();
@@ -75,7 +100,7 @@ public class EnemyHealth : MonoBehaviour, IDamageable
 
         if (otherDamageScript != null)
         {
-            print(string.Format("{0} causes {1} damage to {2}", name, m_damageCausedToOthers, other.name));
+            //print(string.Format("{0} causes {1} damage to {2}", name, m_damageCausedToOthers, other.name));
             otherDamageScript.Damage(m_damageCausedToOthers);
             m_transformJustDamaged = other.transform;
             StartCoroutine(ResetTransformJustDamaged());
@@ -99,7 +124,7 @@ public class EnemyHealth : MonoBehaviour, IDamageable
         if (m_inWater || m_crashedOnGround || (col.gameObject.CompareTag(Tags.Ground) && !m_allowDestroyedByGround))
             return;
 
-        print(name + " crashed into ground");
+        //print(name + " crashed into ground");
         m_crashedOnGround = true;
 
         if (col.gameObject.CompareTag(Tags.Ground) && m_explosion != null)
@@ -114,7 +139,7 @@ public class EnemyHealth : MonoBehaviour, IDamageable
     private void EnterWater()
     {
         m_inWater = true;
-        m_rigidBody.drag = 1f;
+        m_rigidBody.drag = 3f;
 
         var particleSystems = m_activeFireAndSmoke.GetComponentsInChildren<ParticleSystem>();
 
@@ -192,8 +217,7 @@ public class EnemyHealth : MonoBehaviour, IDamageable
 
         if (m_fireAndSmoke != null)
         {
-            m_activeFireAndSmoke = Instantiate(m_fireAndSmoke);
-            m_activeFireAndSmoke.transform.position = transform.position;
+            m_activeFireAndSmoke = (GameObject) Instantiate(m_fireAndSmoke, transform.position, m_fireAndSmoke.transform.rotation);
             m_activeFireAndSmoke.transform.parent = transform;
         }
 
@@ -240,7 +264,8 @@ public class EnemyHealth : MonoBehaviour, IDamageable
         if (shootingAiInputScript != null)
             shootingAiInputScript.enabled = false;
 
-        m_rigidBody.AddTorque(transform.forward * Random.Range(-10f, 10f), ForceMode.Impulse);
+        m_spinRate = Random.Range(-m_maxSpinRateOnDeath, m_maxSpinRateOnDeath);
+        //print("Spin rate: " + m_spinRate);
 
         StartCoroutine(WaitForSleep());
     }
@@ -248,8 +273,22 @@ public class EnemyHealth : MonoBehaviour, IDamageable
 
     private IEnumerator WaitForSleep()
     {
+        // Wait for the first time the ridigbody comes to a stop, i.e. the initial crash
         while (!m_rigidBody.IsSleeping() && m_rigidBody.velocity.sqrMagnitude > 0.1f)
             yield return null;
+
+        //print(Time.time + ": Rigidbody stopped for first time");
+
+        // Then wait to see if it starts moving again
+        yield return new WaitForSeconds(1f);
+
+        //print(Time.time + ": Checking for any further movement");
+
+        // Finally, wait for the second time the ridigbody comes to a stop, i.e. settled
+        while (!m_rigidBody.IsSleeping() && m_rigidBody.velocity.sqrMagnitude > 0.1f)
+            yield return null;
+
+        //print(Time.time + ": Rigidbody stopped for second time");
 
         m_rigidBody.isKinematic = true;
         m_rigidBody.useGravity = false;

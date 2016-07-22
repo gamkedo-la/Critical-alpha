@@ -9,6 +9,8 @@ public class EnemyHealth : MonoBehaviour, IDamageable
 	[SerializeField] ParticleSystem m_explosion;
     [SerializeField] ParticleSystem m_waterSplash;
     [SerializeField] GameObject m_fireAndSmoke;
+    [SerializeField] float m_fireLifetime = 1f;
+    [SerializeField] float m_fireRate = 50f;
     [SerializeField] MeshFilter m_explosionMesh;
     [SerializeField] int m_damageCausedToOthers = 100;
     [SerializeField] bool m_becomePhysicsObjectOnDeath;
@@ -27,6 +29,8 @@ public class EnemyHealth : MonoBehaviour, IDamageable
     private bool m_inWater;
     private bool m_crashedOnGround;
     private GameObject m_activeFireAndSmoke;
+    private float m_originalFireLifetime;
+    private float m_originalFireRate;
     private float m_spinRate;
 
 
@@ -132,6 +136,22 @@ public class EnemyHealth : MonoBehaviour, IDamageable
             InstantiateExplosion();
             m_rigidBody.velocity *= 0.1f;
             m_rigidBody.drag = 1f;
+
+            var particleSystems = m_activeFireAndSmoke.GetComponentsInChildren<ParticleSystem>();
+
+            for (int i = 0; i < particleSystems.Length; i++)
+            {
+                var particleSystem = particleSystems[i];
+
+                if (particleSystem.name == "Fire")
+                {
+                    particleSystem.startLifetime = m_originalFireLifetime;
+                    //var emission = particleSystem.emission;
+                    //emission.rate.constantMax = m_originalFireRate;
+                    //particleSystem.emission.rate = rate;
+                    break;
+                }
+            }
         }
     }
 
@@ -205,6 +225,27 @@ public class EnemyHealth : MonoBehaviour, IDamageable
     }
 
 
+    private void InstantiateFireAndSmoke()
+    {
+        m_activeFireAndSmoke = (GameObject) Instantiate(m_fireAndSmoke, transform.position, m_fireAndSmoke.transform.rotation);
+        m_activeFireAndSmoke.transform.parent = transform;
+
+        var particleSystems = m_activeFireAndSmoke.GetComponentsInChildren<ParticleSystem>();
+
+        for (int i = 0; i < particleSystems.Length; i++)
+        {
+            var particleSystem = particleSystems[i];
+
+            if (particleSystem.name == "Fire")
+            {
+                m_originalFireLifetime = particleSystem.startLifetime;
+                particleSystem.startLifetime = m_fireLifetime;
+                break;
+            }
+        }
+    }
+
+
     private void Dead()
     {
         if (m_dead)
@@ -216,10 +257,7 @@ public class EnemyHealth : MonoBehaviour, IDamageable
             InstantiateExplosion();
 
         if (m_fireAndSmoke != null)
-        {
-            m_activeFireAndSmoke = (GameObject) Instantiate(m_fireAndSmoke, transform.position, m_fireAndSmoke.transform.rotation);
-            m_activeFireAndSmoke.transform.parent = transform;
-        }
+            InstantiateFireAndSmoke(); 
 
         for (int i = 0; i < m_objectsToDetatchOnDeath.Length; i++)
             m_objectsToDetatchOnDeath[i].parent = null;

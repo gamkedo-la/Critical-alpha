@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 public class GameOverCameraController : MonoBehaviour
 {
     [SerializeField] float m_deathCameraPanSpeed = 20f;
+    [SerializeField] float m_cameraDriftSpeed = 10f;
     [SerializeField] ParticleSystem m_explosionParticles;
     [SerializeField] ParticleSystem m_waterSplashParticles;
     [SerializeField] GameObject m_fireParticles;
@@ -13,11 +14,13 @@ public class GameOverCameraController : MonoBehaviour
     private bool m_missionSuccessful;
     private AudioClipBucket m_audioClipBucket;
     private MapGenerator m_mapGenerator;
+    private Transform m_camera;
 
 
     void Awake()
     {
         m_audioClipBucket = GetComponentInParent<AudioClipBucket>();
+        m_camera = Camera.main.transform;
 
         var mapGeneratorObject = GameObject.FindGameObjectWithTag(Tags.MapGenerator);
 
@@ -31,6 +34,7 @@ public class GameOverCameraController : MonoBehaviour
         if (m_dead || m_missionSuccessful)
         {
             transform.Rotate(Vector3.up, m_deathCameraPanSpeed * Time.unscaledDeltaTime, Space.World);
+            m_camera.Translate(-Vector3.forward * m_cameraDriftSpeed * Time.unscaledDeltaTime);
         }
     }
 

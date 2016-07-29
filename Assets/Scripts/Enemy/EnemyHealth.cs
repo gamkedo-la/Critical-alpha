@@ -400,4 +400,10 @@ public class EnemyHealth : MonoBehaviour, IDamageable
     {
         get { return m_crashedOnGround; }
     }
+
+
+    public bool IsInWater
+    {
+        get { return m_inWater; }
+    }
 }

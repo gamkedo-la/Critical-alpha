@@ -22,7 +22,7 @@ public class SpinPropeller : MonoBehaviour
 
     void Update()
     {
-        if (m_enemyHealthScript != null && m_enemyHealthScript.IsCrashedOnGround)
+        if (m_enemyHealthScript != null && (m_enemyHealthScript.IsCrashedOnGround ||m_enemyHealthScript.IsInWater))
             gameObject.SetActive(false);
 
         if (m_flyingControlScript == null)

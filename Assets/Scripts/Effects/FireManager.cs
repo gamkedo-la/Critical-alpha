@@ -40,7 +40,7 @@ public class FireManager : MonoBehaviour
             m_particleSystems[i].Stop();
 
         if (m_light != null)
-            m_light.enabled = false;
+            m_light.gameObject.SetActive(false);
     }
 
 
@@ -50,7 +50,9 @@ public class FireManager : MonoBehaviour
 
         while(!onGround)
         {
-            onGround = m_enemyHealthScript.IsCrashedOnGround || !m_enemyHealthScript.BecomesPhysicsObjectOnDeath;
+            onGround = m_enemyHealthScript.IsCrashedOnGround 
+                || m_enemyHealthScript.IsInWater
+                || !m_enemyHealthScript.BecomesPhysicsObjectOnDeath;
 
             yield return m_wait;
         }

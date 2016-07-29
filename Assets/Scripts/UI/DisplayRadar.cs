@@ -21,7 +21,7 @@ public class DisplayRadar : MonoBehaviour
 
     //private GameObject[] enemies;
     //private GameObject[] radarDots;
-    private List<GameObject> enemyList = new List<GameObject>();
+    private List<EnemyHealth> enemyList = new List<EnemyHealth>();
     private List<GameObject> radarDotList = new List<GameObject>();
 
     public GameObject radarBlip;
@@ -60,12 +60,20 @@ public class DisplayRadar : MonoBehaviour
         //print(enemies.Length + " enemies found");
         //radarDots = new GameObject[enemies.Length];
 
+        var allEnemies = new List<GameObject>();
         GameObject[] enemyAir = GameObject.FindGameObjectsWithTag("Enemy Air");
-        enemyList.AddRange(enemyAir);
+        allEnemies.AddRange(enemyAir);
         GameObject[] enemyLand = GameObject.FindGameObjectsWithTag("Enemy Land");
-        enemyList.AddRange(enemyLand);
+        allEnemies.AddRange(enemyLand);
         GameObject[] enemySea = GameObject.FindGameObjectsWithTag("Enemy Sea");
-        enemyList.AddRange(enemySea);
+        allEnemies.AddRange(enemySea);
+
+        for (int i = 0; i < allEnemies.Count; i++)
+        {
+            var enemyHealth = allEnemies[i].GetComponent<EnemyHealth>();
+            if (enemyHealth != null)
+                enemyList.Add(enemyHealth);
+        }
 
         //Instantiate radar blips with the appropriate color for each enemy and assign them to a list
         GameObject tempRadarDot;
@@ -102,11 +110,10 @@ public class DisplayRadar : MonoBehaviour
 
         for (int key = 0; key < enemyList.Count; key++)
         {
+            var enemy = enemyList[key];
             //If enemy hasn't been destroyed, update radar dot position, otherwise destroy
-            if (enemyList[key] != null)
+            if (enemy != null && !enemy.IsDead)
             {
-
-
                 targetRelative = playerTransform.InverseTransformDirection(enemyList[key].transform.position - playerTransform.position);
 
                 CalculatePolarPoints();
@@ -130,15 +137,12 @@ public class DisplayRadar : MonoBehaviour
                 }
             }
             else
-            {
-               
-                GameObject.Destroy(radarDotList[key]);
-                enemyList.Remove(enemyList[key]);
+            {        
+                Destroy(radarDotList[key]);
+                enemyList.Remove(enemy);
                 radarDotList.Remove(radarDotList[key]);
                 //Debug.Log("Enemy Object Destroy");
-
-            }
-           
+            }        
         }
     }
 
@@ -159,7 +163,7 @@ public class DisplayRadar : MonoBehaviour
 
     }
 
-    public List<GameObject> returnEnemyList()
+    public List<EnemyHealth> returnEnemyList()
     {
         return enemyList;
     }

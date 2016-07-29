@@ -99,9 +99,6 @@ public class EnemyHealth : MonoBehaviour, IDamageable
     }
 
 
-    public bool IsDead { get { return m_dead; } }
-
-
     void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag(Tags.Bullet)
@@ -375,7 +372,13 @@ public class EnemyHealth : MonoBehaviour, IDamageable
 
         m_rigidBody.isKinematic = true;
         m_rigidBody.useGravity = false;
-    } 
+    }
+
+
+    public bool IsDead
+    {
+        get { return m_dead; }
+    }
 
 
     public int CurrentHealth

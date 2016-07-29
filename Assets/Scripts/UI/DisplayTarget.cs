@@ -7,7 +7,7 @@ using System.Collections.Generic;
 public class DisplayTarget : MonoBehaviour {
 
     //Arrays
-    private List<GameObject> enemies;
+    private List<EnemyHealth> enemies;
     private List<GameObject> radarDots;
 
     private GameObject radarTarget;
@@ -103,9 +103,10 @@ public class DisplayTarget : MonoBehaviour {
             Debug.Log("Reset To Zero");
         }
 
-        if (enemies[targetIndex] != null)
-        {
+        var enemy = enemies[targetIndex];
 
+        if (enemy != null && !enemy.IsDead)
+        {
             //Move current target to Target layer which is what the culling mask of Target Camera is set to
             ChangeLayersRecursively(enemies[targetIndex].transform, "Target");
 
@@ -150,8 +151,8 @@ public class DisplayTarget : MonoBehaviour {
         }
         else
         {
-            GameObject.Destroy(radarDots[targetIndex]);
-            enemies.Remove(enemies[targetIndex]);
+            Destroy(radarDots[targetIndex]);
+            enemies.Remove(enemy);
             radarDots.Remove(radarDots[targetIndex]);
             Debug.Log("Enemies Length: " + enemies.Count);
         }
@@ -256,7 +257,7 @@ public class DisplayTarget : MonoBehaviour {
     public GameObject returnCurrentTarget()
     {
         if(targetIndex < enemies.Count)
-            return enemies[targetIndex];
+            return enemies[targetIndex].gameObject;
         else
             return null;
     }

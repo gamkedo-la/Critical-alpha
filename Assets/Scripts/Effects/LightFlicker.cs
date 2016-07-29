@@ -21,15 +21,22 @@ public class LightFlicker : MonoBehaviour
         m_intensity = m_light.intensity;
         m_perlinX = Random.Range(-100f, 100f);
         m_parent = transform.parent;
-        m_parentOffset = transform.position - m_parent.position;
-        transform.parent = null;
+        m_parentOffset = transform.position - m_parent.position;      
     }
 	
+
+    void Start()
+    {
+        transform.parent = null;
+    }
+
 
 	void Update()
     {
         float noise = Mathf.PerlinNoise(m_perlinX, Time.time * m_flickerFrequency);
         m_light.intensity = m_intensity * Mathf.Lerp(m_intensityMultiplierMinMax.x, m_intensityMultiplierMinMax.y, noise);
-        transform.position = Vector3.Lerp(transform.position, m_parent.position + m_parentOffset, Time.deltaTime * m_lightFollowSpeed);
+
+        if (m_parent!= null)
+            transform.position = Vector3.Lerp(transform.position, m_parent.position + m_parentOffset, Time.deltaTime * m_lightFollowSpeed);
 	}
 }

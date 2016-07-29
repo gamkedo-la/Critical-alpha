@@ -7,6 +7,9 @@ public class ShootingControl : MonoBehaviour
     [SerializeField] Transform[] m_bulletSpawnPoints;
     [SerializeField] float m_bulletCooldown = 0.15f;
     [SerializeField] float m_muzzleFlashTime = 0.05f;
+    [SerializeField] bool m_shakeCamera;
+    [SerializeField] float m_cameraShakeMagnitude = 0.2f;
+    [SerializeField] float m_cameraShakeDuration= 0.1f;
 
     private float m_timeSinceBulletFired;
     private FlyingControl m_flyingControlScript;
@@ -62,6 +65,9 @@ public class ShootingControl : MonoBehaviour
     {
         if (m_timeSinceBulletFired > m_bulletCooldown)
         {
+            if (m_shakeCamera)
+                EventManager.TriggerEvent(TwoFloatsEventName.ShakeCamera, m_cameraShakeMagnitude, m_cameraShakeDuration);
+
             //print("Instantiate bullet");
             m_timeSinceBulletFired = 0;
             var bullet = Instantiate(m_bullet);

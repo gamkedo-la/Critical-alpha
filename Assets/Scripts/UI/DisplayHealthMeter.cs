@@ -41,8 +41,9 @@ public class DisplayHealthMeter : MonoBehaviour {
             damageIndicator.color = new Color(Color.red.r, Color.red.g, Color.red.b, 0.587f);
         else if (currentFillAmount < previousFillAmount)
         {
-            StartCoroutine("FlashDamage");
-            StartCoroutine("Shake");
+            StartCoroutine(FlashDamage());
+            StartCoroutine(Shake());
+            //EventManager.TriggerEvent(TwoFloatsEventName.ShakeCamera, sceneMagnitude, duration);
         }
 
         previousFillAmount = currentFillAmount;
@@ -59,16 +60,12 @@ public class DisplayHealthMeter : MonoBehaviour {
 
     IEnumerator Shake()
     {
-
         float elapsed = 0.0f;
 
         Vector3 oroginalCanvasPos = canvasTransform.position;
-        Quaternion originalCamRot = Camera.main.transform.localRotation;
-
 
         while (elapsed < duration)
         {
-
             elapsed += Time.deltaTime;
 
             float percentComplete = elapsed / duration;
@@ -81,16 +78,10 @@ public class DisplayHealthMeter : MonoBehaviour {
             x *= damper;
 
             canvasTransform.position = new Vector3(z * canvasMagnitude, x * canvasMagnitude, oroginalCanvasPos.z);
-            Camera.main.transform.localRotation = originalCamRot;
-
-            Camera.main.transform.localRotation *= Quaternion.AngleAxis(z * sceneMagnitude, Vector3.forward);
-            Camera.main.transform.localRotation *= Quaternion.AngleAxis(x * sceneMagnitude, Vector3.right);
 
             yield return null;
         }
 
         canvasTransform.position = oroginalCanvasPos;
-        Camera.main.transform.localRotation = originalCamRot;
     }
-
 }

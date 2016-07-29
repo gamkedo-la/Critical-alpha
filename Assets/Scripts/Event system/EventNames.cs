@@ -34,6 +34,30 @@ public enum BooleanEventName
 
 
 /// <summary>
+/// Use float event names that need a float value sent to them
+/// </summary>
+public enum FloatEventName
+{
+    None = 0,
+
+    SetThrustLevel = 1,
+    SetMinThrustLevel = 2,
+    SetMaxThrustLevel = 3,
+}
+
+
+/// <summary>
+/// Use two-floats event names that need two float values sent to them
+/// </summary>
+public enum TwoFloatsEventName
+{
+    None = 0,
+
+    ShakeCamera = 1,
+}
+
+
+/// <summary>
 /// Use integer event names for events that need an integger sent to them
 /// </summary>
 public enum IntegerEventName
@@ -53,19 +77,6 @@ public enum StringEventName
 
     ChangeGraphicsQuality = 1,
     PlayerDead = 2,
-}
-
-
-/// <summary>
-/// Use float event names that need a float value sent to them
-/// </summary>
-public enum FloatEventName
-{
-    None = 0,
-
-    SetThrustLevel = 1,
-    SetMinThrustLevel = 2,
-    SetMaxThrustLevel = 3,
 }
 
 

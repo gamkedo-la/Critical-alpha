@@ -8,6 +8,7 @@ public class EventManager : MonoBehaviour
 	private Dictionary<StandardEventName, UnityEvent> m_eventDictionary;
 	private Dictionary<BooleanEventName, UnityEvent<bool>> m_eventWithBoolDictionary;
 	private Dictionary<FloatEventName, UnityEvent<float>> m_eventWithFloatDictionary;
+    private Dictionary<TwoFloatsEventName, UnityEvent<float, float>> m_eventWithTwoFloatsDictionary;
     private Dictionary<StringEventName, UnityEvent<string>> m_eventWithStringDictionary;
     private Dictionary<IntegerEventName, UnityEvent<int>> m_eventWithIntDictionary;
     private Dictionary<TransformEventName, UnityEvent<Transform>> m_eventWithTransformDictionary;
@@ -48,6 +49,9 @@ public class EventManager : MonoBehaviour
 
 		if (m_eventWithFloatDictionary == null)
 			m_eventWithFloatDictionary = new Dictionary<FloatEventName, UnityEvent<float>>();
+
+        if (m_eventWithTwoFloatsDictionary == null)
+            m_eventWithTwoFloatsDictionary = new Dictionary<TwoFloatsEventName, UnityEvent<float, float>>();
 
         if (m_eventWithStringDictionary == null)
             m_eventWithStringDictionary = new Dictionary<StringEventName, UnityEvent<string>>();
@@ -136,40 +140,78 @@ public class EventManager : MonoBehaviour
 	}
 
 
-	public static void StartListening(FloatEventName eventName, UnityAction<float> listener)
+    public static void StartListening(FloatEventName eventName, UnityAction<float> listener)
+    {
+        UnityEvent<float> thisEvent = null;
+        if (Instance.m_eventWithFloatDictionary.TryGetValue(eventName, out thisEvent))
+        {
+            thisEvent.AddListener(listener);
+        }
+        else
+        {
+            thisEvent = new FloatEvent();
+            thisEvent.AddListener(listener);
+            Instance.m_eventWithFloatDictionary.Add(eventName, thisEvent);
+        }
+    }
+
+
+    public static void StopListening(FloatEventName eventName, UnityAction<float> listener)
+    {
+        if (m_eventManager == null) return;
+
+        UnityEvent<float> thisEvent = null;
+        if (Instance.m_eventWithFloatDictionary.TryGetValue(eventName, out thisEvent))
+        {
+            thisEvent.RemoveListener(listener);
+        }
+    }
+
+
+    public static void TriggerEvent(FloatEventName eventName, float argument)
+    {
+        UnityEvent<float> thisEvent = null;
+        if (Instance.m_eventWithFloatDictionary.TryGetValue(eventName, out thisEvent))
+        {
+            thisEvent.Invoke(argument);
+        }
+    }
+
+
+    public static void StartListening(TwoFloatsEventName eventName, UnityAction<float, float> listener)
 	{
-		UnityEvent<float> thisEvent = null;
-		if (Instance.m_eventWithFloatDictionary.TryGetValue(eventName, out thisEvent))
+		UnityEvent<float, float> thisEvent = null;
+		if (Instance.m_eventWithTwoFloatsDictionary.TryGetValue(eventName, out thisEvent))
 		{
 			thisEvent.AddListener(listener);
 		} 
 		else
 		{
-			thisEvent = new FloatEvent();
+			thisEvent = new TwoFloatsEvent();
 			thisEvent.AddListener(listener);
-			Instance.m_eventWithFloatDictionary.Add(eventName, thisEvent);
+			Instance.m_eventWithTwoFloatsDictionary.Add(eventName, thisEvent);
 		}
 	}
 	
 	
-	public static void StopListening(FloatEventName eventName, UnityAction<float> listener)
+	public static void StopListening(TwoFloatsEventName eventName, UnityAction<float, float> listener)
 	{
 		if (m_eventManager == null) return;
 		
-		UnityEvent<float> thisEvent = null;
-		if (Instance.m_eventWithFloatDictionary.TryGetValue(eventName, out thisEvent))
+		UnityEvent<float, float> thisEvent = null;
+		if (Instance.m_eventWithTwoFloatsDictionary.TryGetValue(eventName, out thisEvent))
 		{
 			thisEvent.RemoveListener(listener);
 		}
 	}
 
 
-	public static void TriggerEvent(FloatEventName eventName, float argument)
+	public static void TriggerEvent(TwoFloatsEventName eventName, float argument1, float argument2)
 	{
-		UnityEvent<float> thisEvent = null;
-		if (Instance.m_eventWithFloatDictionary.TryGetValue(eventName, out thisEvent))
+		UnityEvent<float, float> thisEvent = null;
+		if (Instance.m_eventWithTwoFloatsDictionary.TryGetValue(eventName, out thisEvent))
 		{
-			thisEvent.Invoke(argument);
+			thisEvent.Invoke(argument1, argument2);
 		}
 	}
 
@@ -298,6 +340,12 @@ public class EventManager : MonoBehaviour
 	{
 		
 	}
+
+
+    public class TwoFloatsEvent : UnityEvent<float, float>
+    {
+
+    }
 
 
     public class StringEvent : UnityEvent<string>

@@ -61,7 +61,8 @@ public class EnemyHealth : MonoBehaviour, IDamageable
 
     void FixedUpdate()
     {
-        if (!m_dead || m_rigidBody == null || m_rigidBody.isKinematic || m_inWater || m_crashedOnGround)
+        if (!m_becomePhysicsObjectOnDeath || !m_dead || m_rigidBody == null 
+            || m_rigidBody.isKinematic || m_inWater || m_crashedOnGround)
             return;
 
         float rotationZ = m_rigidBody.rotation.eulerAngles.z;
@@ -129,7 +130,8 @@ public class EnemyHealth : MonoBehaviour, IDamageable
 
     void OnCollisionEnter(Collision col)
     {
-        if (m_inWater || m_crashedOnGround || (col.gameObject.CompareTag(Tags.Ground) && !m_allowDestroyedByGround))
+        if (!m_becomePhysicsObjectOnDeath || m_inWater || m_crashedOnGround 
+            || (col.gameObject.CompareTag(Tags.Ground) && !m_allowDestroyedByGround))
             return;
 
         if (col.gameObject.CompareTag(Tags.Ground) && m_explosion != null)

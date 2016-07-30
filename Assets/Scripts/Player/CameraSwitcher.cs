@@ -25,7 +25,7 @@ public class CameraSwitcher : MonoBehaviour
     {
         int index = m_index;
 
-        if (Time.timeScale == 0)
+        if (Time.timeScale == 0 || PlayerHealth.PlayerDead)
             return;
 
         if (Input.GetKeyDown(KeyCode.Alpha1) && m_cameraPositions.Length > 0)

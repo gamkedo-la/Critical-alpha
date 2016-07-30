@@ -23,7 +23,7 @@ public class EnemyShootingAiInput : MonoBehaviour
 
     void Update()
     {
-        if (m_player == null)
+        if (m_player == null || PlayerHealth.PlayerDead)
             return;
 
         if (IsPlayerInRange())

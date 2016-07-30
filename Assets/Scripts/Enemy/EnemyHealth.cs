@@ -4,27 +4,32 @@ using System.Collections;
 public class EnemyHealth : MonoBehaviour, IDamageable 
 {
 	[SerializeField] int m_startingHealth = 100;
+    [SerializeField] int m_damageCausedToOthers = 100;
+
     [SerializeField] GameObject m_aliveModel;
     [SerializeField] GameObject m_deadModel;
 	[SerializeField] ParticleSystem m_explosion;
+    [SerializeField] MeshFilter m_explosionMesh; 
     [SerializeField] ParticleSystem m_waterSplash;
     [SerializeField] GameObject m_fireAndSmoke;
     [SerializeField] Transform[] m_fireSpawnPoints;
+
     [SerializeField] float m_fireInFlightRateMultiplier = 5f;
     [SerializeField] float m_fireInFlightLifetimeMultiplier = 0.2f;
     [SerializeField] float m_smokeInFlightRateMultiplier = 2f;
     [SerializeField] float m_smokeInFlightLifetimeMultiplier = 0.5f;
-    [SerializeField] MeshFilter m_explosionMesh;
-    [SerializeField] int m_damageCausedToOthers = 100;
+    
     [SerializeField] bool m_becomePhysicsObjectOnDeath;
     [SerializeField] bool m_alignWithFlightDirection = true;
     [SerializeField] bool m_allowDestroyedByGround;
     [SerializeField] bool m_allowDestroyedByWater;
     [SerializeField] bool m_explodeOnCrashAfterDeath = true;
+
     [SerializeField] float m_rigidBodyDragInWater = 3f;
     [SerializeField] Transform[] m_objectsToDetatchOnDeath;
-    [SerializeField] float m_transformJustDamagedResetTime = 0.1f;
+    [SerializeField] float m_transformJustDamagedResetTime = 0.15f;
     [SerializeField] float m_maxSpinRateOnDeath = 30f;
+
     [SerializeField] bool m_allowKillKey;
 
 	private int m_currentHealth;

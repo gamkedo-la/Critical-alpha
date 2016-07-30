@@ -1,31 +1,23 @@
 ﻿using UnityEngine;
 using System.Collections;
-using UnityEngine.SceneManagement;
 
 public class GameOverCameraController : MonoBehaviour
 {
     [SerializeField] float m_deathCameraPanSpeed = 20f;
     [SerializeField] float m_cameraDriftSpeed = 10f;
-    [SerializeField] ParticleSystem m_explosionParticles;
-    [SerializeField] ParticleSystem m_waterSplashParticles;
-    [SerializeField] GameObject m_fireParticles;
+    [SerializeField] float m_maxDistanceFromAnchor = 500f;
 
     private bool m_dead;
     private bool m_missionSuccessful;
-    private AudioClipBucket m_audioClipBucket;
-    private MapGenerator m_mapGenerator;
+
+    private Transform m_player;
     private Transform m_camera;
 
 
     void Awake()
     {
-        m_audioClipBucket = GetComponentInParent<AudioClipBucket>();
+        m_player = GameObject.FindGameObjectWithTag(Tags.Player).transform;
         m_camera = Camera.main.transform;
-
-        var mapGeneratorObject = GameObject.FindGameObjectWithTag(Tags.MapGenerator);
-
-        if (mapGeneratorObject != null)
-            m_mapGenerator = mapGeneratorObject.GetComponent<MapGenerator>();
     }
 
 
@@ -33,8 +25,14 @@ public class GameOverCameraController : MonoBehaviour
     {
         if (m_dead || m_missionSuccessful)
         {
+            transform.position = m_player.position;
+
             transform.Rotate(Vector3.up, m_deathCameraPanSpeed * Time.unscaledDeltaTime, Space.World);
-            m_camera.Translate(-Vector3.forward * m_cameraDriftSpeed * Time.unscaledDeltaTime);
+
+            float distanceFromAnchor = (m_camera.position - transform.position).magnitude;
+
+            if (distanceFromAnchor < m_maxDistanceFromAnchor)
+                m_camera.Translate(-Vector3.forward * m_cameraDriftSpeed * Time.unscaledDeltaTime);
         }
     }
 
@@ -44,52 +42,7 @@ public class GameOverCameraController : MonoBehaviour
         m_dead = true;
         transform.rotation = Quaternion.identity;
 
-        if (colliderTag == Tags.Water && m_waterSplashParticles != null)
-        {
-            var waterSplash = (ParticleSystem) Instantiate(m_waterSplashParticles, transform.position, m_waterSplashParticles.transform.rotation);
-
-            var waterSplashAudio = waterSplash.gameObject.GetComponent<ExplosionAudioManager>();
-            float clipLength = 0;
-
-            if (waterSplashAudio != null)
-            {
-                clipLength = waterSplashAudio.ClipLength;
-            }
-
-            float lifetime = Mathf.Max(clipLength, waterSplash.startLifetime);
-            Destroy(waterSplash.gameObject, lifetime * 1.5f);
-        }
-
-        if (m_explosionParticles != null)
-        {
-            var explosion = (ParticleSystem) Instantiate(m_explosionParticles, transform.position, Quaternion.identity);
-
-            var explosionAudio = explosion.gameObject.GetComponent<ExplosionAudioManager>();
-            float clipLength = 0;
-
-            if (explosionAudio != null)
-            {
-                clipLength = explosionAudio.ClipLength;
-
-                if (m_audioClipBucket != null)
-                    explosionAudio.SetClips(m_audioClipBucket.explosionAudioClips);             
-            }
-
-            float lifetime = Mathf.Max(clipLength, explosion.startLifetime);
-            Destroy(explosion.gameObject, lifetime * 1.5f);
-        }
-
-        if (m_fireParticles != null && colliderTag != Tags.Water)
-        {
-            Vector3 position = transform.position;
-
-            if (m_mapGenerator != null)
-                position.y = m_mapGenerator.GetTerrainHeight(position.x, position.z);
-
-            Instantiate(m_fireParticles, position, m_fireParticles.transform.rotation);
-        }
-
-        DetatchCamera();
+        DetachCamera();
         
         EventManager.TriggerEvent(StandardEventName.MissionFailed);
         print("Mission failed");
@@ -101,11 +54,11 @@ public class GameOverCameraController : MonoBehaviour
         transform.rotation = Quaternion.identity;
         Time.timeScale = 0;
         m_missionSuccessful = true;
-        DetatchCamera();
+        DetachCamera();
     }
 
 
-    private void DetatchCamera()
+    private void DetachCamera()
     {
         var cameraPosition = transform.GetChild(0);
 

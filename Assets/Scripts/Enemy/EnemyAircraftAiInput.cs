@@ -163,7 +163,7 @@ public class EnemyAircraftAiInput : MonoBehaviour
 
         m_pitchAngle *= -Mathf.Rad2Deg;
 
-        if (m_player == null)
+        if (m_player == null || PlayerHealth.PlayerDead)
         {
             m_state = State.Patrol;
             return;

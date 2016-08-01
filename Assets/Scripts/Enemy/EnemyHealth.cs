@@ -25,7 +25,8 @@ public class EnemyHealth : MonoBehaviour, IDamageable
     [SerializeField] bool m_allowDestroyedByWater;
     [SerializeField] bool m_explodeOnCrashAfterDeath = true;
 
-    [SerializeField] float m_rigidBodyDragInWater = 3f;
+    [SerializeField] float m_rigidbodyDragInWater = 3f;
+    [SerializeField] float m_rigidbodyAngularDragInWater = 1f;
     [SerializeField] Transform[] m_objectsToDetatchOnDeath;
     [SerializeField] float m_transformJustDamagedResetTime = 0.15f;
     [SerializeField] float m_maxSpinRateOnDeath = 30f;
@@ -111,6 +112,9 @@ public class EnemyHealth : MonoBehaviour, IDamageable
             || (m_transformJustDamaged != null && m_transformJustDamaged == other.transform))
             return;
 
+        if (other.CompareTag(Tags.Water) && !m_inWater)
+            EnterWater();
+
         if (other.CompareTag(Tags.Water) && !m_allowDestroyedByWater)
             return;
 
@@ -132,13 +136,8 @@ public class EnemyHealth : MonoBehaviour, IDamageable
         if (!m_dead)
             return;
 
-        if (other.CompareTag(Tags.Water) && !m_inWater)
-        {
-            EnterWater();
-
-            if (m_waterSplash != null)
-                InstantiateWaterSplash(transform.position);
-        }
+        if (other.CompareTag(Tags.Water) && !m_inWater && m_waterSplash != null)
+            InstantiateWaterSplash(transform.position);
     }
 
 
@@ -194,7 +193,8 @@ public class EnemyHealth : MonoBehaviour, IDamageable
     private void EnterWater()
     {
         m_inWater = true;
-        m_rigidBody.drag = m_rigidBodyDragInWater;
+        m_rigidBody.drag = m_rigidbodyDragInWater;
+        m_rigidBody.angularDrag = m_rigidbodyAngularDragInWater;
     }
 
 

@@ -32,7 +32,12 @@ public class GameOverCameraController : MonoBehaviour
             float distanceFromAnchor = (m_camera.position - transform.position).magnitude;
 
             if (distanceFromAnchor < m_maxDistanceFromAnchor)
-                m_camera.Translate(-Vector3.forward * m_cameraDriftSpeed * Time.unscaledDeltaTime);
+            {
+                float distanceToMove = Mathf.Min(m_maxDistanceFromAnchor - distanceFromAnchor, 
+                    m_cameraDriftSpeed * Time.unscaledDeltaTime);
+
+                m_camera.Translate(-Vector3.forward * distanceToMove);
+            }
         }
     }
 

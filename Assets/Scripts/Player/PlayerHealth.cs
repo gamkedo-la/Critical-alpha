@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+
 public class PlayerHealth : MonoBehaviour, IDamageable
 {
     public static bool PlayerDead;
@@ -80,7 +81,6 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         float magnitude = scaledDamage * m_cameraShakeMagnitude;
         float duration = scaledDamage * m_cameraShakeDuration;
 
-        
         //print(string.Format("{0} damaged by {1}, current health = {2}", name, damage, m_currentHealth));
 
         if (m_currentHealth <= 0)
@@ -393,4 +393,21 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         get { return m_startingHealth; }
     }
 
+
+    public bool BecomesPhysicsObjectOnDeath
+    {
+        get { return true; }
+    }
+
+
+    public bool IsInWater
+    {
+        get { return m_inWater; }
+    }
+
+
+    public bool IsCrashedOnGround
+    {
+        get { return m_crashedOnGround; }
+    }
 }

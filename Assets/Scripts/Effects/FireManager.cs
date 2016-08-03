@@ -4,6 +4,7 @@ using System.Collections;
 public class FireManager : MonoBehaviour
 {
     [SerializeField] float m_fireLifeTimeSeconds = 120f;
+    [SerializeField] bool m_ignoreWaterTrigger;
 
     private Light m_light;
     private ParticleSystem[] m_particleSystems;
@@ -32,8 +33,7 @@ public class FireManager : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (!other.CompareTag(Tags.Water) 
-            || (m_healthScript != null && !m_healthScript.BecomesPhysicsObjectOnDeath))
+        if (!other.CompareTag(Tags.Water)) 
             return;
 
         for (int i = 0; i < m_particleSystems.Length; i++)

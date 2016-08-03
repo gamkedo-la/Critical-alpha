@@ -24,7 +24,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     
     [SerializeField] float m_rigidBodyDragInWater = 3f;
     [SerializeField] Transform[] m_objectsToDetatchOnDeath;
-    [SerializeField] float m_transformJustDamagedResetTime = 0.15f;
+    [SerializeField] float m_canDamageResetTime = 0.15f;
     [SerializeField] float m_maxSpinRateOnDeath = 30f;  
 
     [SerializeField] float m_cameraShakeMagnitude = 1f;
@@ -77,6 +77,8 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
         m_currentHealth -= damage;
 
+        DisableBriefly();
+
         float scaledDamage = damage * 0.1f;
         float magnitude = scaledDamage * m_cameraShakeMagnitude;
         float duration = scaledDamage * m_cameraShakeDuration;
@@ -89,6 +91,13 @@ public class PlayerHealth : MonoBehaviour, IDamageable
             EventManager.TriggerEvent(TwoFloatsEventName.ShakeCamera, magnitude, duration);
     }
 
+
+    public void DisableBriefly()
+    {
+        print(string.Format("{0} diabled for {1}s", name, m_canDamageResetTime));
+        m_canTakeDamage = false;
+        StartCoroutine(ResetTransformJustDamaged());
+    }
 
 
     void Update()
@@ -116,7 +125,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
     void OnTriggerEnter(Collider other)
     {
-        if (!m_canTakeDamage || other.CompareTag(Tags.Bullet)
+        if (other.CompareTag(Tags.Bullet)
             || (m_transformJustDamaged != null && m_transformJustDamaged == other.transform))
             return;
 
@@ -126,9 +135,6 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         {
             //print(string.Format("{0} causes {1} damage to {2}", name, m_damageCausedToOthers, other.name));
             otherDamageScript.Damage(m_damageCausedToOthers);
-            m_transformJustDamaged = other.transform;
-            m_canTakeDamage = false;
-            StartCoroutine(ResetTransformJustDamaged());
         } 
 
         if (!m_invulnerable && (other.CompareTag(Tags.Ground) || other.CompareTag(Tags.Water)))
@@ -274,7 +280,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
     private IEnumerator ResetTransformJustDamaged()
     {
-        yield return new WaitForSeconds(m_transformJustDamagedResetTime);
+        yield return new WaitForSeconds(m_canDamageResetTime);
 
         m_canTakeDamage = true;
         m_transformJustDamaged = null;

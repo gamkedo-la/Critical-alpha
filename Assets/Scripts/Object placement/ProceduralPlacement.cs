@@ -5,6 +5,8 @@ using System.Collections.Generic;
 [RequireComponent(typeof(MissionGoals))]
 public class ProceduralPlacement : MonoBehaviour
 {
+    public static float TimePlacementFinished;
+
     [Header("Mission details")]
     public string missionName;
     [TextArea(1, 2)]
@@ -80,6 +82,10 @@ public class ProceduralPlacement : MonoBehaviour
         PlaceEnemyAircraft();
         PlaceEnemyGroundDefences();
         PlaceEnemyWaterDefences();
+
+        TimePlacementFinished = Time.time;
+
+        print(string.Format("Placement finshed at: {0}", TimePlacementFinished));
     }
 
 
@@ -526,12 +532,14 @@ public class ProceduralPlacement : MonoBehaviour
         var corner2 = new Vector3(minX, minY, maxZ);
         var corner3 = new Vector3(maxX, minY, minZ);
         var corner4 = new Vector3(maxX, minY, maxZ);
+        var centre = new Vector3(0.5f * (minX + maxX), minY, 0.5f * (minZ + maxZ));
 
         // TODO: add side and centre sampling?
         var originToCorner1 = corner1 - trialPosition;
         var originToCorner2 = corner2 - trialPosition;
         var originToCorner3 = corner3 - trialPosition;
         var originToCorner4 = corner4 - trialPosition;
+        var originToCentre = centre - trialPosition;
 
         float originAboveBase = trialPosition.y - bounds.min.y;
 
@@ -539,22 +547,26 @@ public class ProceduralPlacement : MonoBehaviour
         originToCorner2 = trialRotation * originToCorner2;
         originToCorner3 = trialRotation * originToCorner3;
         originToCorner4 = trialRotation * originToCorner4;
+        originToCentre = trialRotation * originToCentre;
 
         corner1 = trialPosition + originToCorner1;
         corner2 = trialPosition + originToCorner2;
         corner3 = trialPosition + originToCorner3;
         corner4 = trialPosition + originToCorner4;
+        centre = trialPosition + originToCentre;
 
         float terrainHeightCorner1 = m_mapGenerator.GetTerrainHeight(corner1.x, corner1.z);
         float terrainHeightCorner2 = m_mapGenerator.GetTerrainHeight(corner2.x, corner2.z);
         float terrainHeightCorner3 = m_mapGenerator.GetTerrainHeight(corner3.x, corner3.z);
         float terrainHeightCorner4 = m_mapGenerator.GetTerrainHeight(corner4.x, corner4.z);
+        float terrainHeightCentre = m_mapGenerator.GetTerrainHeight(centre.x, centre.z);
 
-        float minTerrainHeight = Mathf.Min(terrainHeightCorner1, terrainHeightCorner2, terrainHeightCorner3, terrainHeightCorner4);
-        float maxTerrainHeight = Mathf.Max(terrainHeightCorner1, terrainHeightCorner2, terrainHeightCorner3, terrainHeightCorner4);
+        float minTerrainHeight = Mathf.Min(terrainHeightCorner1, terrainHeightCorner2, terrainHeightCorner3, terrainHeightCorner4, terrainHeightCentre);
+        float maxTerrainHeight = Mathf.Max(terrainHeightCorner1, terrainHeightCorner2, terrainHeightCorner3, terrainHeightCorner4, terrainHeightCentre);
 
-        var boundsData = new BoundsData(corner1, corner2, corner3, corner4, minTerrainHeight, maxTerrainHeight,
-            originAboveBase, terrainHeightCorner1, terrainHeightCorner2, terrainHeightCorner3, terrainHeightCorner4);
+        var boundsData = new BoundsData(corner1, corner2, corner3, corner4, centre, 
+            minTerrainHeight, maxTerrainHeight, originAboveBase, terrainHeightCorner1, 
+            terrainHeightCorner2, terrainHeightCorner3, terrainHeightCorner4, terrainHeightCentre);
 
         return boundsData;      
     }
@@ -566,26 +578,30 @@ public class ProceduralPlacement : MonoBehaviour
         boundsData.corner2.y = y - boundsData.originAboveBase;
         boundsData.corner3.y = y - boundsData.originAboveBase;
         boundsData.corner4.y = y - boundsData.originAboveBase;
+        boundsData.centre.y = y - boundsData.originAboveBase;
 
         var sphere1 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         var sphere2 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         var sphere3 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         var sphere4 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        var sphere5 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
 
         sphere1.transform.position = boundsData.corner1;
         sphere2.transform.position = boundsData.corner2;
         sphere3.transform.position = boundsData.corner3;
         sphere4.transform.position = boundsData.corner4;
+        sphere5.transform.position = boundsData.centre;
 
         //print(string.Format("Pos: {0}, height: {1}", corner1, terrainHeightCorner1));
         //print(string.Format("Pos: {0}, height: {1}", corner2, terrainHeightCorner2));
         //print(string.Format("Pos: {0}, height: {1}", corner3, terrainHeightCorner3));
         //print(string.Format("Pos: {0}, height: {1}", corner4, terrainHeightCorner4));
 
-        var sphere5 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         var sphere6 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         var sphere7 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         var sphere8 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        var sphere9 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        var sphere10 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
 
         sphere1.GetComponent<Collider>().enabled = false;
         sphere2.GetComponent<Collider>().enabled = false;
@@ -595,16 +611,20 @@ public class ProceduralPlacement : MonoBehaviour
         sphere6.GetComponent<Collider>().enabled = false;
         sphere7.GetComponent<Collider>().enabled = false;
         sphere8.GetComponent<Collider>().enabled = false;
+        sphere9.GetComponent<Collider>().enabled = false;
+        sphere10.GetComponent<Collider>().enabled = false;
 
         boundsData.corner1.y = boundsData.terrainHeightCorner1;
         boundsData.corner2.y = boundsData.terrainHeightCorner2;
         boundsData.corner3.y = boundsData.terrainHeightCorner3;
         boundsData.corner4.y = boundsData.terrainHeightCorner4;
+        boundsData.centre.y = boundsData.terrainHeightCentre;
 
-        sphere5.transform.position = boundsData.corner1;
-        sphere6.transform.position = boundsData.corner2;
-        sphere7.transform.position = boundsData.corner3;
-        sphere8.transform.position = boundsData.corner4;
+        sphere6.transform.position = boundsData.corner1;
+        sphere7.transform.position = boundsData.corner2;
+        sphere8.transform.position = boundsData.corner3;
+        sphere9.transform.position = boundsData.corner4;
+        sphere10.transform.position = boundsData.centre;
 
         sphere1.transform.parent = parent;
         sphere2.transform.parent = parent;
@@ -614,5 +634,7 @@ public class ProceduralPlacement : MonoBehaviour
         sphere6.transform.parent = parent;
         sphere7.transform.parent = parent;
         sphere8.transform.parent = parent;
+        sphere9.transform.parent = parent;
+        sphere10.transform.parent = parent;
     }
 }

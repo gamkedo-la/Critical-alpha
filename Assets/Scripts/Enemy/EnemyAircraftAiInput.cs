@@ -102,11 +102,12 @@ public class EnemyAircraftAiInput : MonoBehaviour
 
         while(true)
         {
+            CheckOrientation();
+
             if (PlayerHealth.PlayerDead || m_player == null)
                 m_state = State.Patrol;
             else
-            {
-                CheckOrientation();
+            {   
                 CheckPlayerRange();
                 CheckHealth();
             }
@@ -167,6 +168,9 @@ public class EnemyAircraftAiInput : MonoBehaviour
         m_pitchAngle = Mathf.Atan2(transform.forward.y, forwardOnGround.magnitude);
 
         m_pitchAngle *= -Mathf.Rad2Deg;
+
+        if (m_player == null)
+            return;
 
         m_playerDirection = m_player.position - transform.position;
         var playerDirectionOnGround = new Vector2(m_playerDirection.x, m_playerDirection.z);

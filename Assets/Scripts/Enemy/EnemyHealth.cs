@@ -106,7 +106,7 @@ public class EnemyHealth : MonoBehaviour, IDamageable
 
         m_currentHealth -= damage;
 
-        print(string.Format("{0} damaged by {1}, current health = {2} (time: {3})", name, damage, m_currentHealth, Time.time));
+        //print(string.Format("{0} damaged by {1}, current health = {2} (time: {3})", name, damage, m_currentHealth, Time.time));
 
         DisableBriefly();
 
@@ -117,7 +117,7 @@ public class EnemyHealth : MonoBehaviour, IDamageable
 
     public void DisableBriefly()
     {
-        print(string.Format("{0} diabled for {1}s", name, m_canDamageResetTime));
+        //print(string.Format("{0} diabled for {1}s", name, m_canDamageResetTime));
         m_canTakeDamage = false;
         StartCoroutine(ResetTransformJustDamaged());
     }
@@ -150,7 +150,7 @@ public class EnemyHealth : MonoBehaviour, IDamageable
 
         if (otherDamageScript != null)
         {
-            print(string.Format("{0} causes {1} damage to {2}", name, m_damageCausedToOthers, other.name));
+            //print(string.Format("{0} causes {1} damage to {2}", name, m_damageCausedToOthers, other.name));
             otherDamageScript.Damage(m_damageCausedToOthers);
         }
         else

@@ -108,7 +108,7 @@ public class DisplayTarget : MonoBehaviour {
         if (enemy != null && !enemy.IsDead)
         {
             //Move current target to Target layer which is what the culling mask of Target Camera is set to
-            ChangeLayersRecursively(enemies[targetIndex].transform, "Target");
+            ChangeLayersRecursively(enemies[targetIndex].transform, "Enemy", "Target");
 
             //Gets object bounds of mesh and then chooses whichever is largest, x y or z.
             var overallBounds = enemies[targetIndex].GetComponent<PlaceableObject>().GetUnrotatedBounds();
@@ -173,7 +173,7 @@ public class DisplayTarget : MonoBehaviour {
             targetSelectAudioSource.Play();
 
             //Reset Previous Target back to Enemy Layer
-            ChangeLayersRecursively(enemies[targetIndex].transform, "Enemy");
+            ChangeLayersRecursively(enemies[targetIndex].transform, "Target", "Enemy");
 
             targetIndex++;
 
@@ -197,7 +197,7 @@ public class DisplayTarget : MonoBehaviour {
             targetSelectAudioSource.Play();
 
             //Reset Previous Target back to Enemy Layer
-            ChangeLayersRecursively(enemies[targetIndex].transform, "Enemy");
+            ChangeLayersRecursively(enemies[targetIndex].transform, "Target", "Enemy");
 
             targetIndex--;
 
@@ -215,7 +215,7 @@ public class DisplayTarget : MonoBehaviour {
             targetSelectAudioSource.Play();
 
             //Reset Previous Target back to Enemy Layer
-            ChangeLayersRecursively(enemies[targetIndex].transform, "Enemy");
+            ChangeLayersRecursively(enemies[targetIndex].transform, "Target", "Enemy");
 
             float lowestMagnitude = direction.magnitude;
 
@@ -262,14 +262,14 @@ public class DisplayTarget : MonoBehaviour {
             return null;
     }
 
-    void ChangeLayersRecursively(Transform trans, string name)
+    void ChangeLayersRecursively(Transform trans, string from, string to)
     {
-        trans.gameObject.layer = LayerMask.NameToLayer(name);
+        if (LayerMask.LayerToName(trans.gameObject.layer) == from)
+            trans.gameObject.layer = LayerMask.NameToLayer(to);
+
         foreach (Transform child in trans)
         {
-            ChangeLayersRecursively(child, name);
+            ChangeLayersRecursively(child, from, to);
         }
     }
-
-
 }

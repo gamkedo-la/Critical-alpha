@@ -2,7 +2,7 @@
 using System.Collections;
 
 [RequireComponent(typeof(ParticleSystem))]
-public class SpadExhaustParticlesManager : MonoBehaviour
+public class ExhaustParticlesManager : MonoBehaviour
 {
     [SerializeField] float m_minEmissionRateFraction = 0.2f;
 

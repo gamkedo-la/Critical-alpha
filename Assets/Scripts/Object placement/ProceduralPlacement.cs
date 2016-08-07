@@ -95,7 +95,7 @@ public class ProceduralPlacement : MonoBehaviour
     
         if (m_mainTargetPrefab == null)
         {
-            print("No main target prefab defined");
+            //print("No main target prefab defined");
             SetBackupGroundZeroPosition();
             return;
         }

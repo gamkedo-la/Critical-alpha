@@ -37,8 +37,6 @@ public class EnemyAircraftAiInput : MonoBehaviour
     private Vector3 m_playerDirection;
     private bool m_playerInRange;
     private float m_dotThisForwardToPlayer;
-    //private float m_dotThisUpToUp;
-    //private float m_dotThisRightToUp;
 
     [Header("World space angles to player")]
     private float m_forwardAngleToPlayer;
@@ -50,12 +48,10 @@ public class EnemyAircraftAiInput : MonoBehaviour
 
     [Header("Bank angle values")]
     private float m_bankAngle;
-    private float m_evadeBankMagnitude;
+    private float m_bankMagnitude;
     private float m_bankAngleToAimFor;
-    private float m_evadeBankAngleFromRightLimit;
-    private float m_evadeBankAngleFromLeftLimit;
-    private float m_chaseBankAngleFromRightLimit;
-    private float m_chaseBankAngleFromLeftLimit;
+    private float m_bankAngleFromRightLimit;
+    private float m_bankAngleFromLeftLimit;
     private bool m_turnRight;
 
     [Header("Evade decision values")]
@@ -241,7 +237,7 @@ public class EnemyAircraftAiInput : MonoBehaviour
 
     private void BankAngleToAimFor(float angleToTurn)
     {
-        float maxAngleToTurn = Mathf.Min(90f, Mathf.Abs(2f * angleToTurn));
+        float maxAngleToTurn = Mathf.Min(m_chaseMaxBankAngle, Mathf.Abs(2f * angleToTurn));
 
         m_bankAngleToAimFor = Mathf.Sign(angleToTurn) * maxAngleToTurn;
     }
@@ -319,7 +315,7 @@ public class EnemyAircraftAiInput : MonoBehaviour
 
     private void Bank()
     {
-        CalculateBankMagnitude();
+        CalculateBankMagnitude(m_evadeMaxBankAngle);
 
         if (m_turnRight)
             BankToRight();
@@ -328,18 +324,18 @@ public class EnemyAircraftAiInput : MonoBehaviour
     }
 
 
-    private void CalculateBankMagnitude()
+    private void CalculateBankMagnitude(float maxBankAngle)
     {
-        m_evadeBankAngleFromRightLimit = m_evadeMaxBankAngle - m_bankAngle;
-        m_evadeBankAngleFromLeftLimit = m_bankAngle + m_evadeMaxBankAngle;
+        m_bankAngleFromRightLimit = maxBankAngle - m_bankAngle;
+        m_bankAngleFromLeftLimit = m_bankAngle + maxBankAngle;
 
-        m_evadeBankMagnitude = m_turnRight ? m_evadeBankAngleFromRightLimit / 90f : m_evadeBankAngleFromLeftLimit / 90f;
+        m_bankMagnitude = m_turnRight ? m_bankAngleFromRightLimit / 90f : m_bankAngleFromLeftLimit / 90f;
     }
 
 
     private void BankToLeft()
     {
-        m_h = -m_evadeBankMagnitude;
+        m_h = -m_bankMagnitude;
 
         m_h = Mathf.Clamp(m_h, -1f, 1f);
     }
@@ -347,7 +343,7 @@ public class EnemyAircraftAiInput : MonoBehaviour
 
     private void BankToRight()
     {
-        m_h = m_evadeBankMagnitude;
+        m_h = m_bankMagnitude;
 
         m_h = Mathf.Clamp(m_h, -1f, 1f);
     }

@@ -94,7 +94,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
     public void DisableBriefly()
     {
-        print(string.Format("{0} diabled for {1}s", name, m_canDamageResetTime));
+        //print(string.Format("{0} diabled for {1}s", name, m_canDamageResetTime));
         m_canTakeDamage = false;
         StartCoroutine(ResetTransformJustDamaged());
     }

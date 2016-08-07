@@ -53,7 +53,7 @@ public class ProceduralPlacement : MonoBehaviour
     void Awake()
     {
         m_seed = m_useGlobalSeed ? SeedManager.MissionSeed : m_seed;
-        print("Mission seed: " + m_seed);
+        //print("Mission seed: " + m_seed);
 
         CallsignManager.ResetUsedIndices();
         var mapGeneratorObject = GameObject.FindGameObjectWithTag(Tags.MapGenerator);
@@ -85,7 +85,7 @@ public class ProceduralPlacement : MonoBehaviour
 
         TimePlacementFinished = Time.time;
 
-        print(string.Format("Placement finshed at: {0}", TimePlacementFinished));
+        //print(string.Format("Placement finshed at: {0}", TimePlacementFinished));
     }
 
 
@@ -128,11 +128,11 @@ public class ProceduralPlacement : MonoBehaviour
 
         if (attempts > m_maxPlacementAttempts)
         {
-            print("Failed to place main target");
+            //print("Failed to place main target");
             Destroy(mainTarget.gameObject);
         }
-        else
-            print(string.Format("Main target took {0} attempts to place", --attempts));
+        //else
+        //    print(string.Format("Main target took {0} attempts to place", --attempts));
 
         if (mainTarget != null)
         {
@@ -156,7 +156,7 @@ public class ProceduralPlacement : MonoBehaviour
     {
         if (m_aircraftPlacementOptions.Length == 0)
         {
-            print("No enemy aircraft waves are defined");
+            //print("No enemy aircraft waves are defined");
             return;
         }
 
@@ -170,7 +170,7 @@ public class ProceduralPlacement : MonoBehaviour
 
             if (number == 0)
             {
-                print(string.Format("No enemy aircraft prefabs defined in wave {0}", k + 1));
+                //print(string.Format("No enemy aircraft prefabs defined in wave {0}", k + 1));
                 continue;
             }        
 
@@ -192,7 +192,7 @@ public class ProceduralPlacement : MonoBehaviour
 
                 if (attempts > m_maxPlacementAttempts)
                 {
-                    print(string.Format("Failed to place enemy aircraft number {0} in wave {1}", i + 1, k + 1));
+                    //print(string.Format("Failed to place enemy aircraft number {0} in wave {1}", i + 1, k + 1));
                     Destroy(airGameObject);
                 }
                 else
@@ -206,7 +206,7 @@ public class ProceduralPlacement : MonoBehaviour
     {
         if (m_groundDefencesOptions.Length == 0)
         {
-            print("No enemy ground defence waves are defined");
+            //print("No enemy ground defence waves are defined");
             return;
         }
 
@@ -220,7 +220,7 @@ public class ProceduralPlacement : MonoBehaviour
 
             if (number == 0)
             {
-                print(string.Format("No enemy ground defence prefabs defined in wave {0}", k + 1));
+                //print(string.Format("No enemy ground defence prefabs defined in wave {0}", k + 1));
                 continue;
             }
 
@@ -242,7 +242,7 @@ public class ProceduralPlacement : MonoBehaviour
 
                 if (attempts > m_maxPlacementAttempts)
                 {
-                    print(string.Format("Failed to place enemy ground defence number {0} ({1}) in wave {2}", i + 1, groundGameObject.name, k + 1));
+                    //print(string.Format("Failed to place enemy ground defence number {0} ({1}) in wave {2}", i + 1, groundGameObject.name, k + 1));
                     Destroy(groundGameObject);
                 }
                 else
@@ -256,7 +256,7 @@ public class ProceduralPlacement : MonoBehaviour
     {
         if (m_waterDefencesOptions.Length == 0)
         {
-            print("No enemy water defence waves are defined");
+            //print("No enemy water defence waves are defined");
             return;
         }
 
@@ -270,7 +270,7 @@ public class ProceduralPlacement : MonoBehaviour
 
             if (number == 0)
             {
-                print(string.Format("No enemy water defence prefabs defined in wave {0}", k + 1));
+                //print(string.Format("No enemy water defence prefabs defined in wave {0}", k + 1));
                 continue;
             }
 
@@ -292,7 +292,7 @@ public class ProceduralPlacement : MonoBehaviour
 
                 if (attempts > m_maxPlacementAttempts)
                 {
-                    print(string.Format("Failed to place enemy water defence number {0} in wave {1}", i + 1, k + 1));
+                    //print(string.Format("Failed to place enemy water defence number {0} in wave {1}", i + 1, k + 1));
                     Destroy(waterGameObject);
                 }
                 else

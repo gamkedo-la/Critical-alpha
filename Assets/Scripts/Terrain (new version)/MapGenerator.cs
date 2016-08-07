@@ -132,7 +132,7 @@ public class MapGenerator : MonoBehaviour
             m_initialised = true;
 
             m_seed = m_useGlobalSeed ? SeedManager.TerrainSeed : m_seed;
-            print("Terrain seed: " + m_seed);
+            //print("Terrain seed: " + m_seed);
 
             m_terrainEquation.Initialise(m_seed);
         }

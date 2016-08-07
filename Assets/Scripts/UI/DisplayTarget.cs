@@ -100,7 +100,7 @@ public class DisplayTarget : MonoBehaviour {
         if (targetIndex > enemies.Count - 1)
         {
             targetIndex = 0;
-            Debug.Log("Reset To Zero");
+            //Debug.Log("Reset To Zero");
         }
 
         var enemy = enemies[targetIndex];
@@ -154,7 +154,7 @@ public class DisplayTarget : MonoBehaviour {
             Destroy(radarDots[targetIndex]);
             enemies.Remove(enemy);
             radarDots.Remove(radarDots[targetIndex]);
-            Debug.Log("Enemies Length: " + enemies.Count);
+            //Debug.Log("Enemies Length: " + enemies.Count);
         }
 
         float cycleTargetInput = Input.GetAxisRaw("Cycle Target");
@@ -184,7 +184,7 @@ public class DisplayTarget : MonoBehaviour {
 
             if (enemies[targetIndex].tag == "Enemy Air")
             {
-                Debug.Log("Enemy Air");
+                //Debug.Log("Enemy Air");
             }
 
             //updateBorderColor();
@@ -271,5 +271,23 @@ public class DisplayTarget : MonoBehaviour {
         {
             ChangeLayersRecursively(child, from, to);
         }
+    }
+
+
+    private void EnemyDestroyed(Transform transform)
+    {
+        ChangeLayersRecursively(transform, "Target", "Enemy");
+    }
+
+
+    void OnEnable()
+    {
+        EventManager.StartListening(TransformEventName.EnemyDead, EnemyDestroyed);
+    }
+
+
+    void OnDisable()
+    {
+        EventManager.StopListening(TransformEventName.EnemyDead, EnemyDestroyed);
     }
 }

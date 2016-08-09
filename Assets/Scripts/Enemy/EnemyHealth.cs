@@ -32,6 +32,7 @@ public class EnemyHealth : MonoBehaviour, IDamageable
     [SerializeField] Transform[] m_objectsToDetatchOnDeath;
     [SerializeField] Transform[] m_objectsToTransferToDeadModelOnDeath;
     [SerializeField] float m_canDamageResetTime = 0.15f;
+    [SerializeField] int m_minDamageForReset = 100;
     [SerializeField] float m_maxSpinRateOnDeath = 30f;
 
     [SerializeField] bool m_allowKillKey;
@@ -108,7 +109,8 @@ public class EnemyHealth : MonoBehaviour, IDamageable
 
         //print(string.Format("{0} damaged by {1}, current health = {2} (time: {3})", name, damage, m_currentHealth, Time.time));
 
-        DisableBriefly();
+        if (damage >= m_minDamageForReset)
+            DisableBriefly();
 
         if (m_currentHealth <= 0)
             Dead();

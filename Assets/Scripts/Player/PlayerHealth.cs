@@ -25,6 +25,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     [SerializeField] float m_rigidBodyDragInWater = 3f;
     [SerializeField] Transform[] m_objectsToDetatchOnDeath;
     [SerializeField] float m_canDamageResetTime = 0.15f;
+    [SerializeField] int m_minDamageForReset = 100;
     [SerializeField] float m_maxSpinRateOnDeath = 30f;  
 
     [SerializeField] float m_cameraShakeMagnitude = 1f;
@@ -77,7 +78,8 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
         m_currentHealth -= damage;
 
-        DisableBriefly();
+        if (damage >= m_minDamageForReset)
+            DisableBriefly();
 
         float scaledDamage = damage * 0.1f;
         float magnitude = scaledDamage * m_cameraShakeMagnitude;

@@ -73,13 +73,16 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
     public void Damage(int damage)
     {
+        if (damage >= m_minDamageForReset)
+        {
+            DisableBriefly();
+            InstantiateExplosion(transform.position);
+        }
+
         if (!m_canTakeDamage || m_invulnerable || PlayerDead)
             return;
 
         m_currentHealth -= damage;
-
-        if (damage >= m_minDamageForReset)
-            DisableBriefly();
 
         float scaledDamage = damage * 0.1f;
         float magnitude = scaledDamage * m_cameraShakeMagnitude;

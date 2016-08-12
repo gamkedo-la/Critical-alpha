@@ -22,6 +22,6 @@ public class EarthPosition : MonoBehaviour {
 	void Update () {
 
         transform.localPosition = new Vector3(transform.localPosition.x, transform.localPosition.y, playerTransform.position.z + distance);
-
+        transform.rotation = Quaternion.LookRotation(transform.position - playerTransform.position);
     }
 }

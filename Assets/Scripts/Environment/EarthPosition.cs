@@ -1,27 +1,23 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class EarthPosition : MonoBehaviour {
+public class EarthPosition : MonoBehaviour
+{
+    private Transform m_camera;
+    private Vector3 m_offset;
 
-    public float distance = 1000;
-    public float scale = 15f;
 
-    private Transform playerTransform;
+	void Start()
+    {
+        m_camera = Camera.main.transform;
+        m_offset = transform.position - m_camera.position;
 
-	// Use this for initialization
-	void Start () {
-
-        playerTransform = FindObjectOfType<PlayerFlyingInput>().transform;
-
-        transform.localPosition = new Vector3(transform.localPosition.x, transform.localPosition.y, distance);
-        transform.localScale = new Vector3(scale, scale, scale);
+        transform.rotation = Quaternion.LookRotation(m_offset);
+    }
 	
-	}
-	
-	// Update is called once per frame
-	void Update () {
 
-        transform.localPosition = new Vector3(transform.localPosition.x, transform.localPosition.y, playerTransform.position.z + distance);
-        transform.rotation = Quaternion.LookRotation(transform.position - playerTransform.position);
+	void Update()
+    {
+        transform.position = m_camera.position + m_offset;
     }
 }

@@ -119,7 +119,7 @@ public class EnemyHealth : MonoBehaviour, IDamageable
 
     public void DisableBriefly()
     {
-        //print(string.Format("{0} diabled for {1}s", name, m_canDamageResetTime));
+        //print(string.Format("{0} disabled for {1}s", name, m_canDamageResetTime));
         m_canTakeDamage = false;
         StartCoroutine(ResetTransformJustDamaged());
     }
@@ -131,7 +131,8 @@ public class EnemyHealth : MonoBehaviour, IDamageable
 
         if (other.CompareTag(Tags.Bullet)
             // To make sure no collisions happen during the placement algorithm
-            || Time.time < ProceduralPlacement.TimePlacementFinished)
+            || Time.time < ProceduralPlacement.TimePlacementFinished
+            || Time.timeSinceLevelLoad < 0.15)
             return;
 
         if (other.CompareTag(Tags.Water) && !m_inWater)

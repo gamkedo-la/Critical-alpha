@@ -74,13 +74,13 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     public void Damage(int damage)
     {
         if (damage >= m_minDamageForReset)
-        {
-            DisableBriefly();
             InstantiateExplosion(transform.position);
-        }
 
         if (!m_canTakeDamage || m_invulnerable || PlayerDead)
             return;
+
+        if (damage >= m_minDamageForReset)
+            DisableBriefly();
 
         m_currentHealth -= damage;
 

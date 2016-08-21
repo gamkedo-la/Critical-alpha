@@ -42,7 +42,7 @@ public class ExplosionTrigger : MonoBehaviour
         {
             var collider = colliders[i];
             var explosionTrigger = collider.GetComponent<ExplosionTrigger>();
-            var healthScript = collider.GetComponentInParent<IDamageable>();
+            var healthScript = collider.GetComponentInParent<EnemyHealth>();
 
             if (explosionTrigger != null)
             {

@@ -53,6 +53,8 @@ public class PauseMenuManager : MonoBehaviour
     public void LoadLevel(string levelToLoad)
     {
         EventManager.TriggerEvent(StandardEventName.Unpause);
+        print("Return to menu triggered");
+        EventManager.TriggerEvent(StandardEventName.ReturnToMenu);
         SceneManager.LoadScene(levelToLoad);
     }
 

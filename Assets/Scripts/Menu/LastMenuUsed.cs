@@ -9,12 +9,16 @@ public class LastMenuUsed : MonoBehaviour
 
     public void ReturnToLastMenuUsed()
     {
+        print("Return to last menu used");
+        EventManager.TriggerEvent(StandardEventName.ReturnToMenu);
         SceneManager.LoadScene(LastMenuUsedName);
     }
 
 
     public void ReturnToMainMenu()
     {
+        print("Return to main menu");
+        EventManager.TriggerEvent(StandardEventName.ReturnToMenu);
         SceneManager.LoadScene(0);
     }
 

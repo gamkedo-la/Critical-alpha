@@ -47,8 +47,7 @@ public class CloudGenerator : MonoBehaviour
 	{
         m_cloudParent = gameObject;
 
-		if (AllClouds == null)
-			AllClouds = new Dictionary<GameObject, Vector2>();
+	    AllClouds = new Dictionary<GameObject, Vector2>();
 
 		m_mainCamera = Camera.main;
 		var cameraOrigin = m_mainCamera.transform.position;
@@ -62,12 +61,16 @@ public class CloudGenerator : MonoBehaviour
 
 		for (int i = 0; i < m_numberOfClouds; i++) 
 		{
-			int index = Random.Range(0, cloudPrefabs.Length);
-			var newCloud = Instantiate(cloudPrefabs[index]);
+            var position = GetSpawnPosition();
 
-			var position = GetSpawnPosition();
+            if (!position.HasValue)
+                continue;
+
+            int index = Random.Range(0, cloudPrefabs.Length);
+			var newCloud = Instantiate(cloudPrefabs[index]);		
+
 			float y = Random.Range(m_minAltitude, m_maxAltitude);
-			newCloud.transform.position = new Vector3(position.x, y, position.y);
+			newCloud.transform.position = new Vector3(position.Value.x, y, position.Value.y);
 
 			float scale = Random.Range(m_minScale, m_maxScale);
 			newCloud.transform.localScale = new Vector3(scale, scale, scale);
@@ -78,7 +81,7 @@ public class CloudGenerator : MonoBehaviour
 			var renderers = newCloud.GetComponentsInChildren<MeshRenderer>();
 			m_clouds.Add(newCloud, renderers);
 
-            AllClouds.Add(newCloud, position);
+            AllClouds.Add(newCloud, position.Value);
 
             if (m_cloudParent != null)
                 newCloud.transform.parent = m_cloudParent.transform;
@@ -86,7 +89,7 @@ public class CloudGenerator : MonoBehaviour
 	}
 
 
-	private Vector2 GetSpawnPosition() 
+	private Vector2? GetSpawnPosition() 
 	{
 		Vector2 spawnPosition = new Vector2();
 		float startTime = Time.realtimeSinceStartup;
@@ -108,7 +111,7 @@ public class CloudGenerator : MonoBehaviour
 			if (Time.realtimeSinceStartup - startTime > 0.1f) 
 			{
 				print("Time out placing Cloud!");
-				return Vector3.zero;
+				return null;
 			}
 		}
 		

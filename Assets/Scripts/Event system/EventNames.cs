@@ -15,7 +15,9 @@ public enum StandardEventName
     MissionFailed = 4,
     ActivateCameraPan = 5,
     Pause = 6,
-    Unpause = 7
+    Unpause = 7,
+    StartMission = 8,
+    ReturnToMenu = 9,
 }
 
 

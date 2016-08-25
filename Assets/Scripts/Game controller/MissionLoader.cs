@@ -8,4 +8,11 @@ public class MissionLoader : MonoBehaviour
         if (MissionManager.MissionToLoad != null)
             Instantiate(MissionManager.MissionToLoad.gameObject, Vector3.zero, Quaternion.identity);
     }
+
+
+    void Start()
+    {
+        print("Start mission triggered");
+        EventManager.TriggerEvent(StandardEventName.StartMission);
+    }
 }

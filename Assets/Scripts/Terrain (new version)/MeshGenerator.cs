@@ -68,9 +68,9 @@ public class MeshData
     }
 
 
-    public Mesh CreateMesh()
+    public Mesh CreateMesh(Mesh mesh)
     {
-        Mesh mesh = new Mesh();
+        mesh = mesh ?? new Mesh();
         mesh.vertices = vertices;
         mesh.triangles = triangles;
         mesh.uv = uvs;

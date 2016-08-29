@@ -73,12 +73,12 @@ public class MapGenerator : MonoBehaviour
         }
         else if (m_drawMode == DrawMode.ColourMap)
         {
-            display.DrawTexture(TextureGenerator.TextureFromColourMap(mapData.colourMap, MapChunkSize, MapChunkSize));
+            display.DrawTexture(TextureGenerator.TextureFromColourMap(mapData.colourMap, MapChunkSize, MapChunkSize, null));
         }
         else if (m_drawMode == DrawMode.Mesh)
         {
 			display.DrawMesh(MeshGenerator.GenerateTerrainMesh(mapData.heightMap, m_editorPreviewLod, m_meshHeightMultiplier, m_meshHeightCurve), 
-                TextureGenerator.TextureFromColourMap(mapData.colourMap, MapChunkSize, MapChunkSize));
+                TextureGenerator.TextureFromColourMap(mapData.colourMap, MapChunkSize, MapChunkSize, null));
         }
     }
 

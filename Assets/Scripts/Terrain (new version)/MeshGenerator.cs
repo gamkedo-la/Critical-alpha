@@ -73,11 +73,7 @@ public class MeshData
     public Mesh CreateMesh(Mesh mesh)
     {
         if (mesh != null)
-        {
-            mesh.uv = null;
-            mesh.triangles = null;
-            mesh.vertices = null;       
-        }
+			mesh.Clear();       
 
         mesh = mesh ?? new Mesh();
         mesh.vertices = vertices;

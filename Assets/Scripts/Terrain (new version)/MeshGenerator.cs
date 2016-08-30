@@ -16,7 +16,7 @@ public static class MeshGenerator
         int meshSimplificationIncrement = (int) Mathf.Pow(2, levelOfDetail);
         int verticesPerLine = (width - 1) / meshSimplificationIncrement + 1;
 
-        MeshData meshData = new MeshData(verticesPerLine, verticesPerLine);
+        MeshData meshData = new MeshData(verticesPerLine);
         int vertexIndex = 0;
 
         for (int y = 0; y < height; y += meshSimplificationIncrement)
@@ -47,15 +47,17 @@ public class MeshData
     public Vector3[] vertices;
     public int[] triangles;
     public Vector2[] uvs;
+    public int m_meshSize;
 
-    int triangleIndex;
+    private int triangleIndex;
 
 
-    public MeshData(int meshWidth, int meshHeight)
+    public MeshData(int meshSize)
     {
-        vertices = new Vector3[meshWidth * meshHeight];
-        uvs = new Vector2[meshWidth * meshHeight];
-        triangles = new int[(meshWidth - 1) * (meshHeight - 1) * 6];
+        m_meshSize = meshSize;
+        vertices = new Vector3[meshSize * meshSize];
+        uvs = new Vector2[meshSize * meshSize];
+        triangles = new int[(meshSize - 1) * (meshSize - 1) * 6];
     }
 
 
@@ -70,6 +72,13 @@ public class MeshData
 
     public Mesh CreateMesh(Mesh mesh)
     {
+        if (mesh != null)
+        {
+            mesh.uv = null;
+            mesh.triangles = null;
+            mesh.vertices = null;       
+        }
+
         mesh = mesh ?? new Mesh();
         mesh.vertices = vertices;
         mesh.triangles = triangles;

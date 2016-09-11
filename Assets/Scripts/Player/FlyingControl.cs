@@ -18,7 +18,10 @@ public class FlyingControl : MonoBehaviour
     [SerializeField] float m_accelerationRate = 50f;
 
     [SerializeField] float m_bankRate = 120f;
+    [SerializeField] float m_bankMomentum = 0f;
     [SerializeField] float m_pitchRate = 90f;
+    [SerializeField] float m_pitchMomentum = 0f;
+
     public float turnRate = 20f;
 
     private bool m_isPlayer;
@@ -84,8 +87,8 @@ public class FlyingControl : MonoBehaviour
 
     public void PitchAndRollInput(float v, float h)
     {
-        m_v = v;
-        m_h = h;
+        m_v = m_pitchMomentum > 0 ? Mathf.Lerp(m_v, v, Time.deltaTime / m_pitchMomentum) : v;
+        m_h = m_bankMomentum > 0 ? Mathf.Lerp(m_h, h, Time.deltaTime / m_bankMomentum) : h;
     }
 
 

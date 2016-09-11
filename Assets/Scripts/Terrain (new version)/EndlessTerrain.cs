@@ -11,8 +11,9 @@ public class EndlessTerrain : MonoBehaviour
     private const float ViewerMoveThresholdForChunkUpdate = 25f;
     private const float SquViewerMoveThresholdForChunkUpdate = ViewerMoveThresholdForChunkUpdate * ViewerMoveThresholdForChunkUpdate;
 
-    //public TerrainDetail m_terrainDetail = TerrainDetail.High;
     [SerializeField] bool m_addCollider = true;
+    [SerializeField] int m_colliderTilesToUpdatePerFrame = 1;
+    [SerializeField] int m_tilesToMovePerFrame = 1;
     public LodInfo[] m_detailLevels;
     private LodInfo[] m_startDetailLevels;
     public static float MaxViewDst = 450f;
@@ -31,6 +32,8 @@ public class EndlessTerrain : MonoBehaviour
 
     private List<TerrainChunk> m_terrainChunks = new List<TerrainChunk>();
     private List<TerrainChunk> m_terrainChunksVisibleLastUpdate = new List<TerrainChunk>();
+    private List<TerrainChunk> m_terrainChunksThatNeedMoving = new List<TerrainChunk>();
+    private List<TerrainChunk> m_terrainChunksWithCollider = new List<TerrainChunk>();
 
     private Coroutine m_updateVisibleChunks;
     private bool m_updatingVisibleChunks;
@@ -60,9 +63,12 @@ public class EndlessTerrain : MonoBehaviour
 
         if (m_updateTerrainDetail || (ViewerPositionOld - ViewerPosition).sqrMagnitude > SquViewerMoveThresholdForChunkUpdate)
         {
+            //print(string.Format("Updating chunks: {0}", m_updatingVisibleChunks));
             if (!m_updatingVisibleChunks)
             {
                 ViewerPositionOld = ViewerPosition;
+
+                //UpdateVisibleChunksNonEnumerator();
 
                 if (m_updateVisibleChunks != null)
                     StopCoroutine(m_updateVisibleChunks);
@@ -117,6 +123,9 @@ public class EndlessTerrain : MonoBehaviour
 
             if (terrainChunk.IsVisible())
                 m_terrainChunksVisibleLastUpdate.Add(terrainChunk);
+
+            if (terrainChunk.m_colliderToBeAdded)
+                terrainChunk.SetCollider();
         }
     }
 
@@ -129,7 +138,8 @@ public class EndlessTerrain : MonoBehaviour
             m_terrainChunksVisibleLastUpdate[i].SetVisible(false);
 
         m_terrainChunksVisibleLastUpdate.Clear();
-        var chunksThatNeedMoving = new List<TerrainChunk>();
+        m_terrainChunksWithCollider.Clear();
+        m_terrainChunksThatNeedMoving.Clear();
 
         for (int i = 0; i < m_terrainChunks.Count; i++)
         {
@@ -139,27 +149,102 @@ public class EndlessTerrain : MonoBehaviour
             {
                 terrainChunk.UpdateTerrainChunk();
 
+                if (terrainChunk.m_colliderToBeAdded)
+                {
+                    //print(string.Format("Adding chunk to collider list {0}", terrainChunk.m_position));
+                    m_terrainChunksWithCollider.Add(terrainChunk);
+                }
+
+                // TODO: can this be put into a yield return too?
+
                 if (terrainChunk.IsVisible())
-                    m_terrainChunksVisibleLastUpdate.Add(terrainChunk);
+                    m_terrainChunksVisibleLastUpdate.Add(terrainChunk);            
             }
             else
             {
-                chunksThatNeedMoving.Add(terrainChunk);
+                m_terrainChunksThatNeedMoving.Add(terrainChunk);
             }          
         }
 
-        for (int i = 0; i < chunksThatNeedMoving.Count; i++)
+        int colliderTilesUpdated = 0;
+        //print(string.Format("Adding colliders to {0} terrain chunks", m_terrainChunksWithCollider.Count));
+
+        for (int i = 0; i < m_terrainChunksWithCollider.Count; i++)
         {
-            var terrainChunk = chunksThatNeedMoving[i];
+            //print(i);
+            m_terrainChunksWithCollider[i].SetCollider();
+
+            colliderTilesUpdated++;
+
+            if (colliderTilesUpdated == m_colliderTilesToUpdatePerFrame)
+            {
+                //print(string.Format("{0}: {1} collider tiles updates", Time.time, colliderTilesUpdated));
+                colliderTilesUpdated = 0;
+                yield return null;
+            }
+        }
+
+        yield return null;
+
+        int tilesMoved = 0;
+
+        for (int i = 0; i < m_terrainChunksThatNeedMoving.Count; i++)
+        {
+            var terrainChunk = m_terrainChunksThatNeedMoving[i];
 
             terrainChunk.MoveTerrainChunk(ChunkSize, m_chunksVisibleInViewDst, m_chunksPerSide);
 
-            yield return null;
+            tilesMoved++;
+
+            if (tilesMoved == m_tilesToMovePerFrame)
+            {
+                tilesMoved = 0;
+                yield return null;
+            }
         }
 
         m_updatingVisibleChunks = false;
         m_updateTerrainDetail = false;
     }
+
+
+    //private void UpdateVisibleChunksNonEnumerator()
+    //{
+    //    m_updatingVisibleChunks = true;
+
+    //    for (int i = 0; i < m_terrainChunksVisibleLastUpdate.Count; i++)
+    //        m_terrainChunksVisibleLastUpdate[i].SetVisible(false);
+
+    //    m_terrainChunksVisibleLastUpdate.Clear();
+    //    var chunksThatNeedMoving = new List<TerrainChunk>();
+
+    //    for (int i = 0; i < m_terrainChunks.Count; i++)
+    //    {
+    //        var terrainChunk = m_terrainChunks[i];
+
+    //        if (terrainChunk.IsWithinRange(ChunkSize, m_chunksVisibleInViewDst))
+    //        {
+    //            terrainChunk.UpdateTerrainChunk();
+
+    //            if (terrainChunk.IsVisible())
+    //                m_terrainChunksVisibleLastUpdate.Add(terrainChunk);
+    //        }
+    //        else
+    //        {
+    //            chunksThatNeedMoving.Add(terrainChunk);
+    //        }
+    //    }
+
+    //    for (int i = 0; i < chunksThatNeedMoving.Count; i++)
+    //    {
+    //        var terrainChunk = chunksThatNeedMoving[i];
+
+    //        terrainChunk.MoveTerrainChunk(ChunkSize, m_chunksVisibleInViewDst, m_chunksPerSide);
+    //    }
+
+    //    m_updatingVisibleChunks = false;
+    //    m_updateTerrainDetail = false;
+    //}
 
 
     private void TerrainDetailChanged(int terrainDetailLevel)
@@ -185,6 +270,7 @@ public class EndlessTerrain : MonoBehaviour
     {
         public bool m_meshesUpdated;
         public Vector2 m_position;
+        public bool m_colliderToBeAdded;
 
         private GameObject m_meshObject;
         
@@ -194,6 +280,7 @@ public class EndlessTerrain : MonoBehaviour
         private MeshRenderer m_meshRenderer;
         private MeshFilter m_meshFilter;
         private MeshCollider m_meshCollider;
+        private Mesh m_collderMesh;
 
         private LodInfo[] m_detailLevels;
         private LodMesh[] m_lodMeshes;
@@ -206,7 +293,7 @@ public class EndlessTerrain : MonoBehaviour
         private int m_yOffset;
 
         private bool m_addCollider;
-
+        
 
         public TerrainChunk(Vector2 coord, int size, LodInfo[] detailLevels, Transform parent, Material material, bool addCollider) 
         {
@@ -245,7 +332,7 @@ public class EndlessTerrain : MonoBehaviour
                 var lodMesh = m_lodMeshes[i];
 
                 if (lodMesh == null)
-                    lodMesh = new LodMesh(detailLevels[i].m_lod, UpdateTerrainChunk);
+                    lodMesh = new LodMesh(detailLevels[i].m_lod, UpdateTerrainChunk, m_addCollider);
                 else
                     lodMesh.ResetLodMesh(detailLevels[i].m_lod, UpdateTerrainChunk);
 
@@ -295,6 +382,10 @@ public class EndlessTerrain : MonoBehaviour
             m_bounds = new Bounds(m_positionV3, Vector3.one * chunkSize);
             m_meshObject.transform.position = m_positionV3 * Scale;
 
+            m_meshCollider.sharedMesh = null;
+            m_collderMesh = null;
+            m_colliderToBeAdded = false;
+
             UpdateMeshes(m_detailLevels);
 
             m_mapGenerator.RequestMapData(m_position, OnMapDataReceived);
@@ -308,6 +399,9 @@ public class EndlessTerrain : MonoBehaviour
 
             float viewerDstFromNearestEdge = Mathf.Sqrt(m_bounds.SqrDistance(ViewerPosition));
             bool visible = viewerDstFromNearestEdge <= MaxViewDst;
+
+            if (m_meshCollider.sharedMesh != null)
+                m_colliderToBeAdded = false;
 
             if (visible)
             {
@@ -331,15 +425,24 @@ public class EndlessTerrain : MonoBehaviour
                     var lodMesh = m_lodMeshes[lodIndex];
                     var nextLodMesh = m_lodMeshes[nextLodIndex];
                     
-                    if(lodMesh.m_hasMesh && nextLodMesh.m_hasMesh)
+                    if (lodMesh.m_hasMesh && nextLodMesh.m_hasMesh)
                     {
                         m_meshFilter.mesh = lodMesh.m_mesh;
-                        m_meshCollider.sharedMesh = null;
+                        //m_meshCollider.sharedMesh = null;
 
-                        if (m_addCollider && lodIndex == 0)
+                        if (m_addCollider && lodIndex == 0 && m_meshCollider.sharedMesh == null) 
+                            //&& m_meshCollider.sharedMesh != m_collderMesh)
                         {
-                            m_meshCollider.sharedMesh = nextLodMesh.m_mesh;
+                            //m_meshCollider.sharedMesh = nextLodMesh.m_mesh;
+                            //print(string.Format("Collider to be added to {0}", m_position));
+                            m_collderMesh = nextLodMesh.m_mesh;
+                            m_colliderToBeAdded = true;
                         }
+                        //else
+                        //{
+                            //m_meshCollider.sharedMesh = null;
+                            //m_collderMesh = null;                       
+                        //}
 
                         m_previousLodIndex = lodIndex;
                         m_meshesUpdated = true;
@@ -356,6 +459,12 @@ public class EndlessTerrain : MonoBehaviour
             }
 
             SetVisible(visible);
+        }
+
+
+        public void SetCollider()
+        {
+            m_meshCollider.sharedMesh = m_collderMesh;
         }
 
 
@@ -379,12 +488,14 @@ public class EndlessTerrain : MonoBehaviour
         public bool m_hasMesh;
         private int m_lod;
         private Action m_updateCallback;
+        private bool m_addCollider;
 
 
-        public LodMesh(int lod, Action updateCallback)
+        public LodMesh(int lod, Action updateCallback, bool addCollider)
         {
             m_lod = lod;
             m_updateCallback = updateCallback;
+            m_addCollider = addCollider;
         }
 
 
@@ -398,8 +509,12 @@ public class EndlessTerrain : MonoBehaviour
 
 
         private void OnMeshDataReceived(MeshData meshData)
-        {
-            m_mesh = meshData.CreateMesh(m_mesh);
+        {       
+            if (m_addCollider)
+                m_mesh = meshData.CreateMesh(null);
+            else
+                m_mesh = meshData.CreateMesh(m_mesh);
+
             m_hasMesh = true;
 
             m_updateCallback();

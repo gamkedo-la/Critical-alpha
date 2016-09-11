@@ -20,6 +20,7 @@ public class QualityController : MonoBehaviour
         Manual
     }
 
+
     [Header("Automatic assessment parameters")]
     [SerializeField] float m_assessmentTime = 3f;
     [SerializeField] float m_settlingTime = 2f;
@@ -31,12 +32,12 @@ public class QualityController : MonoBehaviour
 
     [Header("Options")]
     [SerializeField] QualityMode m_qualityMode = QualityMode.Manual;
-    [SerializeField] TerrainDetail m_terrainDetail = TerrainDetail.High;
-	//[SerializeField] Toggle m_autoUpdateToggle;
+    //[SerializeField] Toggle m_autoUpdateToggle;
 	//[SerializeField] Text m_maxFrameTimeText;
 
-    public static TerrainDetail TerrainDetail;
+    public static TerrainDetail TerrainDetail = TerrainDetail.High;
 
+    private TerrainDetail m_terrainDetail;
     private int m_qualityIndex = 0;
     private string[] m_qualityNames;
 
@@ -47,12 +48,13 @@ public class QualityController : MonoBehaviour
 	private int m_maxframeTimeFrames;
 	private bool m_lastDecreaseWasTerrain;
 	private bool m_lastIncreaseWasTerrain;
+    private string m_terrainPrefs = "Terrain detail";
 
 
     void Awake()
     {
-        TerrainDetail = m_terrainDetail;
-
+        m_terrainDetail = (TerrainDetail) PlayerPrefs.GetInt(m_terrainPrefs, (int) TerrainDetail.High);
+        print("Terrain detail loaded: " + m_terrainDetail);
         m_qualityNames = QualitySettings.names;
         m_qualityIndex = QualitySettings.GetQualityLevel();
     }
@@ -187,6 +189,8 @@ public class QualityController : MonoBehaviour
         if (m_terrainDetail != TerrainDetail)
         {
             TerrainDetail = m_terrainDetail;
+            PlayerPrefs.SetInt(m_terrainPrefs, (int) m_terrainDetail);
+            print("Terrain detail saved: " + m_terrainDetail);
             EventManager.TriggerEvent(IntegerEventName.ChangeTerrainDetail, (int) m_terrainDetail);
         }
     }

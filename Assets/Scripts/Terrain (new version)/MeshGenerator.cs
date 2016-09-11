@@ -37,6 +37,8 @@ public static class MeshGenerator
             }
         }
 
+        meshData.BakeNormals();
+
         return meshData;
     }
 }
@@ -47,8 +49,10 @@ public class MeshData
     public Vector3[] vertices;
     public int[] triangles;
     public Vector2[] uvs;
+    
     public int m_meshSize;
 
+    private Vector3[] bakedNormals;
     private int triangleIndex;
 
 
@@ -70,16 +74,78 @@ public class MeshData
     }
 
 
+    private Vector3[] CalculateNormals()
+    {
+        var vertexNormals = new Vector3[vertices.Length];
+        int triangleCount = triangles.Length / 3;
+
+        for (int i = 0; i < triangleCount; i++)
+        {
+            int normalTraingleIndex = i * 3;
+            int vertexIndexA = triangles[normalTraingleIndex];
+            int vertexIndexB = triangles[normalTraingleIndex + 1];
+            int vertexIndexC = triangles[normalTraingleIndex + 2];
+
+            var triangleNormal = SurfaceNormalFromIndices(vertexIndexA, vertexIndexB, vertexIndexC);
+            vertexNormals[vertexIndexA] += triangleNormal;
+            vertexNormals[vertexIndexB] += triangleNormal;
+            vertexNormals[vertexIndexC] += triangleNormal;
+        }
+
+        for (int i = 0; i < vertexNormals.Length; i++)
+            vertexNormals[i].Normalize();
+
+        return vertexNormals;
+    }
+
+
+    private Vector3 SurfaceNormalFromIndices(int indexA, int indexB, int indexC)
+    {
+        var pointA = vertices[indexA];
+        var pointB = vertices[indexB];
+        var pointC = vertices[indexC];
+
+        var sideAB = pointB - pointA;
+        var sideAC = pointC - pointA;
+
+        return Vector3.Cross(sideAB, sideAC).normalized;
+    }
+
+
+    public void BakeNormals()
+    {
+        bakedNormals = CalculateNormals();
+    }
+
+
+    //public Mesh CreateMesh()
+    //{
+    //    var mesh = new Mesh();
+    //    mesh.vertices = vertices;
+    //    mesh.triangles = triangles;
+    //    mesh.uv = uvs;
+    //    mesh.RecalculateNormals();
+
+    //    return mesh;
+    //}
+
+
     public Mesh CreateMesh(Mesh mesh)
     {
         if (mesh != null)
-			mesh.Clear();       
+        	mesh.Clear();
 
         mesh = mesh ?? new Mesh();
         mesh.vertices = vertices;
         mesh.triangles = triangles;
         mesh.uv = uvs;
-        mesh.RecalculateNormals();
+
+        // RecalculateNormals seems to be more efficient than the bespoke CalculateNormals method oddly
+        // But putting it on the other thread seems reasonable too
+        // Need to see if removing the coroutine will be any good
+        //mesh.RecalculateNormals();
+        //mesh.normals = CalculateNormals();
+        mesh.normals = bakedNormals;
         return mesh;
     }
 }

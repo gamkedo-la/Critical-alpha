@@ -240,8 +240,12 @@ public class DisplayTarget : MonoBehaviour {
 
     void cameraTrackTarget()
     {
-        targetCamera.transform.position = enemies[targetIndex].transform.position - (direction.normalized * 15.0f);
-        targetCamera.transform.LookAt(enemies[targetIndex].transform.position, Camera.main.transform.up);
+        var target = enemies[targetIndex].gameObject;
+        var overallBounds = BoundsUtilities.OverallBounds(target);
+        Vector3 centre = overallBounds.Value.center;
+
+        targetCamera.transform.position = centre - (direction.normalized * 15.0f);
+        targetCamera.transform.LookAt(centre, Camera.main.transform.up);
         var angles = targetCamera.transform.rotation.eulerAngles;
         angles.z = 0;
         targetCamera.transform.rotation = Quaternion.Euler(angles);

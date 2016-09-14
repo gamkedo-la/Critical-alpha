@@ -1,24 +1,15 @@
 ﻿using UnityEngine;
-using System.Collections;
+
 using System.Collections.Generic;
 
 public class CloudGenerator : MonoBehaviour
 {
-    [SerializeField] GameObject[] cloudPrefabs;
+    [SerializeField] CloudProperties[] m_cloudProperties;
 
-    [Header("Distribution")]
-    [SerializeField] int m_numberOfClouds = 30;
-    [Space(10)]
-    [SerializeField] float m_minAltitude = 50f;
-    [SerializeField] float m_maxAltitude = 200f;
-    [Space(10)]
+    [Header("Overall distribution")]
     [SerializeField] float m_maxDistance = 1500f;
-    [SerializeField] float m_minSeparation = 200f;
 
-    [Header("Appearance")] 
-    [SerializeField] float m_minScale = 3f;
-    [SerializeField] float m_maxScale = 10f;
-    [Space(10)]
+    [Header("Overall appearance")]
     [SerializeField] bool m_fadeWithDistance = true;
     [SerializeField] float m_distanceOfMinAlpha = 1400f;
     [SerializeField] float m_disatnceOfMaxAlpha = 800f;
@@ -27,8 +18,6 @@ public class CloudGenerator : MonoBehaviour
     [SerializeField] float m_minAlpha = 0f;
     [Range(0f, 1f)]
     [SerializeField] float m_maxAlpha = 1f;
-    [Space(10)]
-    [SerializeField] Vector3 m_rotationAxis = Vector3.forward;	//Default for the low-poly pack
 
     private GameObject m_cloudParent;
     private float m_maxDistanceSq;
@@ -38,58 +27,60 @@ public class CloudGenerator : MonoBehaviour
     private Color m_cloudColour;
     private Camera m_mainCamera;
     private Vector2 m_origin;
-    private Dictionary<GameObject, MeshRenderer[]> m_clouds;
-
-    public static Dictionary<GameObject, Vector2> AllClouds;
+    private Dictionary<GameObject, MeshRenderer[]> m_cloudRenderers;
+    private Dictionary<GameObject, Vector2> m_cloudPositions;
 
 
 	void Start () 
 	{
         m_cloudParent = gameObject;
-
-	    AllClouds = new Dictionary<GameObject, Vector2>();
+        m_cloudRenderers = new Dictionary<GameObject, MeshRenderer[]>();
+        m_cloudPositions = new Dictionary<GameObject, Vector2>();
 
 		m_mainCamera = Camera.main;
 		var cameraOrigin = m_mainCamera.transform.position;
 		m_origin.Set(cameraOrigin.x, cameraOrigin.z);
 
-		m_clouds = new Dictionary<GameObject, MeshRenderer[]>();
-
         m_maxDistanceSq = m_maxDistance * m_maxDistance;
-		m_distanceOfMaxAlphaSq = m_disatnceOfMaxAlpha * m_disatnceOfMaxAlpha;
-		m_distanceOfMinAlphaSq = m_distanceOfMinAlpha * m_distanceOfMinAlpha;
 
-		for (int i = 0; i < m_numberOfClouds; i++) 
-		{
-            var position = GetSpawnPosition();
+        for (int j = 0; j < m_cloudProperties.Length; j++)
+        {
+            var cloud = m_cloudProperties[j];
 
-            if (!position.HasValue)
-                continue;
+            int numberOfClouds = cloud.numberOfClouds;
+            m_distanceOfMaxAlphaSq = m_disatnceOfMaxAlpha * m_disatnceOfMaxAlpha;
+            m_distanceOfMinAlphaSq = m_distanceOfMinAlpha * m_distanceOfMinAlpha;
 
-            int index = Random.Range(0, cloudPrefabs.Length);
-			var newCloud = Instantiate(cloudPrefabs[index]);		
+            for (int i = 0; i < numberOfClouds; i++)
+            {
+                var position = GetSpawnPosition(cloud.minSeparation);
 
-			float y = Random.Range(m_minAltitude, m_maxAltitude);
-			newCloud.transform.position = new Vector3(position.Value.x, y, position.Value.y);
+                if (!position.HasValue)
+                    continue;
 
-			float scale = Random.Range(m_minScale, m_maxScale);
-			newCloud.transform.localScale = new Vector3(scale, scale, scale);
+                var newCloud = Instantiate(cloud.cloudPrefab);
 
-			var rotation = Random.Range(0f, 356f) * m_rotationAxis;
-			newCloud.transform.Rotate(rotation);
+                float y = Random.Range(cloud.minAltitude, cloud.maxAltitude);
+                newCloud.transform.position = new Vector3(position.Value.x, y, position.Value.y);
 
-			var renderers = newCloud.GetComponentsInChildren<MeshRenderer>();
-			m_clouds.Add(newCloud, renderers);
+                float scale = Random.Range(cloud.minScale, cloud.maxScale);
+                newCloud.transform.localScale = new Vector3(scale, scale, scale);
 
-            AllClouds.Add(newCloud, position.Value);
+                var rotation = Random.Range(0f, 356f) * cloud.rotationAxis;
+                newCloud.transform.Rotate(rotation);
 
-            if (m_cloudParent != null)
-                newCloud.transform.parent = m_cloudParent.transform;
-		}
+                var renderers = newCloud.GetComponentsInChildren<MeshRenderer>();
+                m_cloudRenderers.Add(newCloud, renderers);
+                m_cloudPositions.Add(newCloud, position.Value);
+
+                if (m_cloudParent != null)
+                    newCloud.transform.parent = m_cloudParent.transform;
+            }
+        }
 	}
 
 
-	private Vector2? GetSpawnPosition() 
+	private Vector2? GetSpawnPosition(float minSeparation) 
 	{
 		Vector2 spawnPosition = new Vector2();
 		float startTime = Time.realtimeSinceStartup;
@@ -100,11 +91,11 @@ public class CloudGenerator : MonoBehaviour
 			test = true;
 			spawnPosition = Random.insideUnitCircle * m_maxDistance + m_origin;
 			
-			foreach (var cloud in AllClouds.Values)
+			foreach (var cloud in m_cloudPositions.Values)
 			{
 				float distance = (cloud - spawnPosition).magnitude;
 				
-				if (distance < m_minSeparation)
+				if (distance < minSeparation)
 					test = false;
 			}
 			
@@ -121,7 +112,7 @@ public class CloudGenerator : MonoBehaviour
 
 	void Update () 
 	{
-		foreach (var cloud in m_clouds)
+		foreach (var cloud in m_cloudRenderers)
 		{
 			cloud.Key.transform.Translate(Time.deltaTime * WeatherController.windSpeed, Space.World);
 

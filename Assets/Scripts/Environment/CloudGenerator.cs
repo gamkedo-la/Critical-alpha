@@ -14,7 +14,7 @@ public class CloudGenerator : MonoBehaviour
     private Vector2 m_direction;
     private Transform m_mainCamera;
     private Vector2 m_origin;
-    private Dictionary<Transform, Vector2> m_cloudPositions;
+    private Transform[] m_cloudTransforms;
 
 
     public float MaxDistance
@@ -26,7 +26,8 @@ public class CloudGenerator : MonoBehaviour
 	void Start () 
 	{
         m_cloudParent = gameObject;
-        m_cloudPositions = new Dictionary<Transform, Vector2>();
+        var cloudTransforms = new List<Transform>();
+        var cloudPositions = new List<Vector2>();
 
 		m_mainCamera = Camera.main.transform;
 		var cameraOrigin = m_mainCamera.transform.position;
@@ -42,7 +43,7 @@ public class CloudGenerator : MonoBehaviour
             
             for (int i = 0; i < numberOfClouds; i++)
             {
-                var position = GetSpawnPosition(cloud.minSeparation);
+                var position = GetSpawnPosition(cloud.minSeparation, cloudPositions);
 
                 if (!position.HasValue)
                     continue;
@@ -59,16 +60,19 @@ public class CloudGenerator : MonoBehaviour
                 newCloud.transform.Rotate(rotation);
 
                 var renderers = newCloud.GetComponentsInChildren<MeshRenderer>();
-                m_cloudPositions.Add(newCloud.transform, position.Value);
+                cloudTransforms.Add(newCloud.transform);
+                cloudPositions.Add(position.Value);
 
                 if (m_cloudParent != null)
                     newCloud.transform.parent = m_cloudParent.transform;
             }
         }
+
+        m_cloudTransforms = cloudTransforms.ToArray();
 	}
 
 
-	private Vector2? GetSpawnPosition(float minSeparation) 
+	private Vector2? GetSpawnPosition(float minSeparation, List<Vector2> cloudPositions) 
 	{
 		Vector2 spawnPosition = new Vector2();
 		float startTime = Time.realtimeSinceStartup;
@@ -79,9 +83,10 @@ public class CloudGenerator : MonoBehaviour
 			test = true;
 			spawnPosition = Random.insideUnitCircle * m_maxDistance + m_origin;
 			
-			foreach (var cloud in m_cloudPositions.Values)
+			for (int i = 0; i < cloudPositions.Count; i++)
 			{
-				float distance = (cloud - spawnPosition).magnitude;
+                var cloud = cloudPositions[i];
+				float distance = Vector2.Distance(cloud, spawnPosition);
 				
 				if (distance < minSeparation)
 					test = false;
@@ -100,11 +105,12 @@ public class CloudGenerator : MonoBehaviour
 
 	void Update () 
 	{
-		foreach (var cloud in m_cloudPositions)
+		for (int i = 0; i < m_cloudTransforms.Length; i++)
 		{
-			cloud.Key.transform.Translate(Time.deltaTime * WeatherController.windSpeed, Space.World);
+            var cloud = m_cloudTransforms[i];
+			cloud.Translate(Time.deltaTime * WeatherController.windSpeed, Space.World);
 
-			var direction3 = m_mainCamera.position - cloud.Key.transform.position;
+			var direction3 = m_mainCamera.position - cloud.position;
 
 			m_direction.Set(direction3.x, direction3.z);
 
@@ -113,11 +119,11 @@ public class CloudGenerator : MonoBehaviour
             if (distanceSq > m_maxDistanceSq)
 			{
 				m_direction.Normalize();
-				float newX = cloud.Key.transform.position.x + (m_direction.x * m_maxDistance * 2f);
-				float newY = cloud.Key.transform.position.y;
-				float newZ = cloud.Key.transform.position.z + (m_direction.y * m_maxDistance * 2f);
+				float newX = cloud.position.x + (m_direction.x * m_maxDistance * 2f);
+				float newY = cloud.position.y;
+				float newZ = cloud.position.z + (m_direction.y * m_maxDistance * 2f);
 
-				cloud.Key.transform.position = new Vector3(newX, newY, newZ);
+				cloud.position = new Vector3(newX, newY, newZ);
 			}
 		}
 	}

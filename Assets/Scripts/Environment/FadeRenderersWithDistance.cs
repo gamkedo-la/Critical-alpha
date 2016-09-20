@@ -43,8 +43,10 @@ public class FadeRenderersWithDistance : MonoBehaviour
         float alpha = alphaFraction * (m_maxAlpha - m_minAlpha) + m_minAlpha;
         alpha = Mathf.Clamp01(alpha);
 
-        foreach (var renderer in m_renderers)
+        for (int i = 0; i < m_renderers.Length; i++)
         {
+            var renderer = m_renderers[i];
+
             if (alpha > 0.999)
                 renderer.material.SetInt("_Mode", 0);
             else

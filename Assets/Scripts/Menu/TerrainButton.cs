@@ -1,21 +1,39 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Text;
+using UnityEngine;
 using UnityEngine.UI;
 
-public class TerrainButton : MonoBehaviour {
 
+public class TerrainButton : MonoBehaviour
+{
     private Text m_text;
-    //private QualityController qualityController;
+
 
     void Awake()
     {
         m_text = GetComponentInChildren<Text>();
-        //qualityController = FindObjectOfType<QualityController>();
     }
 
-    void Update()
+
+    void Start()
+    {
+        SetButtonText();
+    }
+
+
+    private void SetButtonText()
     {
         m_text.text = string.Format("Terrain: {0}", QualityController.TerrainDetail);
     }
 
+
+    void OnEnable()
+    {
+        EventManager.StartListening(StandardEventName.SetTerrainDetail, SetButtonText);
+    }
+
+
+    void OnDisable()
+    {
+        EventManager.StopListening(StandardEventName.SetTerrainDetail, SetButtonText);
+    }
 }

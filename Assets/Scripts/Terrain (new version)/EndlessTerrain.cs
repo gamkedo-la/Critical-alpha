@@ -119,13 +119,16 @@ public class EndlessTerrain : MonoBehaviour
             if (m_updateTerrainDetail)
                 terrainChunk.UpdateMeshes(m_detailLevels);
 
+            terrainChunk.m_addColliderImmediately = true;
             terrainChunk.UpdateTerrainChunk();
 
             if (terrainChunk.IsVisible())
                 m_terrainChunksVisibleLastUpdate.Add(terrainChunk);
 
-            if (terrainChunk.m_colliderToBeAdded)
-                terrainChunk.SetCollider();
+            // This doesn't work at the start of the game for some reason
+            // so have to use the hacky updateColliderImmediately flag instead
+            //if (terrainChunk.m_colliderToBeAdded)
+            //    terrainChunk.SetCollider();
         }
     }
 
@@ -271,6 +274,7 @@ public class EndlessTerrain : MonoBehaviour
         public bool m_meshesUpdated;
         public Vector2 m_position;
         public bool m_colliderToBeAdded;
+        public bool m_addColliderImmediately;
 
         private GameObject m_meshObject;
         
@@ -428,21 +432,18 @@ public class EndlessTerrain : MonoBehaviour
                     if (lodMesh.m_hasMesh && nextLodMesh.m_hasMesh)
                     {
                         m_meshFilter.mesh = lodMesh.m_mesh;
-                        //m_meshCollider.sharedMesh = null;
-
+       
                         if (m_addCollider && lodIndex == 0 && m_meshCollider.sharedMesh == null) 
-                            //&& m_meshCollider.sharedMesh != m_collderMesh)
                         {
-                            //m_meshCollider.sharedMesh = nextLodMesh.m_mesh;
-                            //print(string.Format("Collider to be added to {0}", m_position));
                             m_collderMesh = nextLodMesh.m_mesh;
                             m_colliderToBeAdded = true;
+
+                            if (m_addColliderImmediately)   // Hacky fix for adding colliders when the game starts
+                            {
+                                SetCollider();
+                                m_addColliderImmediately = false;
+                            }
                         }
-                        //else
-                        //{
-                            //m_meshCollider.sharedMesh = null;
-                            //m_collderMesh = null;                       
-                        //}
 
                         m_previousLodIndex = lodIndex;
                         m_meshesUpdated = true;

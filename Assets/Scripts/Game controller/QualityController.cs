@@ -54,6 +54,7 @@ public class QualityController : MonoBehaviour
     void Awake()
     {
         m_terrainDetail = (TerrainDetail) PlayerPrefs.GetInt(m_terrainPrefs, (int) TerrainDetail.High);
+        TerrainDetail = m_terrainDetail;
         print("Terrain detail loaded: " + m_terrainDetail);
         m_qualityNames = QualitySettings.names;
         m_qualityIndex = QualitySettings.GetQualityLevel();

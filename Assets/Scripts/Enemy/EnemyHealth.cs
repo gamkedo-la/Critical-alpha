@@ -232,7 +232,7 @@ public class EnemyHealth : MonoBehaviour, IDamageable
         waterSplash.transform.position = position;
 
         float lifetime = waterSplash.startLifetime; // Mathf.Max(clipLength, explosion.startLifetime);
-        Destroy(waterSplash.gameObject, lifetime * 1.5f);
+        Destroy(waterSplash.gameObject, lifetime * 3f);
     }
 
 

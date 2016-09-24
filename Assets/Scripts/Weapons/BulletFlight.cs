@@ -67,14 +67,11 @@ public class BulletFlight : MonoBehaviour
 
         var explosionAudio = explosion.gameObject.GetComponent<ExplosionAudioManager>();
         var audioClipBucket = other.gameObject.GetComponentInParent<AudioClipBucket>();
-
-        float clipLength = 0;
-
+      
         if (explosionAudio != null && audioClipBucket != null)
-        {
-            explosionAudio.SetClips(audioClipBucket.bulletHitAudioClips);
-            clipLength = explosionAudio.ClipLength;
-        }
+            explosionAudio.SetClips(audioClipBucket.bulletHitAudioClips);    
+
+        float clipLength = explosionAudio.ClipLength;
 
         float lifetime = Mathf.Max(clipLength, explosion.startLifetime);
 

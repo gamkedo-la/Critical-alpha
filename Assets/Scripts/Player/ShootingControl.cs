@@ -9,7 +9,8 @@ public class ShootingControl : MonoBehaviour
     [SerializeField] float m_muzzleFlashTime = 0.05f;
     [SerializeField] bool m_shakeCamera;
     [SerializeField] float m_cameraShakeMagnitude = 0.2f;
-    [SerializeField] float m_cameraShakeDuration= 0.1f;
+    [SerializeField] float m_cameraShakeDuration = 0.1f;
+    [SerializeField] Vector2 m_gunShotPitchMultiplierMinMax = new Vector2(0.8f, 1.2f);
 
     private float m_timeSinceBulletFired;
     private FlyingControl m_flyingControlScript;
@@ -18,6 +19,7 @@ public class ShootingControl : MonoBehaviour
     private WaitForSeconds m_muzzleFlashWait;
     private GameObject[] m_muzzleFlashes;
     private AudioSource[] m_gunShotAudioSources;
+    private float[] m_gunShotAudioPitches;
 
 
     void Awake()
@@ -32,6 +34,7 @@ public class ShootingControl : MonoBehaviour
     {
         m_muzzleFlashes = new GameObject[m_bulletSpawnPoints.Length];
         m_gunShotAudioSources = new AudioSource[m_bulletSpawnPoints.Length];
+        m_gunShotAudioPitches = new float[m_bulletSpawnPoints.Length];
 
         for (int i = 0; i < m_bulletSpawnPoints.Length; i++)
         {
@@ -50,6 +53,7 @@ public class ShootingControl : MonoBehaviour
             if (gunShotAudio != null)
             {
                 m_gunShotAudioSources[i] = gunShotAudio;
+                m_gunShotAudioPitches[i] = gunShotAudio.pitch;
             }
         }
     }
@@ -97,6 +101,8 @@ public class ShootingControl : MonoBehaviour
 
             if (gunShotAudio != null && gunShotAudio.clip != null)
             {
+                float originalPitch = m_gunShotAudioPitches[m_spawnPointIndex];
+                gunShotAudio.pitch = originalPitch * Random.Range(m_gunShotPitchMultiplierMinMax.x, m_gunShotPitchMultiplierMinMax.y);
                 gunShotAudio.PlayOneShot(gunShotAudio.clip);
             }
 

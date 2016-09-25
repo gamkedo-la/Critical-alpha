@@ -23,6 +23,7 @@ public class BulletFlight : MonoBehaviour
         Destroy(gameObject, m_bulletLifeTime);
         m_originalParent = transform.root;
         transform.parent = null;
+        SetInitialVelocity(Vector3.zero);
     }
 
 

@@ -12,10 +12,12 @@ public class BulletFlight : MonoBehaviour
     [SerializeField] ParticleSystem m_explosion;
     [SerializeField] ParticleSystem m_splash;
     [SerializeField] Vector2 m_impactAudioPitchMultiplierMinMax = new Vector2(0.8f, 1.2f);
+    [SerializeField] float m_timeBeforeCanImpact = 0.1f;
     
     private Vector3 m_velocity;
     private bool m_bulletImpacted;
     private Transform m_originalParent;
+    private float m_instantiationTime;
 
 
     void Start()
@@ -24,6 +26,7 @@ public class BulletFlight : MonoBehaviour
         m_originalParent = transform.root;
         transform.parent = null;
         SetInitialVelocity(Vector3.zero);
+        m_instantiationTime = Time.time;
     }
 
 
@@ -41,7 +44,7 @@ public class BulletFlight : MonoBehaviour
 
     void OnTriggerStay(Collider other)
     {
-        if (m_bulletImpacted)
+        if (m_bulletImpacted || (Time.time - m_instantiationTime < m_timeBeforeCanImpact))
             return;
 
         if ((other.transform == m_originalParent)

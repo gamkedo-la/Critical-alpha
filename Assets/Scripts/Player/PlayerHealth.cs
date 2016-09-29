@@ -73,7 +73,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
     public void Damage(int damage)
     {
-        if (damage >= m_minDamageForReset)
+        if (damage >= m_minDamageForReset && !m_inWater)
             InstantiateExplosion(transform.position);
 
         if (!m_canTakeDamage || m_invulnerable || PlayerDead)
@@ -140,10 +140,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         {
             //print(string.Format("{0} causes {1} damage to {2}", name, m_damageCausedToOthers, other.name));
             otherDamageScript.Damage(m_damageCausedToOthers);
-        } 
-
-        if (!m_invulnerable && (other.CompareTag(Tags.Ground) || other.CompareTag(Tags.Water)))
-            Dead(other.tag);
+        }    
 
         if (other.CompareTag(Tags.Water) && !m_inWater)
         {
@@ -152,6 +149,9 @@ public class PlayerHealth : MonoBehaviour, IDamageable
             if (m_waterSplash != null)
                 InstantiateWaterSplash(transform.position);
         }
+
+        if (!m_invulnerable && (other.CompareTag(Tags.Ground) || other.CompareTag(Tags.Water)))
+            Dead(other.tag);
     }
 
 
@@ -303,10 +303,10 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
         EventManager.TriggerEvent(StringEventName.PlayerDead, colliderTag);
 
-        if (m_explosion != null)
+        if (m_explosion != null && !m_inWater)
             InstantiateExplosion(transform.position);
 
-        if (m_fireAndSmoke != null)
+        if (m_fireAndSmoke != null && !m_inWater)
             InstantiateFireAndSmoke();
 
         for (int i = 0; i < m_objectsToDetatchOnDeath.Length; i++)

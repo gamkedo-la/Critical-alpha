@@ -5,7 +5,7 @@ using System.Collections;
 
 public class GameController : MonoBehaviour
 {
-    public static bool AllowCheatMode = true;
+    public static bool AllowCheatMode = false;
 
     [SerializeField] AudioMixerSnapshot m_sfxFullVolume;
     [SerializeField] AudioMixerSnapshot m_sfxMuted;
@@ -31,19 +31,29 @@ public class GameController : MonoBehaviour
     {
         OnUnpause();
 
-        m_player = GameObject.FindGameObjectWithTag(Tags.Player).transform;
+        var playerObject = GameObject.FindGameObjectWithTag(Tags.Player);
+
+        if (playerObject != null)
+            m_player = playerObject.transform;
 
         m_mainCamera = Camera.main;
         m_cameraParent = m_mainCamera.transform.parent;
 
-        m_freeCameraScript = m_mainCamera.GetComponent<CameraFlyingControl>();
-
-        if (m_freeCameraScript == null)
-            m_freeCameraScript = m_mainCamera.gameObject.AddComponent<CameraFlyingControl>();
-
-        m_freeCameraScript.enabled = false;
-
         m_timeScale = Time.timeScale;
+    }
+
+
+    void Start()
+    {
+        if (AllowCheatMode)
+        {
+            m_freeCameraScript = m_mainCamera.GetComponent<CameraFlyingControl>();
+
+            if (m_freeCameraScript == null)
+                m_freeCameraScript = m_mainCamera.gameObject.AddComponent<CameraFlyingControl>();
+
+            m_freeCameraScript.enabled = false;
+        }
     }
 
 
@@ -69,19 +79,19 @@ public class GameController : MonoBehaviour
         m_paused = m_freeCameraEnabled;
 
         if (m_freeCameraEnabled)
-        {
+        {     
+            m_lastCameraPosition = m_mainCamera.transform.localPosition;
+            m_lastCameraRotation = m_mainCamera.transform.localRotation;
             m_mainCamera.transform.parent = null;
-            m_lastCameraPosition = m_mainCamera.transform.position;
-            m_lastCameraRotation = m_mainCamera.transform.rotation;
             var rotation = m_lastCameraRotation.eulerAngles;
             rotation.z = 0;
             m_mainCamera.transform.rotation.eulerAngles.Set(rotation.x, rotation.y, rotation.z);
         }
         else
         {
-            m_mainCamera.transform.position = m_lastCameraPosition;
-            m_mainCamera.transform.rotation = m_lastCameraRotation;
             m_mainCamera.transform.parent = m_cameraParent;
+            m_mainCamera.transform.localPosition = m_lastCameraPosition;
+            m_mainCamera.transform.localRotation = m_lastCameraRotation;       
         }
 
         SetTimeScale();

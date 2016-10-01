@@ -18,6 +18,6 @@ public class HideUI : MonoBehaviour
             return;
 
         if (Input.GetKeyDown(KeyCode.H) && m_canvases != null)
-            m_canvases.SetActive(!m_canvases.activeSelf);     
+            m_canvases.SetActive(!m_canvases.activeSelf);
 	}
 }

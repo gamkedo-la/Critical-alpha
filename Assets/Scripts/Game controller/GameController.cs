@@ -5,6 +5,8 @@ using System.Collections;
 
 public class GameController : MonoBehaviour
 {
+    public static bool AllowCheatMode = true;
+
     [SerializeField] AudioMixerSnapshot m_sfxFullVolume;
     [SerializeField] AudioMixerSnapshot m_sfxMuted;
     [SerializeField] AudioMixerSnapshot m_musicFullVolume;
@@ -12,10 +14,87 @@ public class GameController : MonoBehaviour
 
     [SerializeField] float m_musicFadeTime = 2f;
 
+    private Transform m_player;
+
+    private Camera m_mainCamera;
+    private bool m_freeCameraEnabled = false;
+    private bool m_paused = false;
+    private float m_timeScale;
+
+    private CameraFlyingControl m_freeCameraScript;
+    private Vector3 m_lastCameraPosition;
+    private Quaternion m_lastCameraRotation;
+    private Transform m_cameraParent;
+
 
     void Awake()
     {
         OnUnpause();
+
+        m_player = GameObject.FindGameObjectWithTag(Tags.Player).transform;
+
+        m_mainCamera = Camera.main;
+        m_cameraParent = m_mainCamera.transform.parent;
+
+        m_freeCameraScript = m_mainCamera.GetComponent<CameraFlyingControl>();
+
+        if (m_freeCameraScript == null)
+            m_freeCameraScript = m_mainCamera.gameObject.AddComponent<CameraFlyingControl>();
+
+        m_freeCameraScript.enabled = false;
+
+        m_timeScale = Time.timeScale;
+    }
+
+
+    void Update()
+    {
+        if (AllowCheatMode)
+        {
+            if (Input.GetKeyDown(KeyCode.F))
+                ToggleFreeCamera();
+
+            if (m_freeCameraEnabled && Input.GetKeyDown(KeyCode.P))
+            {
+                m_paused = !m_paused;
+                SetTimeScale();
+            }
+        }
+    }
+
+
+    private void ToggleFreeCamera()
+    {
+        m_freeCameraEnabled = !m_freeCameraEnabled;
+        m_paused = m_freeCameraEnabled;
+
+        if (m_freeCameraEnabled)
+        {
+            m_mainCamera.transform.parent = null;
+            m_lastCameraPosition = m_mainCamera.transform.position;
+            m_lastCameraRotation = m_mainCamera.transform.rotation;
+            var rotation = m_lastCameraRotation.eulerAngles;
+            rotation.z = 0;
+            m_mainCamera.transform.rotation.eulerAngles.Set(rotation.x, rotation.y, rotation.z);
+        }
+        else
+        {
+            m_mainCamera.transform.position = m_lastCameraPosition;
+            m_mainCamera.transform.rotation = m_lastCameraRotation;
+            m_mainCamera.transform.parent = m_cameraParent;
+        }
+
+        SetTimeScale();
+
+        m_freeCameraScript.enabled = m_freeCameraEnabled;
+
+        //EventManager.TriggerEvent(EventNames.ToggleFreeCamera, m_freeCameraEnabled);
+    }
+
+
+    private void SetTimeScale()
+    {
+        Time.timeScale = m_paused ? 0 : m_timeScale;
     }
 
 
@@ -87,6 +166,8 @@ public class GameController : MonoBehaviour
         EventManager.StopListening(StandardEventName.MissionFailed, MusicFadeUp);
         EventManager.StopListening(StandardEventName.ReturnToMenu, MusicFadeUp);
         EventManager.StopListening(StandardEventName.StartMission, MusicFadeDown);
+
+        Time.timeScale = m_timeScale;
     }
 }
 

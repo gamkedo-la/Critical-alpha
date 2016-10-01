@@ -21,21 +21,21 @@ public class CameraFlyingControl : MonoBehaviour
 	private Quaternion m_originalRotation;
 
 	private bool m_enabled = true;
-	//private GameObject m_player;
-    //private Transform m_camera;
+	private GameObject m_player;
+    private Transform m_camera;
 
 	private float m_forwardSpeed;
 	private float m_sidewaysSpeed;
 	private float m_verticalSpeed;
 
-	//private bool m_followPlayer;
+	private bool m_followPlayer;
 
 
 	void Awake()
 	{
 		m_originalRotation = Quaternion.identity;
-		//m_player = GameObject.FindGameObjectWithTag(Tags.Player);
-        //m_camera = Camera.main.transform;
+		m_player = GameObject.FindGameObjectWithTag(Tags.Player);
+        m_camera = Camera.main.transform;
 	}
 
 
@@ -55,8 +55,8 @@ public class CameraFlyingControl : MonoBehaviour
 			m_verticalSpeed = m_verticalSpeedStart;
 		}
 
-        //if (Input.GetKeyDown(KeyCode.Mouse1) && m_player != null)
-        //	m_followPlayer = !m_followPlayer;
+        if (Input.GetKeyDown(KeyCode.Mouse1) && m_player != null)
+        	m_followPlayer = !m_followPlayer;
 
         if (Input.GetKeyDown(KeyCode.Mouse0))
             m_enabled = !m_enabled;
@@ -78,15 +78,15 @@ public class CameraFlyingControl : MonoBehaviour
         if (!m_enabled)
 			return;
 
-		//if (m_followPlayer)
-		//{
-		//	transform.LookAt(m_player.transform.position);
-		//	SetRotationValues();
-		//}
-		//else
-		//{
-			// Note: have to use Raw here since GetAxis stays at 0 if Time.timeScale is also 0
-			float v = Input.GetAxisRaw ("Vertical");
+        if (m_followPlayer)
+        {
+            transform.LookAt(m_player.transform.position);
+            SetRotationValues();
+        }
+        else
+        {
+            // Note: have to use Raw here since GetAxis stays at 0 if Time.timeScale is also 0
+            float v = Input.GetAxisRaw ("Vertical");
 			float h = Input.GetAxisRaw ("Horizontal");
 			float u = Input.GetAxisRaw ("Elevation");
 
@@ -102,8 +102,8 @@ public class CameraFlyingControl : MonoBehaviour
 			Quaternion xQuaternion = Quaternion.AngleAxis (m_rotationX, Vector3.up);
 			Quaternion yQuaternion = Quaternion.AngleAxis (m_rotationY, -Vector3.right);
 
-        transform.localRotation = m_originalRotation * xQuaternion * yQuaternion;
-		//}
+            transform.localRotation = m_originalRotation * xQuaternion * yQuaternion;
+		}
 	}
 
 

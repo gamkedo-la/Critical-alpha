@@ -35,7 +35,7 @@ public class QualityController : MonoBehaviour
     //[SerializeField] Toggle m_autoUpdateToggle;
 	//[SerializeField] Text m_maxFrameTimeText;
 
-    public static TerrainDetail TerrainDetail = TerrainDetail.High;
+    public static TerrainDetail TerrainDetail = TerrainDetail.Medium;
 
     private TerrainDetail m_terrainDetail;
     private int m_qualityIndex = 0;
@@ -55,7 +55,7 @@ public class QualityController : MonoBehaviour
     {
         m_terrainDetail = (TerrainDetail) PlayerPrefs.GetInt(m_terrainPrefs, (int) TerrainDetail.High);
         TerrainDetail = m_terrainDetail;
-        print("Terrain detail loaded: " + m_terrainDetail);
+        //print("Terrain detail loaded: " + m_terrainDetail);
         m_qualityNames = QualitySettings.names;
         m_qualityIndex = QualitySettings.GetQualityLevel();
     }

@@ -12,7 +12,7 @@ public class MissionLoader : MonoBehaviour
 
     void Start()
     {
-        print("Start mission triggered");
+        //print("Start mission triggered");
         EventManager.TriggerEvent(StandardEventName.StartMission);
     }
 }

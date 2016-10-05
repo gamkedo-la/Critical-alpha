@@ -50,7 +50,7 @@ public class GameOverCameraController : MonoBehaviour
         DetachCamera();
         
         EventManager.TriggerEvent(StandardEventName.MissionFailed);
-        print("Mission failed");
+        //print("Mission failed");
     }
 
 

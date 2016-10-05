@@ -8,6 +8,7 @@ public class ProceduralPlacement : MonoBehaviour
     public static float TimePlacementFinished;
 
     [Header("Mission details")]
+    [SerializeField] bool m_trainingMission = false;
     public string missionName;
     [TextArea(1, 2)]
     public string missionGoal;
@@ -196,7 +197,21 @@ public class ProceduralPlacement : MonoBehaviour
                     Destroy(airGameObject);
                 }
                 else
+                {
                     m_missionGoals.AddAirObject(airGameObject.transform);
+
+                    if (m_trainingMission)
+                    {
+                        var enemyAiFlightInput = airGameObject.GetComponent<EnemyAircraftAiInput>();
+                        var enemyAiShootingInput = airGameObject.GetComponent<EnemyShootingAiInput>();
+
+                        if (enemyAiFlightInput != null)
+                            enemyAiFlightInput.enabled = false;
+
+                        if (enemyAiShootingInput != null)
+                            enemyAiShootingInput.enabled = false;
+                    }
+                }
             }
         }
     }

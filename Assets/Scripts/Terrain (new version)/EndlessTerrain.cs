@@ -51,9 +51,11 @@ public class EndlessTerrain : MonoBehaviour
 
         m_startDetailLevels = new List<LodInfo>(m_detailLevels).ToArray();
 
-        UpdateDetailLevels(QualityController.TerrainDetail);
         BuildTerrainChunks();
-        UpdateAllVisibleChunks();
+   
+        UpdateDetailLevels((int) QualityController.TerrainDetail);
+        m_updateTerrainDetail = true;
+        UpdateAllVisibleChunks();    
     }
 
 
@@ -79,10 +81,10 @@ public class EndlessTerrain : MonoBehaviour
     }
 
 
-    private void UpdateDetailLevels(TerrainDetail terrainDetail)
+    private void UpdateDetailLevels(int terrainDetail)
     {
         for (int i = 0; i < m_detailLevels.Length; i++)
-            m_detailLevels[i].m_lod = Math.Min(5, m_startDetailLevels[i].m_lod + (int) terrainDetail);
+            m_detailLevels[i].m_lod = Math.Min(5, m_startDetailLevels[i].m_lod + terrainDetail);
 
         if (m_updateTerrainDetail)
             UpdateAllVisibleChunks();
@@ -253,7 +255,7 @@ public class EndlessTerrain : MonoBehaviour
     private void TerrainDetailChanged()
     {
         m_updateTerrainDetail = true;
-        UpdateDetailLevels(QualityController.TerrainDetail);
+        UpdateDetailLevels((int) QualityController.TerrainDetail);
     }
 
 

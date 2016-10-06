@@ -53,7 +53,7 @@ public class QualityController : MonoBehaviour
 
     void Awake()
     {
-        m_terrainDetail = (TerrainDetail) PlayerPrefs.GetInt(m_terrainPrefs, (int) TerrainDetail.High);
+        m_terrainDetail = (TerrainDetail) PlayerPrefs.GetInt(m_terrainPrefs, (int) TerrainDetail.Medium);
         TerrainDetail = m_terrainDetail;
         //print("Terrain detail loaded: " + m_terrainDetail);
         m_qualityNames = QualitySettings.names;
@@ -66,8 +66,8 @@ public class QualityController : MonoBehaviour
         UpdateGraphicsQuality();
         m_time = -m_assessmentTime * 4f;
 
-		//if (m_autoUpdateToggle != null)
-		//	m_autoUpdateToggle.isOn = m_qualityMode == QualityMode.Automatic;
+        //if (m_autoUpdateToggle != null)
+        //	m_autoUpdateToggle.isOn = m_qualityMode == QualityMode.Automatic;
     }
 
 

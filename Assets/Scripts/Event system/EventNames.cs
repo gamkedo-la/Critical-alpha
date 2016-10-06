@@ -68,7 +68,7 @@ public enum IntegerEventName
 {
     None = 0,
 
-    //ChangeTerrainDetail = 1,
+    //UpdateTerrainDetail = 1,
 }
 
 

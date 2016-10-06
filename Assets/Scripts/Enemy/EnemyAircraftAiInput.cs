@@ -352,7 +352,7 @@ public class EnemyAircraftAiInput : MonoBehaviour
     private void UpdateFlee()
     {
         if (m_flyingControlScript.ForwardSpeed < m_flyingControlScript.MaxForwardSpeed)
-            m_a = 1;
+            m_a = m_thrustControlsSensitivity;
         else
             m_a = 0f;
 

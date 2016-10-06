@@ -7,14 +7,14 @@ using System.Collections;
 public class ButtonSelectManager : MonoBehaviour
 {
     private Button m_thisButton;
-    private EventSystem m_eventSystem;
+    //private EventSystem m_eventSystem;
     private AudioSource m_audioSource;
 
 
 	void Awake()
     {
         m_thisButton = GetComponent<Button>();
-        m_eventSystem = FindObjectOfType<EventSystem>();
+        //m_eventSystem = FindObjectOfType<EventSystem>();
         m_audioSource = GetComponent<AudioSource>();
     }
 

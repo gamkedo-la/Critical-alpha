@@ -250,22 +250,22 @@ public class EndlessTerrain : MonoBehaviour
     //}
 
 
-    private void TerrainDetailChanged(int terrainDetailLevel)
+    private void TerrainDetailChanged()
     {
         m_updateTerrainDetail = true;
-        UpdateDetailLevels((TerrainDetail) terrainDetailLevel);
+        UpdateDetailLevels(QualityController.TerrainDetail);
     }
 
 
     void OnEnable()
     {
-        EventManager.StartListening(IntegerEventName.ChangeTerrainDetail, TerrainDetailChanged);
+        EventManager.StartListening(StandardEventName.UpdateTerrainDetail, TerrainDetailChanged);
     }
 
 
     void OnDisable()
     {
-        EventManager.StopListening(IntegerEventName.ChangeTerrainDetail, TerrainDetailChanged);
+        EventManager.StopListening(StandardEventName.UpdateTerrainDetail, TerrainDetailChanged);
     }
 
 

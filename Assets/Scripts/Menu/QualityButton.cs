@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEngine.UI;
 
+[RequireComponent(typeof(Text))]
 public class QualityButton : MonoBehaviour {
 
     private Text m_text;
@@ -29,12 +30,13 @@ public class QualityButton : MonoBehaviour {
 
     void OnEnable()
     {
-        EventManager.StartListening(StandardEventName.SetGraphicsQuality, SetButtonText);
+        EventManager.StartListening(StandardEventName.UpdateGraphicsQuality, SetButtonText);
+        SetButtonText();
     }
 
 
     void OnDisable()
     {
-        EventManager.StopListening(StandardEventName.SetGraphicsQuality, SetButtonText);
+        EventManager.StopListening(StandardEventName.UpdateGraphicsQuality, SetButtonText);
     }
 }

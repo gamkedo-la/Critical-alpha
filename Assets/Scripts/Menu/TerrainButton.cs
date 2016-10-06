@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-
+[RequireComponent(typeof(Text))]
 public class TerrainButton : MonoBehaviour
 {
     private Text m_text;
@@ -28,12 +28,13 @@ public class TerrainButton : MonoBehaviour
 
     void OnEnable()
     {
-        EventManager.StartListening(StandardEventName.SetTerrainDetail, SetButtonText);
+        EventManager.StartListening(StandardEventName.UpdateTerrainDetail, SetButtonText);
+        SetButtonText();
     }
 
 
     void OnDisable()
     {
-        EventManager.StopListening(StandardEventName.SetTerrainDetail, SetButtonText);
+        EventManager.StopListening(StandardEventName.UpdateTerrainDetail, SetButtonText);
     }
 }

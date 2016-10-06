@@ -18,6 +18,8 @@ public enum StandardEventName
     Unpause = 7,
     StartMission = 8,
     ReturnToMenu = 9,
+    UpdateGraphicsQuality = 10,
+    UpdateTerrainDetail = 11,
 }
 
 
@@ -66,7 +68,7 @@ public enum IntegerEventName
 {
     None = 0,
 
-    ChangeTerrainDetail = 1,
+    //ChangeTerrainDetail = 1,
 }
 
 
@@ -77,7 +79,7 @@ public enum StringEventName
 {
     None = 0,
 
-    ChangeGraphicsQuality = 1,
+    //ChangeGraphicsQuality = 1,
     PlayerDead = 2,
 }
 

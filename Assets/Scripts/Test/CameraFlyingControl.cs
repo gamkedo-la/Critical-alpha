@@ -22,7 +22,6 @@ public class CameraFlyingControl : MonoBehaviour
 
 	private bool m_enabled = true;
 	private GameObject m_player;
-    private Transform m_camera;
 
 	private float m_forwardSpeed;
 	private float m_sidewaysSpeed;
@@ -35,7 +34,6 @@ public class CameraFlyingControl : MonoBehaviour
 	{
 		m_originalRotation = Quaternion.identity;
 		m_player = GameObject.FindGameObjectWithTag(Tags.Player);
-        m_camera = Camera.main.transform;
 	}
 
 

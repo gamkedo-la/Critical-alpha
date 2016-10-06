@@ -5,7 +5,6 @@ using UnityEngine.UI;
 public class DisplayHealthMeter : MonoBehaviour {
 
     private PlayerHealth playerHealth;
-    private Transform playerTransform;
     private Transform canvasTransform;
 
     private Image healthMeter;
@@ -27,7 +26,6 @@ public class DisplayHealthMeter : MonoBehaviour {
 
         healthMeter = GameObject.Find("Health Meter").GetComponent<Image>();
         damageIndicator = GameObject.Find("Damage Indicator").GetComponent<Image>();
-        playerTransform = FindObjectOfType<PlayerFlyingInput>().GetComponent<Transform>();
         canvasTransform = GameObject.Find("Canvases").GetComponent<Transform>();
     }
 	

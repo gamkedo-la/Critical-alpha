@@ -192,7 +192,7 @@ public class QualityController : MonoBehaviour
             TerrainDetail = m_terrainDetail;
             PlayerPrefs.SetInt(m_terrainPrefs, (int) m_terrainDetail);
             print("Terrain detail saved: " + m_terrainDetail);
-            EventManager.TriggerEvent(IntegerEventName.ChangeTerrainDetail, (int) m_terrainDetail);
+            EventManager.TriggerEvent(StandardEventName.UpdateTerrainDetail);
         }
     }
 
@@ -219,7 +219,7 @@ public class QualityController : MonoBehaviour
 
         QualitySettings.SetQualityLevel(m_qualityIndex, false);
 
-        EventManager.TriggerEvent(StringEventName.ChangeGraphicsQuality, m_qualityNames[m_qualityIndex]);
+        EventManager.TriggerEvent(StandardEventName.UpdateGraphicsQuality);
     }
 
 

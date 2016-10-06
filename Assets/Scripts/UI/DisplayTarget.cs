@@ -10,8 +10,6 @@ public class DisplayTarget : MonoBehaviour {
     private List<EnemyHealth> enemies;
     private List<GameObject> radarDots;
 
-    private GameObject radarTarget;
-
     private Transform playerTransform;
 
     private Text targetName;
@@ -52,8 +50,6 @@ public class DisplayTarget : MonoBehaviour {
 
         targetIndex = 0;
 
-        radarTarget = GameObject.Find("Target Canvas");
-
         var radar = FindObjectOfType<DisplayRadar>();
         radar.Initialise();
 
@@ -93,7 +89,7 @@ public class DisplayTarget : MonoBehaviour {
             targetHealth.text = " ";
             targetBorderTop.color = Color.white;
             targetBorderBottom.color = Color.white;
-            targetSelectIcon.active = false;
+            targetSelectIcon.SetActive(false);
             return;
         }
 
@@ -130,7 +126,7 @@ public class DisplayTarget : MonoBehaviour {
             //Debug.Log("Overall Bounds Max: " + largestBound);
             targetCamera.orthographicSize = (largestBound / 2f) + 5.5f;
 
-            targetSelectIcon.active = true;
+            targetSelectIcon.SetActive(true);
             updateBorderColor();
 
             targetName.text = enemies[targetIndex].name;

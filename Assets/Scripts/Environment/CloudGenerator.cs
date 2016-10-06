@@ -59,7 +59,6 @@ public class CloudGenerator : MonoBehaviour
                 var rotation = Random.Range(0f, 356f) * cloud.rotationAxis;
                 newCloud.transform.Rotate(rotation);
 
-                var renderers = newCloud.GetComponentsInChildren<MeshRenderer>();
                 cloudTransforms.Add(newCloud.transform);
                 cloudPositions.Add(position.Value);
 

@@ -14,8 +14,6 @@ public class GameController : MonoBehaviour
 
     [SerializeField] float m_musicFadeTime = 2f;
 
-    private Transform m_player;
-
     private Camera m_mainCamera;
     private bool m_freeCameraEnabled = false;
     private bool m_paused = false;
@@ -30,11 +28,6 @@ public class GameController : MonoBehaviour
     void Awake()
     {
         OnUnpause();
-
-        var playerObject = GameObject.FindGameObjectWithTag(Tags.Player);
-
-        if (playerObject != null)
-            m_player = playerObject.transform;
 
         m_mainCamera = Camera.main;
         m_cameraParent = m_mainCamera.transform.parent;

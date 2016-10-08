@@ -14,6 +14,7 @@ public class EndlessTerrain : MonoBehaviour
     [SerializeField] bool m_addCollider = true;
     [SerializeField] int m_colliderTilesToUpdatePerFrame = 1;
     [SerializeField] int m_tilesToMovePerFrame = 1;
+    private int m_tilesToMoveMultiplier = 1;
     public LodInfo[] m_detailLevels;
     private LodInfo[] m_startDetailLevels;
     public static float MaxViewDst = 450f;
@@ -43,6 +44,7 @@ public class EndlessTerrain : MonoBehaviour
     {
         m_viewer = Camera.main.transform;
         m_mapGenerator = FindObjectOfType<MapGenerator>();
+        m_tilesToMoveMultiplier = m_mapGenerator.UseFlatShading ? 4 : 1;
 
         MaxViewDst = m_detailLevels[m_detailLevels.Length - 1].m_visibleDistThreshold;
         ChunkSize = MapGenerator.MapChunkSize - 1;
@@ -110,8 +112,8 @@ public class EndlessTerrain : MonoBehaviour
 
     private void UpdateAllVisibleChunks()
     {
-        for (int i = 0; i < m_terrainChunksVisibleLastUpdate.Count; i++)
-            m_terrainChunksVisibleLastUpdate[i].SetVisible(false);
+        //for (int i = 0; i < m_terrainChunksVisibleLastUpdate.Count; i++)
+        //    m_terrainChunksVisibleLastUpdate[i].SetVisible(false);
 
         m_terrainChunksVisibleLastUpdate.Clear();
 
@@ -139,8 +141,8 @@ public class EndlessTerrain : MonoBehaviour
     {
         m_updatingVisibleChunks = true;
 
-        for (int i = 0; i < m_terrainChunksVisibleLastUpdate.Count; i++)
-            m_terrainChunksVisibleLastUpdate[i].SetVisible(false);
+        //for (int i = 0; i < m_terrainChunksVisibleLastUpdate.Count; i++)
+        //    m_terrainChunksVisibleLastUpdate[i].SetVisible(false);
 
         m_terrainChunksVisibleLastUpdate.Clear();
         m_terrainChunksWithCollider.Clear();
@@ -181,7 +183,7 @@ public class EndlessTerrain : MonoBehaviour
 
             colliderTilesUpdated++;
 
-            if (colliderTilesUpdated == m_colliderTilesToUpdatePerFrame)
+            if (colliderTilesUpdated == (m_colliderTilesToUpdatePerFrame * m_tilesToMoveMultiplier))
             {
                 //print(string.Format("{0}: {1} collider tiles updates", Time.time, colliderTilesUpdated));
                 colliderTilesUpdated = 0;
@@ -201,7 +203,7 @@ public class EndlessTerrain : MonoBehaviour
 
             tilesMoved++;
 
-            if (tilesMoved == m_tilesToMovePerFrame)
+            if (tilesMoved == (m_tilesToMovePerFrame * m_tilesToMoveMultiplier))
             {
                 tilesMoved = 0;
                 yield return null;
@@ -317,7 +319,7 @@ public class EndlessTerrain : MonoBehaviour
             m_meshObject.transform.position = m_positionV3 * Scale;
             m_meshObject.transform.parent = parent;
             m_meshObject.transform.localScale = Vector3.one * Scale;
-            SetVisible(false);
+            //SetVisible(false);
 
             UpdateMeshes(detailLevels);      
 
@@ -461,7 +463,7 @@ public class EndlessTerrain : MonoBehaviour
                 }
             }
 
-            SetVisible(visible);
+            //SetVisible(visible);
         }
 
 

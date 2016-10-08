@@ -14,8 +14,9 @@ public class MapGenerator : MonoBehaviour
     };
 
 
-    public const int MapChunkSize = 129;//241;
+    //public const int MapChunkSize = 129;//241;
 
+    [SerializeField] bool m_useFlatShading;
     [SerializeField] bool m_useGlobalSeed = true;
     [SerializeField] int m_seed = 0;
     [SerializeField] TerrainEquationBase m_terrainEquation;
@@ -38,6 +39,23 @@ public class MapGenerator : MonoBehaviour
     private Coroutine m_meshDataCoroutine;
 
     private bool m_initialised = false;
+
+    private static MapGenerator Instance;
+
+
+    public bool UseFlatShading { get { return m_useFlatShading; } }
+
+
+    public static int MapChunkSize
+    {
+        get
+        {
+            if (Instance == null)
+                Instance = FindObjectOfType<MapGenerator>();
+
+            return Instance.m_useFlatShading ? 65 : 129;
+        }
+    }
 
 
 	public float GetTerrainHeight(float x, float z)
@@ -77,7 +95,8 @@ public class MapGenerator : MonoBehaviour
         }
         else if (m_drawMode == DrawMode.Mesh)
         {
-			display.DrawMesh(MeshGenerator.GenerateTerrainMesh(mapData.heightMap, m_editorPreviewLod, m_meshHeightMultiplier, m_meshHeightCurve), 
+            display.DrawMesh(MeshGenerator.GenerateTerrainMesh(mapData.heightMap, m_editorPreviewLod,
+                m_meshHeightMultiplier, m_meshHeightCurve, m_useFlatShading),
                 TextureGenerator.TextureFromColourMap(mapData.colourMap, MapChunkSize, MapChunkSize, null));
         }
     }
@@ -117,7 +136,9 @@ public class MapGenerator : MonoBehaviour
 
     private void MeshDataThread(MapData mapData, int lod, Action<MeshData> callback)
     {
-		var meshData = MeshGenerator.GenerateTerrainMesh(mapData.heightMap, lod, m_meshHeightMultiplier, m_meshHeightCurve);
+		var meshData = MeshGenerator.GenerateTerrainMesh(mapData.heightMap, lod, 
+            m_meshHeightMultiplier, m_meshHeightCurve, m_useFlatShading);
+
         lock (m_meshDataThreadInfoQueue)
         {
             m_meshDataThreadInfoQueue.Enqueue(new MapThreadInfo<MeshData>(callback, meshData));

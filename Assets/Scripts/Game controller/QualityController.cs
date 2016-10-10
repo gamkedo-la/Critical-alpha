@@ -35,9 +35,9 @@ public class QualityController : MonoBehaviour
     //[SerializeField] Toggle m_autoUpdateToggle;
 	//[SerializeField] Text m_maxFrameTimeText;
 
-    public static TerrainDetail TerrainDetail = TerrainDetail.Medium;
+    public static TerrainDetail TerrainDetail;
 
-    private TerrainDetail m_terrainDetail;
+    [SerializeField] TerrainDetail m_terrainDetail = TerrainDetail.High;
     private int m_qualityIndex = 0;
     private string[] m_qualityNames;
 
@@ -53,7 +53,7 @@ public class QualityController : MonoBehaviour
 
     void Awake()
     {
-        m_terrainDetail = (TerrainDetail) PlayerPrefs.GetInt(m_terrainPrefs, (int) TerrainDetail.Medium);
+        //m_terrainDetail = TerrainDetail.SuperLow;// (TerrainDetail) PlayerPrefs.GetInt(m_terrainPrefs, (int) TerrainDetail.Medium);
         TerrainDetail = m_terrainDetail;
         //print("Terrain detail loaded: " + m_terrainDetail);
         m_qualityNames = QualitySettings.names;
@@ -75,7 +75,7 @@ public class QualityController : MonoBehaviour
     {
         if (m_qualityMode == QualityMode.Manual)
         {
-            CheckForTerrainDetailInput();
+            //CheckForTerrainDetailInput();
             CheckForGraphicsQualityInput();
             return;
         }
@@ -242,7 +242,10 @@ public class QualityController : MonoBehaviour
 
     public string GetGraphicsQuality()
     {
-        return m_qualityNames[m_qualityIndex];
+        if (m_qualityNames != null)
+            return m_qualityNames[m_qualityIndex];
+
+        return "";
     }
 
 

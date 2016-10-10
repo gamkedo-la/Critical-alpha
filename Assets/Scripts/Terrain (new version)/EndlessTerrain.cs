@@ -7,7 +7,6 @@ using System.Threading;
 
 public class EndlessTerrain : MonoBehaviour
 {
-    public const float Scale = 2f;
     private const float ViewerMoveThresholdForChunkUpdate = 25f;
     private const float SquViewerMoveThresholdForChunkUpdate = ViewerMoveThresholdForChunkUpdate * ViewerMoveThresholdForChunkUpdate;
 
@@ -17,7 +16,7 @@ public class EndlessTerrain : MonoBehaviour
     private int m_tilesToMoveMultiplier = 1;
     public LodInfo[] m_detailLevels;
     private LodInfo[] m_startDetailLevels;
-    public static float MaxViewDst = 450f;
+    public static float MaxViewDst = 0f;
     public static Vector3 ViewerPosition;
     private static Vector3 ViewerPositionOld;
 
@@ -38,23 +37,25 @@ public class EndlessTerrain : MonoBehaviour
 
     private Coroutine m_updateVisibleChunks;
     private bool m_updatingVisibleChunks;
+    private TerrainDetail m_terrainDetail;
 
 
     void Start()
     {
         m_viewer = Camera.main.transform;
         m_mapGenerator = FindObjectOfType<MapGenerator>();
-        m_tilesToMoveMultiplier = m_mapGenerator.UseFlatShading ? 4 : 1;
+        //m_tilesToMoveMultiplier = m_mapGenerator.UseFlatShading ? 4 : 1;
 
         MaxViewDst = m_detailLevels[m_detailLevels.Length - 1].m_visibleDistThreshold;
         ChunkSize = MapGenerator.MapChunkSize - 1;
-        m_chunksVisibleInViewDst = Mathf.RoundToInt(MaxViewDst / ChunkSize);
+        m_chunksVisibleInViewDst = Mathf.RoundToInt(MaxViewDst / (ChunkSize * m_mapGenerator.uniformScale));
         m_chunksPerSide = m_chunksVisibleInViewDst * 2 + 1;
 
         m_startDetailLevels = new List<LodInfo>(m_detailLevels).ToArray();
 
         BuildTerrainChunks();
-   
+
+        m_terrainDetail = QualityController.TerrainDetail;
         UpdateDetailLevels((int) QualityController.TerrainDetail);
         m_updateTerrainDetail = true;
         UpdateAllVisibleChunks();    
@@ -63,7 +64,7 @@ public class EndlessTerrain : MonoBehaviour
 
     void Update()
     {
-        ViewerPosition = m_viewer.position / Scale;
+        ViewerPosition = m_viewer.position / m_mapGenerator.uniformScale;
 
         if (m_updateTerrainDetail || (ViewerPositionOld - ViewerPosition).sqrMagnitude > SquViewerMoveThresholdForChunkUpdate)
         {
@@ -124,6 +125,7 @@ public class EndlessTerrain : MonoBehaviour
                 terrainChunk.UpdateMeshes(m_detailLevels);
 
             terrainChunk.m_addColliderImmediately = true;
+            terrainChunk.m_terrainDetail = m_terrainDetail;
             terrainChunk.UpdateTerrainChunk();
 
             if (terrainChunk.IsVisible())
@@ -151,6 +153,7 @@ public class EndlessTerrain : MonoBehaviour
         for (int i = 0; i < m_terrainChunks.Count; i++)
         {
             var terrainChunk = m_terrainChunks[i];
+            terrainChunk.m_terrainDetail = m_terrainDetail;
 
             if (terrainChunk.IsWithinRange(ChunkSize, m_chunksVisibleInViewDst))
             {
@@ -257,19 +260,20 @@ public class EndlessTerrain : MonoBehaviour
     private void TerrainDetailChanged()
     {
         m_updateTerrainDetail = true;
+        m_terrainDetail = QualityController.TerrainDetail;
         UpdateDetailLevels((int) QualityController.TerrainDetail);
     }
 
 
     void OnEnable()
     {
-        EventManager.StartListening(StandardEventName.UpdateTerrainDetail, TerrainDetailChanged);
+        //EventManager.StartListening(StandardEventName.UpdateTerrainDetail, TerrainDetailChanged);
     }
 
 
     void OnDisable()
     {
-        EventManager.StopListening(StandardEventName.UpdateTerrainDetail, TerrainDetailChanged);
+        //EventManager.StopListening(StandardEventName.UpdateTerrainDetail, TerrainDetailChanged);
     }
 
 
@@ -279,6 +283,7 @@ public class EndlessTerrain : MonoBehaviour
         public Vector2 m_position;
         public bool m_colliderToBeAdded;
         public bool m_addColliderImmediately;
+        public TerrainDetail m_terrainDetail;
 
         private GameObject m_meshObject;
         
@@ -316,9 +321,9 @@ public class EndlessTerrain : MonoBehaviour
             m_meshFilter = m_meshObject.AddComponent<MeshFilter>();
             m_meshCollider = m_meshObject.AddComponent<MeshCollider>();
             m_meshRenderer.material = material;
-            m_meshObject.transform.position = m_positionV3 * Scale;
+            m_meshObject.transform.position = m_positionV3 * m_mapGenerator.uniformScale;
             m_meshObject.transform.parent = parent;
-            m_meshObject.transform.localScale = Vector3.one * Scale;
+            m_meshObject.transform.localScale = Vector3.one * m_mapGenerator.uniformScale;
             //SetVisible(false);
 
             UpdateMeshes(detailLevels);      
@@ -355,7 +360,9 @@ public class EndlessTerrain : MonoBehaviour
             m_mapDataReceived = true;
             var texture = m_meshRenderer.material.mainTexture as Texture2D;
 
-            texture = TextureGenerator.TextureFromColourMap(mapData.colourMap, MapGenerator.MapChunkSize, MapGenerator.MapChunkSize, texture);
+            texture = TextureGenerator.TextureFromColourMap(mapData.colourMap, 
+                MapGenerator.MapChunkSize, MapGenerator.MapChunkSize, texture);
+
             m_meshRenderer.material.mainTexture = texture;
 
             UpdateTerrainChunk();
@@ -388,7 +395,7 @@ public class EndlessTerrain : MonoBehaviour
             m_position = m_position + shift * chunkSize;
             m_positionV3 = new Vector3(m_position.x, 0, m_position.y);
             m_bounds = new Bounds(m_positionV3, Vector3.one * chunkSize);
-            m_meshObject.transform.position = m_positionV3 * Scale;
+            m_meshObject.transform.position = m_positionV3 * m_mapGenerator.uniformScale;
 
             m_meshCollider.sharedMesh = null;
             m_collderMesh = null;
@@ -405,8 +412,8 @@ public class EndlessTerrain : MonoBehaviour
             if (!m_mapDataReceived)
                 return;
 
-            float viewerDstFromNearestEdge = Mathf.Sqrt(m_bounds.SqrDistance(ViewerPosition));
-            bool visible = viewerDstFromNearestEdge <= MaxViewDst;
+            float viewerDstFromNearestEdge = Mathf.Sqrt(m_bounds.SqrDistance(ViewerPosition)) * m_mapGenerator.uniformScale;
+            bool visible = true;// viewerDstFromNearestEdge <= MaxViewDst;
 
             if (m_meshCollider.sharedMesh != null)
                 m_colliderToBeAdded = false;
@@ -439,7 +446,11 @@ public class EndlessTerrain : MonoBehaviour
        
                         if (m_addCollider && lodIndex == 0 && m_meshCollider.sharedMesh == null) 
                         {
-                            m_collderMesh = nextLodMesh.m_mesh;
+                            m_collderMesh = m_mapGenerator.UseFlatShading
+                                || m_terrainDetail == TerrainDetail.SuperLow
+                                ? lodMesh.m_mesh
+                                : nextLodMesh.m_mesh;
+
                             m_colliderToBeAdded = true;
 
                             if (m_addColliderImmediately)   // Hacky fix for adding colliders when the game starts

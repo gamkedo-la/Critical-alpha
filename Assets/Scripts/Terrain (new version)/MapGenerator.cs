@@ -13,7 +13,7 @@ public class MapGenerator : MonoBehaviour
         Mesh
     };
 
-
+    public float uniformScale = 2f;
     //public const int MapChunkSize = 129;//241;
 
     [SerializeField] bool m_useFlatShading;
@@ -53,7 +53,7 @@ public class MapGenerator : MonoBehaviour
             if (Instance == null)
                 Instance = FindObjectOfType<MapGenerator>();
 
-            return Instance.m_useFlatShading ? 65 : 129;
+            return Instance.m_useFlatShading ? 33 : 129;
         }
     }
 
@@ -62,8 +62,8 @@ public class MapGenerator : MonoBehaviour
 	{
 		x -= 1f;	// Offsets needed for some reason I forget, but they're important so don't mess with this!
 		z -= 1f;
-		x /= EndlessTerrain.Scale;
-		z /= EndlessTerrain.Scale;
+		x /= uniformScale;
+		z /= uniformScale;
 
 		float height = m_terrainEquation.GetHeight(x, z);
 
@@ -72,7 +72,7 @@ public class MapGenerator : MonoBehaviour
 		//print(height);
 		height *= m_meshHeightMultiplier;
 		//print(height);
-		height *= EndlessTerrain.Scale;
+		height *= uniformScale;
 		//print(height);
 
 		return height;

@@ -161,7 +161,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         waterSplash.transform.position = position;
 
         float lifetime = waterSplash.startLifetime; // Mathf.Max(clipLength, explosion.startLifetime);
-        Destroy(waterSplash.gameObject, lifetime * 3f);
+        Destroy(waterSplash.gameObject, lifetime * 5f);
     }
 
 

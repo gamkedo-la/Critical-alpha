@@ -6,6 +6,9 @@ using System.Collections.Generic;
 
 public class DisplayTarget : MonoBehaviour {
 
+    private static readonly string Enemy = "Enemy";
+    private static readonly string Target = "Target";
+
     //Arrays
     private List<EnemyHealth> enemies;
     private List<GameObject> radarDots;
@@ -37,14 +40,17 @@ public class DisplayTarget : MonoBehaviour {
 
     private AudioSource targetSelectAudioSource;
 
+    private EnemyHealth m_currentTarget;
 
-    // Use this for initialization
-    void Start () {
+    
+    void Start()
+    {
         Initialise();           
     }
 
 
-    public void Initialise() {
+    public void Initialise()
+    {
         if (initialised)
             return;
 
@@ -102,20 +108,25 @@ public class DisplayTarget : MonoBehaviour {
         var enemy = enemies[targetIndex];
 
         if (enemy != null && !enemy.IsDead)
-        {
+        {   
             //Move current target to Target layer which is what the culling mask of Target Camera is set to
-            ChangeLayersRecursively(enemies[targetIndex].transform, "Enemy", "Target");
+            if (enemy != m_currentTarget)
+            {
+                m_currentTarget = enemy;
+                ChangeLayersRecursively(enemies[targetIndex].transform, Enemy, Target);
+            }
 
             //Gets object bounds of mesh and then chooses whichever is largest, x y or z.
             var overallBounds = enemies[targetIndex].GetComponent<PlaceableObject>().GetUnrotatedBounds();
             var largestBound = 0f;
-            if(overallBounds.Value.size.x > overallBounds.Value.size.y && overallBounds.Value.size.x > overallBounds.Value.size.z)
+            if (overallBounds.Value.size.x > overallBounds.Value.size.y 
+                && overallBounds.Value.size.x > overallBounds.Value.size.z)
             {
-
                 largestBound = overallBounds.Value.size.x;
-
             }
-            else if(overallBounds.Value.size.y > overallBounds.Value.size.x && overallBounds.Value.size.y > overallBounds.Value.size.z){
+            else if (overallBounds.Value.size.y > overallBounds.Value.size.x
+                && overallBounds.Value.size.y > overallBounds.Value.size.z)
+            {
                 largestBound = overallBounds.Value.size.y;
             }
             else
@@ -143,7 +154,6 @@ public class DisplayTarget : MonoBehaviour {
             targetHealth.text = "Hull: " + Mathf.Ceil(((float) enemyHealth.CurrentHealth / enemyHealth.StartingHealth) * 100) + "%";
 
             cameraTrackTarget();
-
         }
         else
         {
@@ -165,11 +175,11 @@ public class DisplayTarget : MonoBehaviour {
         if (!cycleTargetAxisInUse && cycleTargetInput == 1)
         {
             cycleTargetAxisInUse = true;
-
+  
             targetSelectAudioSource.Play();
 
             //Reset Previous Target back to Enemy Layer
-            ChangeLayersRecursively(enemies[targetIndex].transform, "Target", "Enemy");
+            ChangeLayersRecursively(enemies[targetIndex].transform, Target, Enemy);
 
             targetIndex++;
 
@@ -184,7 +194,6 @@ public class DisplayTarget : MonoBehaviour {
             }
 
             //updateBorderColor();
-
         }
         else if (!cycleTargetAxisInUse && cycleTargetInput == -1)
         {
@@ -193,7 +202,7 @@ public class DisplayTarget : MonoBehaviour {
             targetSelectAudioSource.Play();
 
             //Reset Previous Target back to Enemy Layer
-            ChangeLayersRecursively(enemies[targetIndex].transform, "Target", "Enemy");
+            ChangeLayersRecursively(enemies[targetIndex].transform, Target, Enemy);
 
             targetIndex--;
 
@@ -211,28 +220,28 @@ public class DisplayTarget : MonoBehaviour {
             targetSelectAudioSource.Play();
 
             //Reset Previous Target back to Enemy Layer
-            ChangeLayersRecursively(enemies[targetIndex].transform, "Target", "Enemy");
+            ChangeLayersRecursively(enemies[targetIndex].transform, Target, Enemy);
 
             float lowestMagnitude = direction.magnitude;
 
             for (int key = 0; key < enemies.Count; key++)
             {
                 direction = enemies[key].transform.position - playerTransform.position;
-                if(direction.magnitude < lowestMagnitude)
+                if (direction.magnitude < lowestMagnitude)
                 {
                     lowestMagnitude = direction.magnitude;
                     targetIndex = key;
                 }
             }
 
+            //Set new Target to Target Layer
+            ChangeLayersRecursively(enemies[targetIndex].transform, Enemy, Target);
             //updateBorderColor();
         }
 
-        
-
         //Debug.Log("Target Index: " + targetIndex);
-
     }
+
 
     void cameraTrackTarget()
     {
@@ -247,12 +256,14 @@ public class DisplayTarget : MonoBehaviour {
         targetCamera.transform.rotation = Quaternion.Euler(angles);
     }
 
+
     void updateBorderColor()
     {
         targetBorderColor = radarDots[targetIndex].GetComponent<Image>().color;
         targetBorderTop.color = targetBorderColor;
         targetBorderBottom.color = targetBorderColor;
     }
+
 
     public GameObject returnCurrentTarget()
     {
@@ -261,6 +272,7 @@ public class DisplayTarget : MonoBehaviour {
         else
             return null;
     }
+
 
     void ChangeLayersRecursively(Transform trans, string from, string to)
     {
@@ -276,7 +288,7 @@ public class DisplayTarget : MonoBehaviour {
 
     private void EnemyDestroyed(Transform transform)
     {
-        ChangeLayersRecursively(transform, "Target", "Enemy");
+        ChangeLayersRecursively(transform, Target, Enemy);
     }
 
 

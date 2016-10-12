@@ -4,6 +4,8 @@ using UnityEngine.UI;
 
 public class CameraSwitcher : MonoBehaviour
 {
+    private static readonly string CameraAxis = "Camera";
+
     [SerializeField] Transform[] m_cameraPositions;
     [SerializeField] int[] m_indicesToShowHud = new int[] { 0, 1 };
     [SerializeField] int[] m_indicesToShowRadar = new int[] { 0, 1 };
@@ -49,7 +51,7 @@ public class CameraSwitcher : MonoBehaviour
         else if (Input.GetKeyDown(KeyCode.Alpha0) && m_cameraPositions.Length > 9)
             index = 9;
 
-        int increment = (int) Input.GetAxisRaw("Camera");
+        int increment = (int) Input.GetAxisRaw(CameraAxis);
 
         if (increment == 0)
             m_inputAxisInUse = false;

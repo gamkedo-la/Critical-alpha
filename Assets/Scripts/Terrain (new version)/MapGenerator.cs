@@ -60,12 +60,13 @@ public class MapGenerator : MonoBehaviour
 
 	public float GetTerrainHeight(float x, float z)
 	{
-		x -= 1f;	// Offsets needed for some reason I forget, but they're important so don't mess with this!
-		z -= 1f;
 		x /= uniformScale;
 		z /= uniformScale;
 
-		float height = m_terrainEquation.GetHeight(x, z);
+        x -= 0.5f;    // Offsets needed for some reason I forget, but they're important so don't mess with this!
+        z -= 0.5f;
+
+        float height = m_terrainEquation.GetHeight(x, z);
 
 		//print(height);
 		height = m_meshHeightCurve.Evaluate(height);
